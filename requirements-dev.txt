@@ -1,0 +1,255 @@
+# Velvet Python - Development Dependencies
+# ==========================================
+# Install with: pip install -r requirements-dev.txt
+# Last updated: January 2025
+# Python: 3.10+
+
+# Core Development Tools
+# ----------------------
+# These are essential for all contributors
+
+# Testing Framework
+pytest==8.0.0                  # Core testing framework
+pytest-cov==4.1.0              # Coverage plugin for pytest
+pytest-asyncio==0.23.3         # Async test support
+pytest-timeout==2.2.0          # Test timeout management
+pytest-mock==3.12.0            # Enhanced mocking capabilities
+pytest-benchmark==4.0.0        # Performance benchmarking
+pytest-xdist==3.5.0            # Parallel test execution
+hypothesis==6.98.1             # Property-based testing
+faker==22.2.0                  # Test data generation
+
+# Code Quality & Formatting
+black==24.1.1                  # Code formatter
+isort==5.13.2                  # Import sorting
+ruff==0.2.1                    # Fast Python linter
+mypy==1.8.0                    # Static type checking
+pylint==3.0.3                  # Additional linting
+flake8==7.0.0                  # Style guide enforcement
+bandit==1.7.6                  # Security linter
+vulture==2.11                  # Dead code detection
+
+# Type Stubs & Annotations
+types-requests==2.31.0.20240125
+types-setuptools==69.0.0.20240125
+types-PyYAML==6.0.12.12
+types-redis==4.6.0.20240125
+types-python-dateutil==2.8.19.20240125
+types-toml==0.10.8.7
+
+# Documentation
+mkdocs==1.5.3                  # Documentation site generator
+mkdocs-material==9.5.6         # Material theme for MkDocs
+mkdocs-material-extensions==1.3.1
+mkdocs-mermaid2-plugin==1.1.1  # Mermaid diagram support
+mkdocs-git-revision-date-localized-plugin==1.2.4
+mkdocs-minify-plugin==0.8.0
+mkdocs-redirects==1.2.1
+mkdocs-awesome-pages-plugin==2.9.2
+pymdown-extensions==10.7       # Markdown extensions
+markdown-include==0.8.1
+
+# Performance & Profiling
+memory-profiler==0.61.0        # Memory usage profiling
+line-profiler==4.1.2           # Line-by-line profiling
+py-spy==0.3.14                 # Sampling profiler
+scalene==1.5.38                # CPU+GPU+memory profiler
+snakeviz==2.2.0                # Visualization of cProfile
+guppy3==3.1.4                  # Heap analysis
+objgraph==3.6.1                # Object reference graphs
+
+# Development Utilities
+ipython==8.20.0                # Enhanced Python shell
+ipdb==0.13.13                  # IPython debugger
+rich==13.7.0                   # Rich terminal output
+typer==0.9.0                   # CLI development
+python-dotenv==1.0.0           # Environment variable management
+watchdog==3.0.0                # File system monitoring
+pre-commit==3.6.0              # Git hook management
+commitizen==3.13.0             # Conventional commits
+gitpython==3.1.41              # Git integration
+
+# Build & Packaging
+build==1.0.3                   # PEP 517 package builder
+twine==4.0.2                   # PyPI upload tool
+wheel==0.42.0                  # Wheel package support
+setuptools==69.0.3             # Package setup tools
+setuptools-scm==8.0.4          # Git-based versioning
+hatch==1.9.1                   # Modern project management
+flit==3.9.0                    # Simplified packaging
+
+# CI/CD Tools
+tox==4.12.1                    # Test automation
+nox==2023.4.22                 # Flexible test automation
+invoke==2.2.0                  # Task execution
+coverage[toml]==7.4.0          # Coverage with TOML support
+codecov==2.1.13                # Codecov integration
+
+# Data & Visualization (for examples)
+numpy==1.26.3                  # Numerical computing
+pandas==2.2.0                  # Data manipulation
+matplotlib==3.8.2              # Plotting library
+seaborn==0.13.2                # Statistical visualization
+plotly==5.18.0                 # Interactive visualizations
+altair==5.2.0                  # Declarative visualization
+bokeh==3.3.3                   # Interactive plots
+
+# Web & Async (for examples)
+requests==2.31.0               # HTTP library
+httpx==0.26.0                  # Async HTTP client
+aiohttp==3.9.1                 # Async HTTP client/server
+fastapi==0.109.0               # Modern web API
+flask==3.0.0                   # Web microframework
+django==5.0.1                  # Web framework
+streamlit==1.30.0              # Data apps framework
+
+# Database Drivers (for examples)
+psycopg2-binary==2.9.9         # PostgreSQL adapter
+pymongo==4.6.1                 # MongoDB driver
+redis==5.0.1                   # Redis client
+sqlalchemy==2.0.25             # SQL toolkit
+alembic==1.13.1                # Database migrations
+
+# Machine Learning (for ML modules)
+scikit-learn==1.4.0            # ML library
+xgboost==2.0.3                 # Gradient boosting
+lightgbm==4.3.0                # Gradient boosting
+scipy==1.12.0                  # Scientific computing
+statsmodels==0.14.1            # Statistical modeling
+
+# NLP Libraries (for NLP modules)
+spacy==3.7.2                   # NLP library
+nltk==3.8.1                    # Natural language toolkit
+transformers==4.37.2           # Transformer models
+gensim==4.3.2                  # Topic modeling
+
+# Utility Libraries
+pydantic==2.5.3                # Data validation
+python-dateutil==2.8.2         # Date utilities
+pendulum==3.0.0                # DateTime handling
+arrow==1.3.0                   # DateTime library
+click==8.1.7                   # CLI framework
+tqdm==4.66.1                   # Progress bars
+colorama==0.4.6                # Cross-platform colored output
+tabulate==0.9.0                # Table formatting
+humanize==4.9.0                # Human-friendly output
+
+# Security & Cryptography
+cryptography==42.0.0           # Cryptographic recipes
+pyjwt==2.8.0                   # JWT implementation
+passlib==1.7.4                 # Password hashing
+python-jose==3.3.0             # JOSE implementation
+authlib==1.3.0                 # OAuth/OIDC library
+
+# Task Queues (for examples)
+celery==5.3.6                  # Distributed task queue
+rq==1.16.1                     # Simple job queue
+huey==2.5.0                    # Lightweight task queue
+dramatiq==1.16.0               # Task processing
+
+# Monitoring & Logging
+loguru==0.7.2                  # Advanced logging
+structlog==24.1.0              # Structured logging
+sentry-sdk==1.40.0             # Error tracking
+opentelemetry-api==1.22.0     # Observability
+opentelemetry-sdk==1.22.0     # Observability SDK
+prometheus-client==0.19.0      # Metrics collection
+
+# Development Environment
+python-lsp-server==1.10.0      # Language server
+pylsp-mypy==0.6.8              # MyPy plugin for LSP
+pylsp-black==2.0.0             # Black plugin for LSP
+rope==1.12.0                   # Refactoring library
+autopep8==2.0.4                # Auto-formatting
+
+# Platform-Specific Dependencies
+# -------------------------------
+# These are installed conditionally based on platform
+
+# Unix/Linux specific
+uvloop==0.19.0 ; sys_platform != 'win32'
+
+# Windows specific
+pywin32==306 ; sys_platform == 'win32'
+windows-curses==2.3.2 ; sys_platform == 'win32'
+
+# macOS specific
+pyobjc-core==10.1 ; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==10.1 ; sys_platform == 'darwin'
+
+# Optional Accelerators
+# ---------------------
+# Install these for better performance
+
+# Numerical acceleration
+numba==0.59.0                  # JIT compiler
+numexpr==2.9.0                 # Fast numerical expressions
+bottleneck==1.3.7              # Fast NumPy functions
+cython==3.0.8                  # C extensions
+
+# Async acceleration
+uvicorn[standard]==0.27.0      # ASGI server
+gunicorn==21.2.0               # WSGI server
+gevent==23.9.1                 # Coroutine networking
+
+# Database acceleration
+asyncpg==0.29.0                # Fast PostgreSQL for asyncio
+aiomysql==0.2.0                # MySQL for asyncio
+motor==3.3.2                   # Async MongoDB driver
+
+# Serialization
+orjson==3.9.12                 # Fast JSON
+msgpack==1.0.7                 # Binary serialization
+pyarrow==15.0.0                # Columnar data format
+
+# Version Constraints
+# ------------------
+# Pin these to avoid conflicts
+
+# Pillow for image processing
+Pillow>=10.2.0,<11.0.0
+
+# OpenCV for computer vision
+opencv-python>=4.9.0,<5.0.0
+
+# PyQt/PySide for GUI examples
+# Note: Choose one, not both
+# PyQt6>=6.6.0,<7.0.0
+# PySide6>=6.6.0,<7.0.0
+
+# Jupyter for notebooks
+jupyter>=1.0.0,<2.0.0
+jupyterlab>=4.0.0,<5.0.0
+notebook>=7.0.0,<8.0.0
+
+# Additional Quality Tools
+# -----------------------
+# Optional but recommended
+
+interrogate==1.5.0             # Docstring coverage
+docstr-coverage==2.3.0         # Docstring coverage
+pydocstyle==6.3.0              # Docstring style
+darglint==1.8.1                # Docstring/function match
+pycodestyle==2.11.1            # PEP 8 style
+
+# Deployment & Distribution
+# ------------------------
+docker==7.0.0                  # Docker SDK
+fabric==3.2.2                  # Remote execution
+paramiko==3.4.0                # SSH connections
+ansible==9.1.0                 # Automation
+
+# Development Notes
+# ----------------
+# After installing, run:
+# - pre-commit install
+# - python scripts/verify_setup.py
+# 
+# To upgrade all packages:
+# - pip list --outdated
+# - pip-review --auto
+#
+# For platform-specific issues:
+# - Windows: May need Visual C++ Build Tools
+# - macOS: May need Xcode Command Line Tools
+# - Linux: May need python3-dev package
