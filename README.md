@@ -17,12 +17,13 @@
 <img src="https://readme-typing-svg.demolab.com?font=Georgia&weight=500&size=22&duration=3000&pause=1000&color=8B7D8B&center=true&vCenter=true&multiline=true&width=800&height=80&lines=Every+pattern+tested+and+benchmarked;Interactive+visualizations+for+deep+understanding;Started+January+2025+as+my+learning+journey" alt="Typing Animation"/>
 
 </div
-
-    
+   
 
 <!-- Advanced statistics cards with pastel ombre -->
 <div align="center">
 <table style="border: none; width: 100%;"><tr><td valign="top" width="33%">
+
+
 
 ### Core Metrics
 <div align="center">
