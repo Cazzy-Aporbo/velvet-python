@@ -1,0 +1,463 @@
+# Velvet Python - Git Ignore Configuration
+# =========================================
+# Author: Cazzy Aporbo, MS
+# Last Updated: January 2025
+#
+# This file specifies intentionally untracked files to ignore
+# Organized by category for clarity and maintenance
+
+# Python Development
+# ------------------
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# C extensions
+*.so
+
+# Distribution / Packaging
+# ------------------------
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+*.dist-info/
+
+# PyInstaller
+# -----------
+# Usually these files are written by a python script from a template
+# before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Testing & Quality
+# -----------------
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+test-results/
+*.pytest_cache
+
+# Benchmarking
+# ------------
+.benchmarks/
+*.benchmark
+benchmark_results/
+perf_results/
+
+# Type Checking
+# -------------
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linting & Formatting
+# --------------------
+.ruff_cache/
+.pylint.d/
+
+# Documentation
+# -------------
+site/
+docs/_build/
+docs/.doctrees/
+.docusaurus/
+
+# Jupyter Notebooks
+# -----------------
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Virtual Environments
+# --------------------
+# Common environment names
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+Pipfile.lock
+poetry.lock
+
+# IDE & Editor Files
+# ------------------
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+*.vsix
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+.org-id-locations
+*_archive
+*_flymake.*
+/eshell/history
+/eshell/lastdir
+/elpa/
+*.rel
+/auto/
+.cask/
+dist/
+flycheck_*.el
+/server/
+.projectile
+.dir-locals.el
+/network-security.data
+
+# macOS
+# -----
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+# -------
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+# -----
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Environment Variables
+# ---------------------
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.staging
+*.env
+!.env.example
+!.env.template
+
+# Secrets & Credentials
+# ---------------------
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+.secrets/
+.credentials/
+config/secrets.yml
+*.secret
+*.private
+
+# Database Files
+# --------------
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Log Files
+# ---------
+*.log
+logs/
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Temporary Files
+# ---------------
+*.tmp
+*.temp
+*.swp
+*.bak
+*.backup
+*.old
+tmp/
+temp/
+
+# Cache Files
+# -----------
+*.cache
+.cache/
+cache/
+.parcel-cache/
+.sass-cache/
+
+# Media Files (Optional - uncomment if needed)
+# --------------------------------------------
+# *.jpg
+# *.jpeg
+# *.png
+# *.gif
+# *.svg
+# *.ico
+# *.mov
+# *.mp4
+# *.mp3
+# *.wav
+# *.avi
+# *.mkv
+
+# Large Data Files
+# ----------------
+*.csv
+!examples/*.csv
+!tests/fixtures/*.csv
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.npy
+*.npz
+data/raw/
+data/processed/
+data/external/
+datasets/
+
+# Model Files
+# -----------
+*.pt
+*.pth
+*.onnx
+*.pb
+*.h5
+*.tflite
+*.caffemodel
+models/
+checkpoints/
+saved_models/
+
+# Node.js (for documentation tools)
+# ----------------------------------
+node_modules/
+jspm_packages/
+web_modules/
+*.node
+.npm
+.node_repl_history
+.yarn-integrity
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Streamlit
+# ---------
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# Docker
+# ------
+*.dockerignore
+docker-compose.override.yml
+.docker/
+
+# Terraform
+# ---------
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+*.tfvars
+!*.tfvars.example
+
+# CI/CD
+# -----
+.gitlab-ci-local/
+.github/actions/
+
+# Project Specific
+# ----------------
+# Benchmark results (keep only templates)
+*/benchmarks/results/*.json
+!*/benchmarks/results/template.json
+
+# Interactive app data
+*/app_data/
+*/user_uploads/
+
+# Module-specific build artifacts
+*/build/
+*/dist/
+*/output/
+
+# Scratch work and experiments
+scratch/
+experiments/
+playground/
+sandbox/
+_experimental/
+
+# Personal notes (but keep documentation)
+notes.txt
+todo.txt
+personal_notes/
+!docs/notes/
+
+# Backup files
+backup/
+backups/
+*.backup
+*.bkp
+
+# Generated documentation
+docs/api/
+docs/generated/
+
+# Performance profiling outputs
+*.prof
+*.pstats
+*.calltree
+profiles/
+
+# Memory dumps
+*.hprof
+*.heap
+*.dmp
+
+# Keep these files
+# ----------------
+!.gitignore
+!.gitkeep
+!requirements.txt
+!requirements-dev.txt
+!pyproject.toml
+!Makefile
+!LICENSE
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+!.pre-commit-config.yaml
+!.github/
+!.github/workflows/
+!.github/ISSUE_TEMPLATE/
+!.github/PULL_REQUEST_TEMPLATE/
+
+# Module Structure Files to Keep
+# -------------------------------
+!*/src/
+!*/tests/
+!*/benchmarks/
+!*/examples/
+!*/notebooks/
+!*/docs/
+!*/app.py
+!*/README.md
+!*/requirements.txt
+
+# End of Velvet Python .gitignore
+# ================================
+# Remember: Use 'git add -f' to force add ignored files if needed
+# Check ignored files with: git status --ignored
