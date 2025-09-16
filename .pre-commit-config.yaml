@@ -1,0 +1,330 @@
+# Velvet Python - Pre-commit Hook Configuration
+# ==============================================
+# Author: Cazzy Aporbo, MS
+# Created: January 2025
+#
+# This file saved my sanity. I used to constantly push code with formatting
+# issues, then have to fix them in follow-up commits. My git history was a mess
+# of "fix formatting" and "oops, forgot to run black" commits.
+#
+# Now these hooks run automatically before every commit. If something's wrong,
+# the commit fails and tells me exactly what to fix. It's like having a
+# personal code reviewer who never gets tired.
+#
+# To use this:
+#   1. Install pre-commit: pip install pre-commit
+#   2. Install the hooks: pre-commit install
+#   3. That's it! The hooks run automatically on git commit
+#
+# To run manually on all files: pre-commit run --all-files
+# To skip hooks (emergency only!): git commit --no-verify
+
+# Minimum pre-commit version required
+minimum_pre_commit_version: '3.6.0'
+
+# Don't allow commits to these branches directly
+# I learned this the hard way after accidentally pushing to main
+fail_fast: false  # Run all hooks even if one fails - I want to see all issues at once
+
+# Skip these hooks in CI - they're already run separately there
+ci:
+  skip: [mypy, pytest-check]
+  autofix_prs: false  # Don't automatically fix PRs - I want to review changes
+
+# Hook Repositories
+# -----------------
+# Each repo contains multiple hooks. I've tested dozens of combinations
+# and this set gives the best balance of speed and thoroughness.
+
+repos:
+  # Python Code Formatting
+  # -----------------------
+  # Black is non-negotiable for me. Consistent formatting = less time arguing about style
+  - repo: https://github.com/psf/black
+    rev: 24.1.1
+    hooks:
+      - id: black
+        name: Format code with Black
+        language_version: python3.11
+        # I exclude version-controlled notebooks - they're better handled manually
+        exclude: \.ipynb$
+        verbose: true  # I like seeing what files are being formatted
+
+  # Import Sorting
+  # --------------
+  # isort keeps imports organized. I used to spend time manually organizing them.
+  # Now isort does it perfectly every time.
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: Sort imports with isort
+        args: ['--profile', 'black']  # Compatible with black's style
+        additional_dependencies: ['toml']  # Needed to read pyproject.toml
+
+  # Fast Python Linting
+  # --------------------
+  # Ruff is FAST. It replaced flake8, pylint, and a dozen other tools for me.
+  # It catches real issues without being pedantic.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.2.1
+    hooks:
+      - id: ruff
+        name: Lint with Ruff (fast Python linter)
+        args: ['--fix', '--exit-non-zero-on-fix']  # Auto-fix what it can
+        types_or: [python, pyi, jupyter]
+        
+      - id: ruff-format
+        name: Format with Ruff (backup formatter)
+        # This is a backup in case black fails for some reason
+        types_or: [python, pyi, jupyter]
+
+  # File and Repository Checks
+  # ---------------------------
+  # These catch embarrassing mistakes before they hit the repository
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # Files and formatting
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+        # I hate trailing whitespace. It serves no purpose and clutters diffs.
+        exclude: \.(md|markdown)$  # Markdown needs trailing spaces for line breaks
+        
+      - id: end-of-file-fixer
+        name: Fix missing newline at end of files
+        # Every file should end with a newline. It's POSIX standard.
+        exclude: \.ipynb$
+        
+      - id: mixed-line-ending
+        name: Fix mixed line endings
+        args: ['--fix=lf']  # Force LF line endings (Unix style)
+        # Windows users kept introducing CRLF. This stops that.
+        
+      # File size and type checks
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=5000']  # 5MB limit
+        # I accidentally committed a 50MB dataset once. Never again.
+        
+      - id: check-case-conflict
+        name: Check for case conflicts in filenames
+        # Windows isn't case-sensitive. This prevents issues.
+        
+      # Content checks
+      - id: check-merge-conflict
+        name: Check for merge conflict markers
+        # These sometimes sneak in during rebases
+        
+      - id: check-docstring-first
+        name: Check docstring is first in module
+        # Docstrings should come before imports
+        
+      # Security
+      - id: detect-private-key
+        name: Detect private keys
+        # This has saved me from accidentally committing AWS keys
+        
+      # Python specific
+      - id: check-ast
+        name: Check Python syntax
+        # Catches syntax errors before they break everything
+        
+      - id: debug-statements
+        name: Check for debug statements
+        # No more print() statements in production code
+        
+      - id: name-tests-test
+        name: Verify test file naming
+        args: ['--pytest-test-first']
+        # All test files must start with test_
+        
+      # Data formats
+      - id: check-json
+        name: Validate JSON files
+        
+      - id: check-yaml
+        name: Validate YAML files
+        args: ['--unsafe']  # Allow custom tags (for CI configs)
+        
+      - id: check-toml
+        name: Validate TOML files
+        
+      - id: check-xml
+        name: Validate XML files
+
+  # Docstring Coverage
+  # ------------------
+  # I believe every public function deserves documentation
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        name: Check docstring style
+        # Google style docstrings - clean and readable
+        args: ['--convention=google', '--add-ignore=D100,D104']
+        # D100: Missing module docstring (not always needed)
+        # D104: Missing package docstring (redundant with module)
+        exclude: ^(tests/|benchmarks/|examples/)
+        additional_dependencies: ['tomli']
+
+  # Type Checking
+  # -------------
+  # Static typing catches so many bugs before runtime
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        name: Type check with mypy
+        args: ['--ignore-missing-imports', '--no-strict-optional']
+        additional_dependencies: [
+          'types-requests',
+          'types-setuptools',
+          'types-PyYAML',
+          'types-python-dateutil',
+          'pydantic'
+        ]
+        # Only check our source code, not tests
+        files: ^velvet_python/
+        pass_filenames: false
+
+  # Security Scanning
+  # -----------------
+  # Catches common security issues in Python code
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.6
+    hooks:
+      - id: bandit
+        name: Security check with Bandit
+        args: ['-ll', '-i', '-r']  # Low severity, recursive
+        exclude: ^(tests/|benchmarks/)
+        # Don't check test code for security issues
+
+  # Secrets Detection
+  # -----------------
+  # This has saved me from committing API keys multiple times
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        name: Detect secrets in code
+        args: ['--baseline', '.secrets.baseline']
+        # Run 'detect-secrets scan --baseline .secrets.baseline' to create baseline
+        exclude: \.(lock|package-lock\.json)$
+
+  # Markdown Formatting
+  # -------------------
+  # Keeps documentation consistent
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        name: Lint Markdown files
+        args: ['--fix']
+        # I'm less strict with markdown - content matters more than format
+
+  # Jupyter Notebook Cleaning
+  # --------------------------
+  # Strips output from notebooks to keep diffs clean
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.6.1
+    hooks:
+      - id: nbstripout
+        name: Strip Jupyter notebook outputs
+        # Notebook outputs can be huge and make diffs unreadable
+
+  # Shell Script Checking
+  # ---------------------
+  # For any bash scripts in the project
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+        name: Check shell scripts
+        # I occasionally write bash scripts for automation
+
+  # Dockerfile Linting
+  # ------------------
+  # If we add Docker support later
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        name: Lint Dockerfiles
+        # Disabled by default - uncomment when we add Docker
+
+  # Custom Local Hooks
+  # ------------------
+  # These are specific to our project
+  - repo: local
+    hooks:
+      # Check that requirements files are sorted
+      - id: requirements-sorted
+        name: Check requirements.txt is sorted
+        entry: python -c "import sys; lines = open(sys.argv[1]).readlines(); sys.exit(0 if lines == sorted(lines, key=str.lower) else 1)"
+        language: system
+        files: requirements.*\.txt$
+        # I like sorted requirements - easier to find packages
+
+      # Ensure no TODO comments in main branch
+      - id: no-todos
+        name: Check for TODO comments
+        entry: bash -c 'grep -r "TODO\|FIXME\|XXX" --include="*.py" . && exit 1 || exit 0'
+        language: system
+        pass_filenames: false
+        # TODOs should become issues, not stay in code
+
+      # Verify author attribution
+      - id: check-author
+        name: Verify author attribution
+        entry: bash -c 'grep -l "Author: Cazzy Aporbo, MS" velvet_python/*.py || (echo "Missing author attribution" && exit 1)'
+        language: system
+        pass_filenames: false
+        # Every main module file should have my attribution
+
+      # Check that new Python files have proper headers
+      - id: python-file-headers
+        name: Check Python file headers
+        entry: python scripts/check_headers.py
+        language: system
+        types: [python]
+        exclude: ^(tests/|benchmarks/)
+        # Ensures consistent file headers (need to create this script)
+
+# Configuration for specific hooks
+# ---------------------------------
+default_language_version:
+  python: python3.11  # My preferred Python version
+  
+default_stages: [commit]  # Run on commit by default
+
+# Files to exclude globally
+exclude: |
+  (?x)^(
+    .venv/.*|
+    venv/.*|
+    .env/.*|
+    env/.*|
+    build/.*|
+    dist/.*|
+    .*\.egg-info/.*|
+    htmlcov/.*|
+    site/.*|
+    .pytest_cache/.*|
+    .mypy_cache/.*|
+    .ruff_cache/.*|
+    __pycache__/.*|
+    .*\.pyc|
+    .*\.pyo|
+    .*\.orig|
+    .*\.rej
+  )$
+
+# End of pre-commit configuration
+# --------------------------------
+# To test: pre-commit run --all-files
+# To update hooks: pre-commit autoupdate
+# To skip: git commit --no-verify (use sparingly!)
+#
+# Author: Cazzy Aporbo, MS
+# Last updated: January 2025
