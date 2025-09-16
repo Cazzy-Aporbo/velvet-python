@@ -1,0 +1,28 @@
+# Why .python-version exists
+# ==========================
+# Author: Cazzy Aporbo, MS
+# 
+# This file tells pyenv which Python version to use for this project.
+# When you enter the project directory, pyenv automatically switches
+# to this Python version.
+#
+# I chose Python 3.11.7 because:
+# - It's stable and well-tested
+# - Has all the modern features we need
+# - Great performance improvements over 3.10
+# - Compatible with all our dependencies
+#
+# How it works:
+# 1. Install pyenv: https://github.com/pyenv/pyenv
+# 2. Install this Python version: pyenv install 3.11.7
+# 3. When you cd into this directory, pyenv activates 3.11.7
+#
+# You can also set it manually:
+# pyenv local 3.11.7  (creates/updates this file)
+# pyenv global 3.11.7 (sets system-wide default)
+#
+# To check current version:
+# python --version
+#
+# If you don't use pyenv, you can ignore this file.
+# Just make sure you're using Python 3.10+ for compatibility.
