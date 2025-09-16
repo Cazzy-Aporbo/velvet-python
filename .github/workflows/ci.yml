@@ -1,0 +1,169 @@
+# Velvet Python - Continuous Integration Pipeline
+# ================================================
+# Author: Cazzy Aporbo, MS
+# Created: January 2025; Updated March 2025, September 2025
+#
+# This workflow is the result of countless broken builds and failed deployments.
+# I've learned that catching issues early saves hours of debugging later.
+# Every job here exists because I've been burned by not having it before.
+#
+# This runs on every push and pull request. It's strict because I'd rather
+# fix issues immediately than discover them in production.
+
+name: CI Pipeline
+
+# When this runs
+# --------------
+# I trigger this on everything except documentation-only changes.
+# No point running expensive tests when I just fix a typo in the README.
+on:
+  push:
+    branches: [ main, develop ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'CHANGELOG.md'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  schedule:
+    # Run at 2 AM UTC every Monday - catches dependency breaks
+    # I've been bitten by dependencies breaking without me knowing
+    - cron: '0 2 * * 1'
+  workflow_dispatch:  # Allows manual triggering - useful for debugging
+
+# Cancel in-progress runs when new commits are pushed
+# This saves CI minutes and gives faster feedback
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Environment variables
+# ---------------------
+# These apply to all jobs. I learned to set these after debugging
+# Unicode errors in CI for hours.
+env:
+  PYTHONUNBUFFERED: "1"  # See output immediately, not buffered
+  FORCE_COLOR: "1"  # Keep colored output in CI logs
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"  # Stop pip from nagging about updates
+  PIP_NO_CACHE_DIR: "1"  # Don't cache in CI - wastes space
+  PYTHONDONTWRITEBYTECODE: "1"  # Don't create .pyc files
+
+jobs:
+  # Job 1: Linting and Formatting
+  # ------------------------------
+  # This runs first and fails fast. No point running expensive tests
+  # if the code isn't even formatted correctly.
+  lint:
+    name: 🎨 Lint & Format Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10  # Should never take longer than this
+    
+    steps:
+      # Check out the code
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better diffs
+      
+      # Set up Python
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      # Cache dependencies - speeds up builds significantly
+      # I've seen this cut CI time from 10 minutes to 2 minutes
+      - name: 📦 Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-lint-${{ hashFiles('requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-lint-
+            ${{ runner.os }}-pip-
+      
+      # Install linting tools only - faster than full dev install
+      - name: 📚 Install linting dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort ruff mypy
+          pip install types-requests types-setuptools types-PyYAML
+          echo "::notice::Linting tools installed successfully"
+      
+      # Check formatting with black
+      - name: 🖤 Check Black formatting
+        id: black
+        run: |
+          echo "Checking code formatting with Black..."
+          black --check --diff --color velvet_python/ tests/ || {
+            echo "::error::Code needs formatting. Run 'make format' locally"
+            exit 1
+          }
+          echo "✅ Black formatting check passed"
+      
+      # Check import sorting
+      - name: 📑 Check import sorting with isort
+        id: isort
+        run: |
+          echo "Checking import sorting..."
+          isort --check-only --diff --color velvet_python/ tests/ || {
+            echo "::error::Imports need sorting. Run 'make format' locally"
+            exit 1
+          }
+          echo "✅ Import sorting check passed"
+      
+      # Run ruff linter
+      - name: ⚡ Lint with Ruff
+        id: ruff
+        run: |
+          echo "Running Ruff linter..."
+          ruff check velvet_python/ tests/ --output-format=github
+          echo "✅ Ruff linting passed"
+      
+      # Type checking with mypy
+      - name: 🔍 Type check with mypy
+        id: mypy
+        continue-on-error: true  # Don't fail build on type errors yet
+        run: |
+          echo "Running type checking..."
+          mypy velvet_python/ --ignore-missing-imports --pretty --show-error-codes || {
+            echo "::warning::Type checking found issues (non-blocking)"
+          }
+
+  # Job 2: Security Scanning
+  # -------------------------
+  # Security issues are critical. This job catches them before they reach main.
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      # Run Bandit security scanner
+      - name: 🔍 Run Bandit security scan
+        run: |
+          pip install bandit
+          echo "Scanning for security issues..."
+          bandit -r velvet_python/ -ll -i -f json -o bandit-report.json || true
+          bandit -r velvet_python/ -ll -i
+          echo "✅ Security scan complete"
+      
+      # Check for secrets
+      - name: 🕵️ Scan for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          ba
