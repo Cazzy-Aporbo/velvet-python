@@ -1,0 +1,395 @@
+# Velvet Python - Documentation Configuration
+# ============================================
+# Author: Cazzy Aporbo, MS
+# Created: January 2025
+#
+# This configures MkDocs to generate our beautiful documentation site.
+# I spent way too long getting the colors just right to match our pastel theme.
+# The result is documentation that's actually pleasant to read.
+
+# Project Information
+# -------------------
+site_name: Velvet Python
+site_description: Building Python mastery through working code - a comprehensive learning journey
+site_author: Cazzy Aporbo, MS
+site_url: https://github.com/Cazzy-Aporbo/velvet-python
+copyright: Copyright &copy; 2025 Cazzy Aporbo, MS
+
+# Repository Information
+# ----------------------
+repo_name: Cazzy-Aporbo/velvet-python
+repo_url: https://github.com/Cazzy-Aporbo/velvet-python
+edit_uri: edit/main/docs/
+
+# Documentation Structure
+# -----------------------
+# I organize docs the same way I think about the project
+nav:
+  - Home:
+    - Welcome: index.md
+    - Why Velvet Python?: why-velvet.md
+    - Getting Started: getting-started.md
+    - Learning Path: learning-path.md
+    - Contributing: contributing.md
+    
+  - Core Concepts:
+    - Philosophy: concepts/philosophy.md
+    - Architecture: concepts/architecture.md
+    - Best Practices: concepts/best-practices.md
+    - Code Style: concepts/code-style.md
+    
+  - Modules:
+    - Overview: modules/index.md
+    - "01 - Environment Management": modules/01-environments.md
+    - "02 - Package Distribution": modules/02-packaging.md
+    - "03 - CLI Applications": modules/03-cli-applications.md
+    - "04 - DateTime Handling": modules/04-datetime-handling.md
+    - "05 - Text Processing": modules/05-text-processing.md
+    - "06 - NLP Essentials": modules/06-nlp-essentials.md
+    - "07 - HTTP & APIs": modules/07-http-clients.md
+    - "08 - Database Systems": modules/08-data-stores.md
+    - "09 - Concurrency Patterns": modules/09-concurrency.md
+    - "10 - Media Processing": modules/10-media-processing.md
+    - "11 - Numerical Computing": modules/11-numerical-computing.md
+    - "12 - Data Visualization": modules/12-data-visualization.md
+    - "13 - Machine Learning": modules/13-machine-learning.md
+    - "14 - Web Frameworks": modules/14-web-frameworks.md
+    - "15 - Authentication & Security": modules/15-authentication.md
+    - "16 - Task Queues": modules/16-task-queues.md
+    - "17 - Data Validation": modules/17-data-validation.md
+    - "18 - Testing Strategies": modules/18-testing-quality.md
+    - "19 - Performance Optimization": modules/19-performance.md
+    - "20 - Architecture Patterns": modules/20-architecture.md
+    - "21 - Desktop Applications": modules/21-desktop-applications.md
+    - "22 - Algorithms & Data Structures": modules/22-algorithms.md
+    - "23 - Development Tools": modules/23-development-tools.md
+    
+  - API Reference:
+    - CLI: api/cli.md
+    - Core Package: api/core.md
+    - Utilities: api/utilities.md
+    
+  - Resources:
+    - FAQ: resources/faq.md
+    - Troubleshooting: resources/troubleshooting.md
+    - Benchmarks: resources/benchmarks.md
+    - Changelog: resources/changelog.md
+    - License: resources/license.md
+
+# Theme Configuration
+# -------------------
+# Material theme with our custom pastel colors
+theme:
+  name: material
+  language: en
+  
+  # Color scheme - our pastel aesthetic
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  
+  # Font configuration
+  font:
+    text: Georgia
+    code: Fira Code
+  
+  # Features I find essential for good documentation
+  features:
+    - navigation.instant          # Instant loading (SPA-like)
+    - navigation.instant.progress # Progress bar
+    - navigation.tracking         # Update URL with active anchor
+    - navigation.tabs             # Top-level navigation tabs
+    - navigation.tabs.sticky      # Sticky navigation tabs
+    - navigation.sections         # Render sections in sidebar
+    - navigation.expand          # Expand sections by default
+    - navigation.path            # Show breadcrumbs
+    - navigation.prune           # Prune large sidebars
+    - navigation.indexes         # Section index pages
+    - navigation.top             # Back to top button
+    - navigation.footer          # Footer navigation
+    - search.suggest             # Search suggestions
+    - search.highlight           # Highlight search results
+    - search.share              # Share search URL
+    - content.code.copy         # Copy code button
+    - content.code.annotate     # Code annotations
+    - content.action.edit       # Edit page button
+    - content.action.view       # View source button
+    - content.tooltips          # Tooltips
+    - header.autohide           # Auto-hide header
+    - toc.follow                # Follow scroll in TOC
+    - toc.integrate             # Integrate TOC into sidebar
+  
+  # Custom logo and favicon
+  logo: assets/logo.svg
+  favicon: assets/favicon.ico
+  
+  # Icon customization
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+# Theme Customization
+# -------------------
+# Our beautiful pastel colors
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/pastel-theme.css
+
+extra_javascript:
+  - javascripts/extra.js
+
+# CSS Override for our pastel theme (you'll need to create these files)
+# primary: #DDA0DD (plum)
+# accent: #E6E6FA (lavender)
+# Background gradients using our colors
+
+# Plugins
+# -------
+# These enhance the documentation experience
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.\_]+'  # Better search tokenization
+      
+  - tags:
+      tags_file: tags.md
+      
+  # Minify HTML in production
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+        
+  # Git revision date
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      fallback_to_build_date: true
+      
+  # Generate docstrings from code
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [.]
+          options:
+            show_source: true
+            show_bases: true
+            show_root_heading: true
+            show_root_toc_entry: true
+            show_object_full_path: false
+            show_category_heading: true
+            show_if_no_docstring: false
+            show_signature: true
+            show_signature_annotations: true
+            separate_signature: false
+            line_length: 80
+            merge_init_into_class: true
+            docstring_style: google
+            docstring_section_style: spacy
+            
+  # Redirects for moved pages
+  - redirects:
+      redirect_maps: {}
+      
+  # Social cards generation
+  - social:
+      cards: true
+      cards_color:
+        fill: "#FFE4E1"
+        text: "#4A4A4A"
+
+# Markdown Extensions
+# -------------------
+# These make the documentation more powerful
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 3
+      
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+      
+  - pymdownx.betterem:
+      smart_enable: all
+      
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  
+  - pymdownx.critic:
+      mode: view
+      
+  - pymdownx.details
+  
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      
+  - pymdownx.inlinehilite
+  
+  - pymdownx.keys
+  
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: Cazzy-Aporbo
+      repo: velvet-python
+      
+  - pymdownx.smartsymbols
+  
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+        
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+          
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      
+  - pymdownx.tasklist:
+      custom_checkbox: true
+      clickable_checkbox: true
+
+# Extra Configuration
+# -------------------
+extra:
+  # Social links
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Cazzy-Aporbo
+      name: GitHub
+    
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/velvet-python/
+      name: PyPI
+    
+    - icon: fontawesome/solid/book
+      link: https://velvet-python.readthedocs.io
+      name: Documentation
+  
+  # Version provider
+  version:
+    provider: mike
+    default: stable
+  
+  # Analytics (if you want to add them)
+  # analytics:
+  #   provider: google
+  #   property: G-XXXXXXXXXX
+  
+  # Consent for cookies
+  consent:
+    title: Cookie consent
+    description: >-
+      I use cookies to track documentation usage and improve the learning
+      experience. Your privacy matters to me.
+    actions:
+      - accept
+      - reject
+      - manage
+  
+  # Meta tags
+  meta:
+    - name: description
+      content: Building Python mastery through working code
+    - name: keywords
+      content: python, tutorial, learning, programming, cazzy aporbo
+    - name: author
+      content: Cazzy Aporbo, MS
+  
+  # Status badges
+  status:
+    new: Recently added
+    deprecated: Deprecated
+    beta: Beta feature
+    stable: Stable
+
+# Page tree (for better navigation structure)
+nav_style: light
+
+# Search configuration
+search:
+  boost: 2
+
+# Validation
+strict: true
+
+# Development server
+dev_addr: 127.0.0.1:8000
+
+# Build configuration
+use_directory_urls: true
+docs_dir: docs
+site_dir: site
+
+# Watch for changes
+watch:
+  - velvet_python
+  - docs
+  - mkdocs.yml
+
+# Exclude patterns
+exclude_docs: |
+  *.pyc
+  __pycache__/
+  .git/
+  .idea/
+  .vscode/
+  drafts/
+  templates/
+
+# Hooks (if needed)
+# hooks:
+#   - docs/hooks/custom_hook.py
+
+# Copyright notice
+copyright: >
+  Copyright &copy; 2025 Cazzy Aporbo, MS –
+  <a href="#__consent">Change cookie settings</a>
+
+# Comments
+# --------
+# I've configured this to create beautiful, readable documentation that
+# matches our pastel aesthetic. The navigation structure mirrors our
+# module organization, making it intuitive to browse.
+#
+# To build: mkdocs build
+# To serve: mkdocs serve
+# To deploy: mkdocs gh-deploy
+#
+# Author: Cazzy Aporbo, MS
