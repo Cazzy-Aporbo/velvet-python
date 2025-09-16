@@ -1,0 +1,105 @@
+# Velvet Python - Production Dependencies
+# ========================================
+# Author: Cazzy Aporbo, MS
+# Created: January 2025
+#
+# These are the core dependencies needed to run Velvet Python.
+# I keep this minimal - only what's absolutely necessary for production.
+# Development dependencies go in requirements-dev.txt
+#
+# To install: pip install -r requirements.txt
+# To upgrade: pip install --upgrade -r requirements.txt
+
+# Core Dependencies
+# -----------------
+# These are the absolute essentials for the project to run
+
+# Rich - Beautiful terminal output (our pastel theme needs this)
+rich==13.7.0
+
+# Typer - CLI framework (powers our command-line interface)
+typer==0.9.0
+
+# Pydantic - Data validation (ensures our configs are correct)
+pydantic==2.5.3
+
+# Python-dotenv - Environment variable management (.env files)
+python-dotenv==1.0.0
+
+# Click - Typer dependency, but specifying for version control
+click==8.1.7
+
+# Web Application Dependencies
+# ----------------------------
+# For the interactive dashboards in each module
+
+# Streamlit - Interactive web apps (for our beautiful dashboards)
+streamlit==1.29.0
+
+# Plotly - Interactive visualizations
+plotly==5.18.0
+
+# Data Processing
+# ---------------
+# Essential data handling libraries
+
+# Pandas - Data manipulation (used in multiple modules)
+pandas==2.1.4
+
+# NumPy - Numerical computing (Pandas dependency, but being explicit)
+numpy==1.26.3
+
+# Utility Libraries
+# -----------------
+# Common utilities used across modules
+
+# PyYAML - YAML file parsing
+pyyaml==6.0.1
+
+# toml - TOML file parsing (for pyproject.toml)
+toml==0.10.2
+
+# Requests - HTTP library (for API modules)
+requests==2.31.0
+
+# Packaging - Version handling and requirements parsing
+packaging==23.2
+
+# Module-Specific Core Dependencies
+# ----------------------------------
+# These are needed by specific modules but common enough to include
+
+# Pipdeptree - Dependency tree visualization (01-environments)
+pipdeptree==2.13.1
+
+# Psutil - System and process utilities
+psutil==5.9.8
+
+# Tabulate - Pretty tables in terminal
+tabulate==0.9.0
+
+# Platform Support
+# -----------------
+# Cross-platform compatibility
+
+# Colorama - Colored terminal output on Windows
+colorama==0.4.6 ; platform_system=='Windows'
+
+# Version Constraints
+# -------------------
+# Python version requirement
+# Requires-Python: >=3.10
+
+# Notes
+# -----
+# I keep this file minimal on purpose. Each module has its own
+# requirements.txt for module-specific dependencies. This file
+# only contains what's needed to run the core framework.
+#
+# For development dependencies (testing, linting, etc.), 
+# see requirements-dev.txt
+#
+# To install everything for development:
+# pip install -r requirements.txt -r requirements-dev.txt
+#
+# Author: Cazzy Aporbo, MS
