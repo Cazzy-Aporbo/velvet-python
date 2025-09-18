@@ -1,5 +1,3 @@
-# Contributing to Velvet Python
-
 <div align="center">
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,16,18,20,22&height=200&section=header&text=Contributing%20Guidelines&fontSize=60&animation=fadeIn&fontAlignY=35&desc=Help%20build%20the%20future%20of%20Python%20education&descAlignY=55&descSize=20&fontColor=8B7D8B" alt="Contributing Header"/>
