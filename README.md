@@ -1,5 +1,3 @@
-# Velvet Python
-
 <div align="center">
 
 <!-- Advanced animated header with gradient background -->
