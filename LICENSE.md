@@ -1,9 +1,3 @@
-MIT License
-
-Copyright (c) 2025 Cazandra Aporbo
-
-# License
-
 <div align="center">
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,16,18,20,22&height=200&section=header&text=License%20Information&fontSize=60&animation=fadeIn&fontAlignY=35&desc=MIT%20for%20Code%20•%20CC-BY-4.0%20for%20Documentation&descAlignY=55&descSize=20&fontColor=8B7D8B" alt="License Header"/>
@@ -373,5 +367,7 @@ This project is intended for educational purposes. While I strive for accuracy a
 <img src="https://img.shields.io/badge/Licensed-Openly-FFE4E1?style=for-the-badge&labelColor=8B7D8B" />
 <img src="https://img.shields.io/badge/Shared-Freely-EDE5FF?style=for-the-badge&labelColor=8B7D8B" />
 <img src="https://img.shields.io/badge/Built-Together-F0E6FF?style=for-the-badge&labelColor=8B7D8B" />
+
+Copyright (c) 2025 Cazandra Aporbo
 
 </div>.
