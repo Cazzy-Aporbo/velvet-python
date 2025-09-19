@@ -1,0 +1,501 @@
+Age_Group,Ethnicity,Education,Income,Insurance,Has_Primary_Care,Annual_Checkup,Delayed_Care_Due_To_Cost,Satisfaction_Score
+45-54,White,Less than high school,$25K-$50K,Other,True,False,False,8
+55-64,White,Bachelor's degree,>$100K,Private,True,False,True,8
+35-44,White,Less than high school,$50K-$75K,Medicare,True,False,False,7
+55-64,Black,Less than high school,<$25K,Private,True,True,False,8
+55-64,Black,Bachelor's degree,<$25K,None,False,True,True,8
+25-34,White,Bachelor's degree,$75K-$100K,Private,True,False,False,8
+35-44,White,Graduate degree,$25K-$50K,None,True,False,False,10
+35-44,Black,Less than high school,$75K-$100K,None,True,False,False,7
+35-44,White,Less than high school,$50K-$75K,Medicaid,True,True,False,1
+55-64,Hispanic,Graduate degree,$75K-$100K,Other,True,False,True,4
+45-54,Black,Some college,<$25K,None,True,False,False,4
+35-44,White,Some college,<$25K,Medicaid,False,False,True,5
+65+,White,Some college,>$100K,Other,True,False,False,10
+55-64,Black,Graduate degree,>$100K,None,True,False,True,6
+25-34,White,Less than high school,$50K-$75K,None,True,True,False,4
+45-54,White,Graduate degree,$25K-$50K,Private,False,True,False,2
+65+,Asian,Graduate degree,$75K-$100K,Private,False,True,False,6
+65+,White,Some college,$50K-$75K,Other,True,True,False,8
+25-34,White,High school,>$100K,None,False,True,False,8
+45-54,Black,Less than high school,$75K-$100K,Medicare,True,True,False,7
+55-64,White,Some college,>$100K,Private,True,True,False,6
+18-24,White,High school,$75K-$100K,Other,True,True,True,2
+45-54,Asian,High school,$25K-$50K,None,True,True,False,7
+25-34,White,Bachelor's degree,$50K-$75K,None,True,False,False,5
+65+,Asian,Less than high school,$75K-$100K,Medicare,False,False,False,6
+55-64,Hispanic,High school,<$25K,Other,False,True,False,10
+45-54,White,Some college,<$25K,None,True,False,False,8
+18-24,White,Bachelor's degree,$75K-$100K,Private,True,True,False,8
+18-24,White,Less than high school,$75K-$100K,Medicare,True,True,True,3
+35-44,White,Graduate degree,$75K-$100K,Other,True,True,True,7
+35-44,White,Some college,<$25K,Medicare,True,True,False,1
+25-34,Black,High school,<$25K,Private,True,False,False,1
+45-54,White,High school,$75K-$100K,Other,True,False,True,7
+45-54,White,Some college,>$100K,Medicare,False,True,False,10
+65+,Hispanic,High school,>$100K,Medicaid,True,True,False,9
+65+,White,Bachelor's degree,$25K-$50K,Private,True,True,False,7
+65+,Hispanic,Less than high school,$50K-$75K,Private,False,True,False,10
+35-44,White,Bachelor's degree,>$100K,Private,True,True,True,5
+45-54,White,High school,<$25K,Medicaid,True,True,False,8
+45-54,Black,Graduate degree,>$100K,Medicaid,True,False,False,2
+18-24,Black,Less than high school,$25K-$50K,None,True,False,False,9
+35-44,Hispanic,Less than high school,$25K-$50K,Medicare,False,True,False,6
+55-64,Hispanic,Some college,$50K-$75K,None,True,False,False,9
+35-44,Hispanic,Some college,>$100K,Medicare,True,True,False,2
+55-64,White,Graduate degree,<$25K,Medicaid,False,True,False,3
+18-24,White,Less than high school,<$25K,Medicaid,False,True,False,8
+25-34,Hispanic,Graduate degree,$75K-$100K,None,False,True,False,1
+45-54,Hispanic,Some college,<$25K,Other,True,False,False,10
+18-24,Other,Some college,$50K-$75K,None,True,True,True,7
+45-54,White,Less than high school,$50K-$75K,Medicare,False,True,True,7
+65+,White,Bachelor's degree,<$25K,None,False,True,False,1
+25-34,Hispanic,High school,<$25K,Private,True,True,False,9
+25-34,White,Some college,$75K-$100K,Medicare,True,False,False,8
+18-24,Asian,Some college,<$25K,Medicare,True,True,True,4
+25-34,Hispanic,Bachelor's degree,$75K-$100K,Other,False,True,False,10
+55-64,White,Bachelor's degree,$75K-$100K,Medicaid,True,True,False,5
+25-34,Hispanic,Graduate degree,<$25K,Medicare,True,True,False,2
+45-54,Hispanic,Graduate degree,$25K-$50K,Medicaid,True,True,False,9
+45-54,White,High school,$25K-$50K,None,True,False,True,6
+45-54,Hispanic,High school,$75K-$100K,Private,False,True,False,3
+45-54,White,Less than high school,<$25K,Other,True,False,False,7
+55-64,Hispanic,Graduate degree,$25K-$50K,Medicaid,False,False,False,9
+35-44,White,Some college,<$25K,Medicare,False,False,False,3
+65+,Hispanic,Graduate degree,<$25K,Medicaid,True,True,False,2
+18-24,White,Some college,<$25K,Medicare,True,True,False,7
+45-54,White,Bachelor's degree,>$100K,Medicaid,True,True,True,7
+25-34,Hispanic,Graduate degree,<$25K,Medicare,False,False,False,4
+45-54,White,Bachelor's degree,>$100K,None,True,True,False,9
+25-34,White,High school,$75K-$100K,Medicare,True,True,True,8
+65+,Asian,High school,$25K-$50K,Medicare,False,True,True,1
+65+,Asian,Less than high school,$25K-$50K,Private,True,True,False,1
+65+,White,Graduate degree,$25K-$50K,Medicare,False,True,True,5
+25-34,Black,Bachelor's degree,$25K-$50K,Private,True,True,False,6
+45-54,White,Some college,$25K-$50K,Other,True,False,False,3
+65+,White,High school,$25K-$50K,Private,True,True,False,9
+55-64,White,High school,$25K-$50K,None,False,True,False,10
+25-34,Black,Some college,$75K-$100K,Private,True,True,False,6
+25-34,Hispanic,Bachelor's degree,<$25K,Other,False,True,False,4
+45-54,Hispanic,Bachelor's degree,$50K-$75K,None,False,True,True,7
+25-34,Hispanic,Graduate degree,>$100K,Medicaid,True,False,False,8
+25-34,White,Graduate degree,$50K-$75K,Medicaid,False,True,False,9
+65+,White,Less than high school,$50K-$75K,Private,True,False,False,6
+45-54,White,High school,<$25K,Private,True,True,True,6
+65+,White,Graduate degree,<$25K,Other,True,True,False,8
+65+,White,Bachelor's degree,<$25K,Other,False,False,True,5
+45-54,Hispanic,Some college,$25K-$50K,Medicare,True,True,True,3
+18-24,White,Bachelor's degree,$75K-$100K,Other,True,True,False,3
+65+,White,High school,$25K-$50K,Medicare,True,True,False,6
+55-64,White,Bachelor's degree,$75K-$100K,None,True,True,True,2
+55-64,Hispanic,Less than high school,$75K-$100K,Private,True,False,True,6
+25-34,Black,High school,$50K-$75K,None,False,True,True,6
+55-64,White,Some college,$50K-$75K,Other,False,False,False,8
+25-34,White,Less than high school,$75K-$100K,None,True,False,True,7
+18-24,Black,High school,$75K-$100K,None,False,True,True,8
+45-54,White,Some college,$25K-$50K,None,True,False,False,9
+45-54,Hispanic,Less than high school,$25K-$50K,Other,False,True,False,6
+45-54,Black,Less than high school,$50K-$75K,None,True,False,False,3
+55-64,White,High school,<$25K,Medicare,True,True,False,10
+18-24,White,Graduate degree,$75K-$100K,Other,True,False,True,3
+55-64,Other,Less than high school,$25K-$50K,None,False,True,False,1
+55-64,White,Less than high school,$50K-$75K,Other,True,True,False,5
+18-24,White,Some college,$25K-$50K,Medicaid,True,True,False,4
+18-24,Hispanic,Bachelor's degree,$75K-$100K,Medicare,True,False,False,9
+18-24,Asian,High school,$75K-$100K,None,True,True,False,9
+18-24,Other,High school,>$100K,Medicaid,True,True,False,5
+45-54,Hispanic,Graduate degree,<$25K,Medicaid,False,False,True,10
+35-44,White,Graduate degree,>$100K,Other,False,False,False,4
+35-44,White,High school,$50K-$75K,Medicaid,True,False,False,7
+18-24,Hispanic,Graduate degree,$25K-$50K,Medicare,False,False,False,6
+35-44,White,Some college,$50K-$75K,Medicare,True,False,False,4
+35-44,White,High school,$75K-$100K,Private,False,False,True,10
+18-24,Hispanic,Graduate degree,>$100K,Medicare,False,True,False,2
+35-44,White,High school,>$100K,Medicaid,True,True,False,1
+55-64,White,Bachelor's degree,>$100K,Medicare,False,False,False,4
+25-34,White,Less than high school,$50K-$75K,Other,True,True,False,4
+25-34,White,High school,$75K-$100K,Private,True,True,False,1
+18-24,White,Less than high school,$25K-$50K,Medicaid,False,True,False,6
+45-54,White,Graduate degree,$25K-$50K,Private,True,False,False,4
+18-24,White,Less than high school,$50K-$75K,Medicaid,True,True,False,1
+45-54,Black,High school,>$100K,Other,True,True,False,1
+25-34,Hispanic,Bachelor's degree,<$25K,Private,False,True,False,1
+18-24,White,Graduate degree,$50K-$75K,None,True,True,False,8
+65+,Asian,High school,$50K-$75K,Medicaid,True,True,True,10
+55-64,White,Graduate degree,$75K-$100K,None,False,True,False,8
+35-44,White,Some college,$25K-$50K,Private,False,True,False,2
+45-54,Hispanic,Less than high school,$50K-$75K,None,True,False,False,7
+65+,White,Some college,$50K-$75K,None,True,True,False,8
+35-44,Asian,High school,>$100K,Private,True,False,False,8
+35-44,White,Bachelor's degree,>$100K,Other,True,False,True,10
+18-24,Asian,Graduate degree,<$25K,None,True,True,False,7
+35-44,White,Less than high school,$75K-$100K,None,False,False,False,5
+55-64,Hispanic,Graduate degree,<$25K,Other,True,True,False,1
+65+,White,High school,>$100K,None,True,False,True,9
+35-44,Other,Graduate degree,$25K-$50K,None,True,True,False,7
+18-24,White,Less than high school,>$100K,None,False,False,False,2
+55-64,White,High school,$75K-$100K,Medicare,True,True,True,6
+25-34,Asian,Graduate degree,>$100K,Other,False,True,False,2
+65+,White,Bachelor's degree,$75K-$100K,None,True,True,False,1
+35-44,Black,High school,$75K-$100K,Other,True,False,True,7
+18-24,Black,High school,$75K-$100K,Medicaid,True,False,False,2
+25-34,White,Bachelor's degree,$75K-$100K,Medicaid,True,True,False,2
+25-34,Black,Some college,$75K-$100K,None,True,True,False,5
+45-54,White,Less than high school,$25K-$50K,Other,True,True,False,5
+55-64,Hispanic,Some college,<$25K,Other,True,False,True,7
+35-44,White,Graduate degree,$50K-$75K,Other,False,True,True,1
+18-24,White,Bachelor's degree,<$25K,Medicare,True,False,True,8
+45-54,Asian,Some college,$75K-$100K,Medicaid,False,True,True,3
+55-64,Hispanic,High school,$25K-$50K,Other,True,True,False,4
+45-54,White,Graduate degree,>$100K,Other,True,True,False,9
+65+,Black,Graduate degree,$25K-$50K,Medicare,True,True,False,4
+55-64,White,Some college,$75K-$100K,Medicare,True,True,False,10
+55-64,White,Some college,$25K-$50K,Other,True,True,True,5
+35-44,White,Bachelor's degree,$25K-$50K,Private,True,False,False,7
+55-64,White,Less than high school,$75K-$100K,Other,True,True,False,4
+45-54,White,Some college,$25K-$50K,Other,True,True,True,1
+55-64,White,Some college,$50K-$75K,Medicare,True,True,False,9
+35-44,Other,High school,$50K-$75K,Medicare,False,True,False,4
+35-44,Other,Graduate degree,$25K-$50K,Other,False,True,False,9
+65+,Black,Less than high school,>$100K,Other,False,True,False,6
+45-54,White,High school,$75K-$100K,Other,False,True,False,1
+25-34,White,Bachelor's degree,$50K-$75K,Medicare,True,True,False,3
+25-34,Hispanic,Bachelor's degree,>$100K,Other,True,True,False,2
+55-64,Black,Some college,$25K-$50K,Other,False,True,False,9
+65+,White,Some college,>$100K,None,True,True,False,1
+18-24,Asian,Bachelor's degree,<$25K,Private,True,True,False,9
+55-64,Hispanic,Some college,$50K-$75K,Medicaid,True,False,False,9
+65+,Asian,Less than high school,$25K-$50K,Private,True,True,False,8
+45-54,Black,Some college,$75K-$100K,None,True,False,False,8
+45-54,Black,Graduate degree,$25K-$50K,Medicaid,False,True,False,1
+45-54,White,Some college,$75K-$100K,Other,True,False,True,8
+45-54,Asian,High school,$25K-$50K,None,True,False,False,10
+45-54,Hispanic,Less than high school,>$100K,Other,False,True,False,3
+65+,White,High school,>$100K,Medicare,True,False,False,7
+65+,White,High school,>$100K,None,True,True,True,1
+35-44,White,Graduate degree,<$25K,Medicare,True,True,False,1
+25-34,Hispanic,Less than high school,$75K-$100K,None,False,False,False,10
+45-54,Other,Less than high school,>$100K,None,False,False,False,5
+18-24,White,Less than high school,<$25K,Medicare,True,True,False,5
+65+,White,Less than high school,$75K-$100K,Medicaid,False,True,False,8
+18-24,White,Less than high school,$25K-$50K,Private,True,True,False,7
+18-24,Asian,Graduate degree,<$25K,Other,False,True,False,8
+18-24,Hispanic,Some college,$50K-$75K,None,False,False,True,6
+35-44,Hispanic,High school,<$25K,Other,False,True,False,6
+65+,White,Less than high school,<$25K,Medicare,True,True,True,2
+18-24,White,Some college,$75K-$100K,Other,False,True,False,6
+45-54,White,Some college,$25K-$50K,Medicare,False,True,True,5
+55-64,White,High school,$50K-$75K,Other,True,True,True,3
+18-24,Hispanic,Graduate degree,>$100K,Private,False,True,True,6
+35-44,Hispanic,Bachelor's degree,>$100K,Private,True,False,True,8
+65+,Other,Bachelor's degree,<$25K,Private,False,False,False,9
+35-44,Other,Some college,$75K-$100K,Private,True,True,False,1
+18-24,White,High school,$75K-$100K,Private,False,False,False,3
+65+,Hispanic,Bachelor's degree,>$100K,Private,True,False,True,3
+55-64,Asian,Some college,$50K-$75K,Medicare,True,False,True,8
+18-24,Hispanic,Graduate degree,$25K-$50K,None,True,True,True,1
+35-44,White,Bachelor's degree,$50K-$75K,Other,True,True,True,5
+25-34,White,Some college,$25K-$50K,Private,True,True,False,3
+45-54,White,Some college,>$100K,Medicare,True,True,True,2
+35-44,Asian,Less than high school,$25K-$50K,Medicare,True,True,False,8
+65+,Black,Graduate degree,$75K-$100K,Medicare,True,True,True,3
+18-24,White,Less than high school,<$25K,None,True,True,True,7
+45-54,Black,High school,<$25K,Other,False,False,False,1
+18-24,Black,Less than high school,>$100K,None,True,True,False,6
+65+,White,Less than high school,$75K-$100K,Medicaid,False,True,True,3
+18-24,White,Bachelor's degree,$50K-$75K,Medicare,False,False,True,8
+25-34,Black,Some college,$75K-$100K,Medicaid,True,False,False,6
+45-54,White,Graduate degree,<$25K,Private,True,False,True,2
+45-54,Hispanic,Less than high school,<$25K,Private,False,False,True,6
+65+,White,Graduate degree,$75K-$100K,None,True,True,False,7
+25-34,Hispanic,Less than high school,$75K-$100K,Other,True,False,False,5
+35-44,White,High school,<$25K,Medicaid,True,True,False,3
+18-24,White,Less than high school,$50K-$75K,Other,False,True,False,4
+55-64,Hispanic,Bachelor's degree,>$100K,None,True,True,False,4
+18-24,White,Some college,>$100K,Private,True,True,False,6
+18-24,White,High school,$75K-$100K,Other,False,True,False,10
+35-44,White,Less than high school,>$100K,Other,False,True,False,1
+18-24,Hispanic,Graduate degree,<$25K,Private,True,False,True,4
+25-34,Black,High school,<$25K,Medicaid,True,True,False,10
+25-34,Black,High school,$75K-$100K,Private,False,True,False,4
+45-54,White,Less than high school,$75K-$100K,Other,True,False,False,10
+65+,White,High school,$75K-$100K,Medicaid,True,True,False,1
+55-64,White,Graduate degree,$50K-$75K,Medicaid,True,True,False,9
+18-24,White,High school,>$100K,Private,False,False,True,4
+18-24,White,Graduate degree,$75K-$100K,Other,True,True,False,7
+35-44,White,Less than high school,$25K-$50K,None,False,True,True,3
+65+,White,Some college,$25K-$50K,Other,False,False,False,10
+25-34,Hispanic,High school,<$25K,Medicare,True,True,True,3
+55-64,White,Some college,>$100K,None,True,True,False,8
+45-54,White,Graduate degree,$75K-$100K,Medicaid,True,False,True,8
+25-34,Hispanic,High school,$25K-$50K,None,True,False,False,1
+65+,White,Bachelor's degree,>$100K,Medicaid,True,True,False,10
+45-54,Black,Some college,<$25K,Medicaid,False,True,True,2
+35-44,Hispanic,High school,$50K-$75K,None,True,True,False,8
+35-44,Asian,Some college,>$100K,Medicaid,False,True,False,1
+18-24,White,High school,>$100K,Medicaid,True,True,True,8
+65+,Asian,Less than high school,$50K-$75K,Medicare,True,True,False,8
+55-64,White,Some college,>$100K,Other,True,False,True,2
+45-54,White,Bachelor's degree,<$25K,Other,True,True,False,4
+25-34,White,Bachelor's degree,<$25K,Medicare,False,True,False,6
+65+,Other,Graduate degree,$50K-$75K,None,True,True,False,9
+65+,White,High school,$75K-$100K,Private,True,False,False,8
+35-44,White,Some college,$25K-$50K,Private,True,True,False,8
+18-24,Black,Graduate degree,$75K-$100K,Private,True,True,True,7
+18-24,White,Some college,>$100K,Medicare,True,False,False,9
+45-54,White,High school,$25K-$50K,Medicare,True,True,False,2
+35-44,White,Bachelor's degree,$50K-$75K,Medicaid,False,True,False,3
+65+,White,Less than high school,$50K-$75K,Private,True,True,False,10
+55-64,White,Bachelor's degree,$25K-$50K,None,False,True,False,8
+35-44,White,Graduate degree,<$25K,None,True,True,False,6
+45-54,Black,Less than high school,$25K-$50K,Private,True,True,False,10
+45-54,White,Graduate degree,>$100K,Private,True,True,False,9
+35-44,White,High school,<$25K,Private,True,True,False,10
+45-54,Hispanic,Less than high school,$50K-$75K,Medicare,True,False,True,4
+35-44,White,Graduate degree,$25K-$50K,Medicare,True,False,False,8
+25-34,Black,High school,$75K-$100K,Medicare,True,False,False,10
+35-44,White,Bachelor's degree,$75K-$100K,Other,True,False,False,3
+35-44,White,High school,>$100K,None,True,True,True,3
+45-54,White,Some college,$75K-$100K,None,False,False,False,8
+45-54,White,High school,$25K-$50K,Medicaid,True,True,False,5
+18-24,White,High school,$25K-$50K,Medicare,True,False,False,3
+18-24,White,Some college,$75K-$100K,Other,True,False,True,10
+25-34,White,Graduate degree,$25K-$50K,Other,True,False,True,1
+18-24,White,Graduate degree,>$100K,None,True,False,False,3
+35-44,White,High school,<$25K,Medicare,True,True,False,9
+45-54,White,Some college,>$100K,Medicaid,True,True,False,5
+18-24,White,Some college,>$100K,Medicare,True,True,False,10
+18-24,White,Bachelor's degree,$25K-$50K,Private,True,True,True,2
+25-34,Black,Graduate degree,<$25K,Medicare,True,True,False,7
+65+,White,Less than high school,$25K-$50K,Private,True,True,True,2
+25-34,Hispanic,Graduate degree,$50K-$75K,Private,True,False,False,4
+35-44,Black,Graduate degree,$25K-$50K,Medicaid,True,True,False,7
+45-54,White,Bachelor's degree,$25K-$50K,None,False,False,False,4
+25-34,Hispanic,Less than high school,$25K-$50K,Medicare,True,False,False,7
+18-24,Asian,Bachelor's degree,<$25K,Private,True,False,False,7
+45-54,White,Less than high school,$25K-$50K,Medicare,True,False,False,1
+45-54,White,High school,<$25K,None,False,True,True,6
+18-24,Hispanic,Less than high school,$75K-$100K,None,True,False,False,9
+25-34,Hispanic,Bachelor's degree,$50K-$75K,Other,True,False,False,2
+18-24,White,Graduate degree,<$25K,None,True,True,True,3
+65+,White,Less than high school,$75K-$100K,Medicaid,True,True,False,10
+45-54,White,Less than high school,<$25K,Private,True,False,False,5
+55-64,White,Some college,<$25K,Other,True,True,False,9
+55-64,Black,Graduate degree,$50K-$75K,Medicaid,False,True,False,4
+35-44,White,High school,>$100K,Medicare,True,False,False,1
+18-24,White,Bachelor's degree,>$100K,Private,False,True,True,4
+18-24,Hispanic,High school,<$25K,None,False,True,True,6
+35-44,White,Graduate degree,$25K-$50K,Private,True,False,False,5
+35-44,White,Less than high school,$75K-$100K,Medicare,True,True,False,1
+35-44,Black,Less than high school,$25K-$50K,Other,True,True,True,4
+45-54,Hispanic,Graduate degree,$25K-$50K,Other,True,True,False,6
+65+,White,Less than high school,<$25K,Other,True,True,False,10
+18-24,White,Less than high school,<$25K,None,False,False,False,10
+45-54,White,Less than high school,<$25K,Medicaid,False,True,True,4
+35-44,White,Bachelor's degree,<$25K,Medicaid,True,True,False,9
+18-24,White,Bachelor's degree,>$100K,Private,True,True,False,5
+45-54,White,Some college,<$25K,None,False,True,False,8
+65+,White,High school,>$100K,Other,False,False,False,9
+45-54,White,Graduate degree,>$100K,Other,False,False,False,10
+65+,White,Graduate degree,<$25K,Medicare,True,True,False,5
+35-44,White,Graduate degree,$50K-$75K,Medicare,True,True,True,6
+65+,White,Some college,$75K-$100K,Other,True,True,False,1
+18-24,White,Bachelor's degree,$25K-$50K,Other,True,True,False,7
+35-44,White,Some college,>$100K,None,True,False,False,4
+18-24,Hispanic,Graduate degree,$75K-$100K,Medicaid,True,True,True,2
+55-64,White,High school,$50K-$75K,Medicare,True,True,True,5
+25-34,Black,Less than high school,$25K-$50K,Medicaid,True,True,False,3
+65+,Hispanic,Bachelor's degree,$25K-$50K,None,True,False,False,6
+25-34,White,Bachelor's degree,>$100K,Other,True,False,False,8
+25-34,White,Some college,<$25K,Medicaid,True,True,False,7
+65+,White,Bachelor's degree,$50K-$75K,Other,True,False,False,3
+35-44,White,Graduate degree,>$100K,Other,True,True,False,8
+55-64,Hispanic,Graduate degree,$50K-$75K,Private,False,True,False,2
+18-24,White,Some college,<$25K,Medicaid,True,False,False,10
+45-54,White,Graduate degree,<$25K,Medicaid,True,False,False,9
+18-24,White,High school,>$100K,Other,True,False,True,4
+45-54,White,Some college,<$25K,None,False,True,False,1
+18-24,Black,High school,$75K-$100K,Private,True,True,False,8
+65+,White,Less than high school,$25K-$50K,Other,True,False,False,7
+55-64,White,High school,>$100K,Medicare,True,True,True,5
+45-54,Other,Less than high school,$50K-$75K,Medicare,True,True,False,10
+35-44,Black,Less than high school,$75K-$100K,Private,True,True,True,5
+18-24,White,High school,>$100K,None,True,False,True,7
+18-24,White,Some college,<$25K,Other,False,True,False,5
+45-54,White,Graduate degree,<$25K,Medicaid,True,True,False,8
+35-44,White,Graduate degree,<$25K,Private,False,False,False,6
+35-44,White,Less than high school,<$25K,None,False,True,True,5
+65+,White,Less than high school,$50K-$75K,Medicaid,True,True,True,9
+65+,White,Some college,$75K-$100K,Medicare,False,True,False,2
+65+,White,Bachelor's degree,$25K-$50K,Medicare,True,True,False,1
+65+,Hispanic,High school,$50K-$75K,Medicaid,True,True,False,8
+65+,White,Less than high school,$50K-$75K,Private,True,True,False,3
+65+,White,Graduate degree,$25K-$50K,Medicare,True,False,False,7
+55-64,White,Some college,$25K-$50K,Other,True,True,False,10
+35-44,Other,High school,<$25K,Medicaid,True,False,False,8
+65+,White,Some college,$50K-$75K,Medicaid,True,True,False,6
+35-44,White,High school,>$100K,Medicare,True,True,False,10
+35-44,Asian,High school,$25K-$50K,Private,True,True,False,9
+25-34,Hispanic,Less than high school,$25K-$50K,Other,True,True,False,7
+55-64,Hispanic,Some college,$75K-$100K,Private,True,False,False,10
+65+,White,Some college,>$100K,None,True,True,True,5
+18-24,White,Graduate degree,>$100K,None,False,True,False,8
+45-54,Black,Graduate degree,$25K-$50K,Medicare,True,False,True,2
+18-24,Asian,Less than high school,<$25K,Medicare,False,False,False,7
+55-64,White,Less than high school,$75K-$100K,Medicare,True,False,False,4
+45-54,White,Bachelor's degree,>$100K,None,True,True,False,9
+55-64,White,Graduate degree,$25K-$50K,Private,True,False,False,1
+35-44,Hispanic,High school,>$100K,Private,True,True,False,7
+45-54,White,Some college,$75K-$100K,Medicare,True,True,False,6
+35-44,White,Less than high school,$75K-$100K,Other,False,True,True,8
+18-24,White,Some college,$50K-$75K,Private,True,True,True,5
+18-24,White,Some college,$25K-$50K,None,False,True,False,1
+45-54,White,Bachelor's degree,$75K-$100K,Medicaid,False,True,False,1
+45-54,White,Graduate degree,$50K-$75K,Medicaid,False,False,False,9
+65+,Black,Less than high school,$50K-$75K,Medicaid,False,True,True,10
+55-64,White,Some college,>$100K,Other,True,True,False,6
+65+,White,Less than high school,>$100K,Medicare,True,True,True,10
+55-64,White,High school,$50K-$75K,None,True,False,False,5
+65+,White,Bachelor's degree,>$100K,Other,True,True,True,1
+35-44,White,High school,$75K-$100K,None,True,True,False,6
+45-54,White,Less than high school,<$25K,None,False,False,True,6
+18-24,White,Less than high school,$75K-$100K,Medicare,True,False,False,3
+55-64,White,Graduate degree,$50K-$75K,Medicaid,True,True,False,8
+55-64,White,Some college,$50K-$75K,Medicare,True,False,False,1
+18-24,Other,Some college,$75K-$100K,Other,True,False,False,1
+65+,White,High school,>$100K,Other,True,False,False,6
+55-64,Hispanic,Bachelor's degree,>$100K,Other,False,True,False,10
+35-44,White,Some college,$50K-$75K,Medicare,True,False,False,1
+45-54,Black,Graduate degree,$25K-$50K,None,True,True,False,6
+18-24,Hispanic,High school,>$100K,None,True,True,False,1
+45-54,White,High school,$75K-$100K,Private,True,True,True,6
+55-64,White,Graduate degree,>$100K,Other,True,True,False,3
+55-64,White,Bachelor's degree,$75K-$100K,None,True,True,True,8
+18-24,White,Graduate degree,$50K-$75K,Private,True,False,True,6
+35-44,Asian,Bachelor's degree,>$100K,None,True,True,False,1
+25-34,Hispanic,Graduate degree,$75K-$100K,Other,True,True,False,5
+18-24,Asian,Graduate degree,$50K-$75K,Medicaid,True,True,False,8
+25-34,White,Less than high school,$25K-$50K,Other,True,True,False,3
+65+,Hispanic,High school,$75K-$100K,Medicare,True,False,False,6
+25-34,Asian,Graduate degree,$25K-$50K,None,True,True,False,5
+35-44,White,Graduate degree,$25K-$50K,None,False,True,True,6
+65+,White,Some college,<$25K,Medicare,True,True,True,10
+25-34,Hispanic,High school,>$100K,Medicare,True,True,False,1
+65+,White,Some college,$75K-$100K,Medicaid,True,True,True,7
+25-34,Hispanic,High school,$25K-$50K,None,True,False,True,9
+35-44,White,Some college,<$25K,None,True,False,False,2
+25-34,Hispanic,Graduate degree,$50K-$75K,Medicaid,True,True,False,10
+25-34,White,Graduate degree,$75K-$100K,Private,False,False,False,5
+25-34,White,Less than high school,$25K-$50K,Medicaid,True,False,False,10
+18-24,White,Some college,>$100K,Other,True,False,False,4
+18-24,Hispanic,Bachelor's degree,<$25K,None,True,True,True,6
+18-24,Black,Less than high school,$25K-$50K,Medicare,True,True,True,6
+35-44,White,Some college,>$100K,Other,True,True,False,2
+65+,White,Some college,$25K-$50K,None,True,False,False,2
+55-64,Hispanic,Less than high school,$75K-$100K,Medicaid,False,False,False,4
+25-34,White,Graduate degree,$75K-$100K,Other,True,True,True,1
+25-34,Hispanic,Some college,$75K-$100K,None,True,True,False,9
+35-44,White,Graduate degree,<$25K,Private,False,False,False,7
+25-34,White,Less than high school,$75K-$100K,Private,True,False,False,7
+18-24,White,Graduate degree,>$100K,Medicare,False,False,False,3
+55-64,White,High school,$25K-$50K,None,True,False,False,3
+45-54,Hispanic,Bachelor's degree,$50K-$75K,Private,False,True,False,1
+25-34,White,Some college,>$100K,Medicaid,True,True,False,3
+18-24,White,Bachelor's degree,>$100K,None,False,False,False,3
+45-54,Hispanic,Graduate degree,$75K-$100K,Medicaid,False,True,False,4
+55-64,White,Some college,<$25K,Medicaid,True,True,False,4
+45-54,White,Graduate degree,$25K-$50K,Private,False,False,False,3
+18-24,Hispanic,High school,<$25K,None,True,True,False,10
+65+,Black,Less than high school,$25K-$50K,Other,True,False,True,8
+65+,White,Some college,$25K-$50K,Private,True,True,False,8
+45-54,Asian,High school,<$25K,Private,True,False,False,1
+35-44,Black,High school,>$100K,None,True,True,False,7
+45-54,White,Some college,$25K-$50K,None,True,True,False,2
+25-34,White,Graduate degree,<$25K,Medicaid,True,True,False,1
+25-34,Hispanic,High school,$25K-$50K,None,False,True,True,3
+65+,Black,Bachelor's degree,$50K-$75K,Medicaid,False,False,False,4
+35-44,White,High school,>$100K,Private,True,False,False,6
+18-24,Hispanic,Graduate degree,$75K-$100K,Medicare,True,True,False,10
+25-34,Hispanic,Graduate degree,$25K-$50K,Other,True,True,False,5
+65+,White,Bachelor's degree,$50K-$75K,Private,True,True,False,4
+55-64,White,High school,$75K-$100K,None,True,True,False,8
+65+,White,Graduate degree,$75K-$100K,Other,True,False,True,4
+25-34,Hispanic,Some college,$25K-$50K,Medicare,True,False,False,10
+25-34,White,Less than high school,<$25K,Medicare,False,False,False,2
+65+,White,Less than high school,$25K-$50K,Medicaid,True,False,False,3
+18-24,Hispanic,Less than high school,$50K-$75K,Other,True,True,False,6
+45-54,Hispanic,High school,$75K-$100K,Medicaid,True,False,False,8
+25-34,White,Bachelor's degree,$25K-$50K,Private,True,False,True,8
+65+,Hispanic,Graduate degree,<$25K,Other,True,False,False,9
+65+,White,Some college,$25K-$50K,Private,True,False,False,7
+35-44,Hispanic,Some college,>$100K,Medicaid,True,True,False,2
+45-54,White,High school,<$25K,Other,True,False,False,8
+55-64,White,Less than high school,$50K-$75K,Medicaid,False,True,False,7
+18-24,Hispanic,High school,$75K-$100K,Other,False,True,True,8
+55-64,White,Bachelor's degree,$25K-$50K,Medicaid,True,True,False,3
+45-54,White,Bachelor's degree,<$25K,Medicare,True,False,False,7
+45-54,Black,Graduate degree,>$100K,Medicaid,True,False,True,10
+45-54,Black,Graduate degree,<$25K,Medicare,True,False,False,9
+55-64,Black,Bachelor's degree,>$100K,Medicaid,True,False,False,3
+45-54,Black,Bachelor's degree,$50K-$75K,Other,True,True,False,10
+65+,White,Bachelor's degree,$75K-$100K,Other,True,False,False,6
+55-64,White,High school,$50K-$75K,Other,True,True,True,2
+45-54,White,Bachelor's degree,$25K-$50K,None,True,True,True,2
+65+,White,Some college,<$25K,Private,False,True,False,5
+35-44,Hispanic,Less than high school,>$100K,Other,False,False,False,5
+45-54,White,Bachelor's degree,>$100K,Medicare,False,False,False,7
+55-64,White,Less than high school,<$25K,Other,True,True,False,2
+25-34,White,High school,<$25K,None,False,True,False,7
+45-54,Asian,Less than high school,$25K-$50K,Medicare,True,False,False,5
+25-34,White,High school,$50K-$75K,None,False,True,False,6
+65+,White,Some college,>$100K,Medicare,True,False,False,8
+35-44,White,High school,$25K-$50K,Medicaid,False,False,False,10
+18-24,Black,High school,$50K-$75K,Private,True,True,True,4
+35-44,White,Graduate degree,$25K-$50K,Private,False,True,False,7
+45-54,Hispanic,Bachelor's degree,>$100K,None,False,False,False,6
+25-34,Asian,Bachelor's degree,<$25K,Private,True,False,False,10
+25-34,White,Some college,<$25K,None,True,True,False,2
+55-64,Black,Some college,$50K-$75K,None,False,False,False,8
+25-34,Asian,Bachelor's degree,$75K-$100K,None,True,True,False,10
+55-64,Black,Graduate degree,$50K-$75K,Private,False,True,True,9
+65+,White,Bachelor's degree,$75K-$100K,None,True,False,True,5
+18-24,White,Graduate degree,$25K-$50K,Private,True,False,False,10
+45-54,Black,Some college,$25K-$50K,None,True,True,True,4
+55-64,White,Less than high school,>$100K,Other,True,False,False,6
+18-24,Hispanic,Some college,$75K-$100K,None,False,True,False,8
+25-34,Asian,Some college,>$100K,Medicare,True,True,False,3
+25-34,Asian,High school,<$25K,None,True,True,False,10
+18-24,White,High school,$75K-$100K,Medicaid,True,False,True,1
+25-34,White,High school,$50K-$75K,None,True,True,False,4
+65+,Other,High school,<$25K,Medicare,False,True,False,4
+65+,Hispanic,Graduate degree,<$25K,Medicare,False,True,True,1
+18-24,White,Bachelor's degree,$50K-$75K,Private,True,False,False,9
+55-64,Asian,Less than high school,<$25K,Other,False,False,False,3
+55-64,Hispanic,Some college,$75K-$100K,None,False,False,False,5
+18-24,White,Graduate degree,>$100K,Private,True,True,False,6
+55-64,White,Less than high school,<$25K,Other,False,True,True,8
+55-64,White,Graduate degree,$75K-$100K,None,True,True,False,6
+65+,White,Graduate degree,$25K-$50K,Medicaid,True,False,False,3
+55-64,White,Some college,$75K-$100K,None,False,False,False,6
+35-44,Hispanic,Bachelor's degree,>$100K,Medicare,True,True,False,1
+45-54,White,High school,$75K-$100K,Medicare,False,False,False,4
+25-34,White,Bachelor's degree,$50K-$75K,Medicaid,False,True,True,6
+35-44,White,Some college,>$100K,Private,True,True,False,7
+55-64,White,Some college,$25K-$50K,Other,False,True,True,10
+65+,Asian,Some college,$50K-$75K,None,True,True,False,3
+18-24,White,Less than high school,$75K-$100K,Medicare,True,True,False,9
+55-64,White,Bachelor's degree,>$100K,Private,True,True,False,7
+65+,Hispanic,Bachelor's degree,$25K-$50K,Medicaid,False,True,False,1
+45-54,White,Graduate degree,$50K-$75K,Medicare,True,False,True,2
+55-64,White,Graduate degree,$25K-$50K,Medicaid,True,True,False,1
+18-24,White,Graduate degree,$75K-$100K,None,True,True,True,9
+65+,White,Some college,$25K-$50K,Other,False,False,True,9
+65+,White,Bachelor's degree,<$25K,Medicare,True,True,True,7
+65+,White,Some college,$50K-$75K,Medicare,True,True,False,10
+45-54,White,Less than high school,$25K-$50K,None,True,False,False,3
+55-64,Asian,Graduate degree,$75K-$100K,Private,True,True,True,5
+45-54,White,Some college,$75K-$100K,Other,False,True,True,4
+25-34,White,Some college,$25K-$50K,Medicare,True,True,True,7
+25-34,Black,Less than high school,$75K-$100K,Other,True,False,False,9
+55-64,White,High school,>$100K,Medicare,False,True,False,2
+45-54,Black,Bachelor's degree,>$100K,Other,True,False,False,8

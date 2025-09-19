@@ -1,0 +1,191 @@
+{
+    "Demographics": {
+        "Age": 35,
+        "Height": 165,
+        "Weight": 68,
+        "BMI": 25.0,
+        "Race": "Asian",
+        "Ethnicity": "Chinese",
+        "Education": "College degree",
+        "Occupation": "Software Engineer",
+        "Income_Range": "$75,000 - $100,000",
+        "Marital_Status": "Married",
+        "Children": 1
+    },
+    "Medical_History": {
+        "Pre_Existing_Conditions": [
+            "Hypertension",
+            "Type 2 Diabetes"
+        ],
+        "Family_History": {
+            "Mother": [
+                "Breast Cancer",
+                "Hypertension"
+            ],
+            "Father": [
+                "Type 2 Diabetes",
+                "Heart Disease"
+            ],
+            "Siblings": [
+                "Asthma"
+            ]
+        },
+        "Allergies": [
+            "Penicillin",
+            "Pollen"
+        ],
+        "Surgeries": [
+            "Appendectomy (2010)"
+        ],
+        "Hospitalizations": [
+            "Childbirth (2018)"
+        ]
+    },
+    "Reproductive_Health": {
+        "Menstrual_Cycle": {
+            "Regular": false,
+            "Average_Length": 32,
+            "Last_Period": "2023-03-15",
+            "Flow_Description": "Heavy"
+        },
+        "Pregnancy_History": {
+            "Pregnancies": 1,
+            "Live_Births": 1,
+            "Miscarriages": 0,
+            "Complications": [
+                "Gestational diabetes"
+            ]
+        },
+        "Contraception": {
+            "Current_Method": "IUD",
+            "Past_Methods": [
+                "Oral contraceptives",
+                "Condoms"
+            ]
+        },
+        "Menopause_Status": "Not applicable"
+    },
+    "Lifestyle": {
+        "Diet": {
+            "Type": "Omnivore",
+            "Restrictions": [
+                "Low sugar due to diabetes"
+            ],
+            "Typical_Daily_Meals": 3,
+            "Water_Intake": "6-8 glasses daily"
+        },
+        "Physical_Activity": {
+            "Exercise_Frequency": "2-3 times per week",
+            "Exercise_Types": [
+                "Walking",
+                "Yoga"
+            ],
+            "Duration": "30-45 minutes"
+        },
+        "Sleep": {
+            "Average_Hours": 6.5,
+            "Quality": "Poor",
+            "Issues": [
+                "Difficulty falling asleep",
+                "Early waking"
+            ]
+        },
+        "Substance_Use": {
+            "Smoking": "Never",
+            "Alcohol": "Occasional (1-2 drinks per week)",
+            "Recreational_Drugs": "Never"
+        },
+        "Stress_Level": "High"
+    },
+    "Healthcare_Utilization": {
+        "Primary_Care": {
+            "Has_Provider": true,
+            "Last_Visit": "2022-11-10",
+            "Frequency": "Annual"
+        },
+        "Specialists": {
+            "Endocrinologist": {
+                "Last_Visit": "2023-01-15",
+                "Frequency": "Every 6 months"
+            },
+            "Gynecologist": {
+                "Last_Visit": "2022-08-22",
+                "Frequency": "Annual"
+            }
+        },
+        "Screenings": {
+            "Mammogram": "Never",
+            "Pap_Smear": "2022-08-22",
+            "Colonoscopy": "Never",
+            "Bone_Density": "Never"
+        },
+        "Vaccinations": {
+            "Flu": "2022-10",
+            "COVID-19": "2022-05",
+            "HPV": "Complete series",
+            "Tdap": "2019"
+        }
+    },
+    "Current_Health_Status": {
+        "Specific_Concerns": "Fatigue, irregular periods, and weight management",
+        "Pain_Areas": [
+            "Lower back",
+            "Joints"
+        ],
+        "Current_Medications": [
+            {
+                "Name": "Metformin",
+                "Dosage": "500mg",
+                "Frequency": "Twice daily"
+            },
+            {
+                "Name": "Lisinopril",
+                "Dosage": "10mg",
+                "Frequency": "Once daily"
+            }
+        ],
+        "Supplements": [
+            {
+                "Name": "Vitamin D",
+                "Dosage": "2000 IU",
+                "Frequency": "Daily"
+            },
+            {
+                "Name": "Magnesium",
+                "Dosage": "250mg",
+                "Frequency": "Daily"
+            }
+        ],
+        "Vital_Signs": {
+            "Blood_Pressure": "135/85",
+            "Resting_Heart_Rate": 78,
+            "Blood_Glucose": "140 mg/dL (fasting)"
+        }
+    },
+    "Mental_Health": {
+        "Diagnosed_Conditions": [
+            "Generalized Anxiety Disorder"
+        ],
+        "Current_Symptoms": [
+            "Worry",
+            "Fatigue",
+            "Irritability"
+        ],
+        "Treatment": {
+            "Therapy": "Cognitive Behavioral Therapy (monthly)",
+            "Medications": "None currently"
+        },
+        "Self_Reported_Status": "Moderate anxiety, well-managed"
+    },
+    "Health_Goals": {
+        "Short_Term": [
+            "Improve sleep quality",
+            "Increase physical activity"
+        ],
+        "Long_Term": [
+            "Better manage diabetes",
+            "Reduce anxiety symptoms",
+            "Achieve healthy weight"
+        ]
+    }
+}
