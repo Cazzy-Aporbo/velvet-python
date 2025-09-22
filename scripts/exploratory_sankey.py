@@ -1,10 +1,9 @@
 """
 Exploratory Sankey Demo
-Author: Cazzy
+Author: Cazzy A
 Purpose: This demo visualizes the flow of passengers in the Titanic dataset using a 
 Sankey diagram. The goal is to show the distribution from class to gender to survival 
-outcome in a clear, visually appealing way. Colors are carefully chosen in pastel tones 
-to make the diagram elegant, human-readable, and portfolio-ready.
+outcome in a clear, visually appealing way.
 """
 
 import pandas as pd
