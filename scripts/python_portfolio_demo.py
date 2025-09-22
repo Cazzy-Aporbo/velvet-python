@@ -2,7 +2,7 @@
 Ultimate Python Portfolio Demo Extended
 Author: Cazzy
 Purpose: Install, test, and run illustrative demos for advanced Python packages.
-Includes multiple examples per domain without dash separators. Fully human-readable.
+Includes multiple examples per domain 
 """
 
 import subprocess
