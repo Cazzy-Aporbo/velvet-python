@@ -3,7 +3,7 @@ Exploratory Python Demonstrations
 Author: Cazzy
 Purpose: This collection of Python demos explores unusual and creative applications of 
 advanced libraries. The goal is to show not only technical fluency but also imagination 
-and the ability to apply tools in ways that are unexpected, practical, and portfolio-worthy. 
+and the ability to apply tools in ways that are unexpected & practical. 
 Each demo is self-contained, illustrating concepts from quantum randomness to topological 
 data structures, graph neural networks, 3D chaotic systems, and even mapping biological 
 data to sound. This is meant to inspire, educate, and demonstrate mastery across multiple domains.
