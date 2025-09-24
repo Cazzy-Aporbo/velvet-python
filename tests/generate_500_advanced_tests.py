@@ -3,8 +3,6 @@ generate_500_advanced_tests.py
 
 Generates 500 advanced Python tests with randomized inputs across multiple topics.
 Tests are saved to `advanced_tests_generated.py` and ready for pytest.
-
-Author: ChatGPT
 """
 
 import os
