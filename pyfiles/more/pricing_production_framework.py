@@ -17,9 +17,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import logging
 
-# -----------------------------
 # Logging Setup
-# -----------------------------
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] %(message)s')
 
