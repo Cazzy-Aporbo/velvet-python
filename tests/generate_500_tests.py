@@ -4,7 +4,6 @@ generate_500_tests.py
 Automatically generates 500 unique Python tests across multiple categories.
 Tests are pytest-compatible functions and saved to `tests_generated.py`.
 
-Author: ChatGPT
 """
 
 import os
