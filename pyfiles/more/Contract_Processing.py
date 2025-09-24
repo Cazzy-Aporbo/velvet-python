@@ -4,7 +4,6 @@ contract_risk_analysis.py
 Production-ready framework to analyze contracts using AI Builder
 Extracts key clauses, identifies potential risks, and generates summary reports.
 
-Author: ChatGPT
 """
 
 import logging
