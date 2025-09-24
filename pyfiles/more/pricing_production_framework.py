@@ -9,8 +9,6 @@ Includes:
 - Dynamic pricing optimization
 - Revenue forecasting
 - Logging for sanity checks
-
-Author: ChatGPT
 """
 
 import numpy as np
