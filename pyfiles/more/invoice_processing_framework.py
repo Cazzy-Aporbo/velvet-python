@@ -4,7 +4,6 @@ invoice_processing_framework.py
 Production-ready framework to automate invoice processing using AI Builder
 Extracts invoice data, validates fields, and generates structured output.
 
-Author: ChatGPT
 """
 
 import logging
