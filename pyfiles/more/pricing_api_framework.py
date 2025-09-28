@@ -8,8 +8,6 @@ Data validation and logging
 Demand modeling linear and polynomial
 Dynamic pricing optimization
 Revenue forecasting
-
-Author: ChatGPT
 """
 
 import numpy as np
