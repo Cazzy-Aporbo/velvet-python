@@ -1,0 +1,98 @@
+# Multi-Environment Testing Pipeline
+# Purpose: Test application across different OS and runtime versions
+# Triggers: Push to main/develop and all pull requests
+# Use Case: Ensuring compatibility across different environments
+
+name: Cross-Platform Testing
+
+on:
+  push:
+    branches: [ main, develop ]  # Multiple branch triggers
+  pull_request:
+    types: [ opened, synchronize, reopened ]  # Specific PR events
+
+# Environment variables available to all jobs
+env:
+  NODE_ENV: test  # Set testing environment globally
+  CI: true  # Indicates running in CI environment
+
+jobs:
+  # Test across multiple operating systems and Node versions
+  test-matrix:
+    # Strategy defines how to run jobs in parallel
+    strategy:
+      matrix:
+        # Test on three different operating systems
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # Test on multiple Node.js versions
+        node-version: [16, 18, 20]
+      # Continue running other combinations even if one fails
+      fail-fast: false
+      # Maximum parallel jobs to run
+      max-parallel: 6
+    
+    # Use matrix values to run on different OS
+    runs-on: ${{ matrix.os }}
+    
+    # Give the job a descriptive name in the UI
+    name: Test Node ${{ matrix.node-version }} on ${{ matrix.os }}
+    
+    steps:
+      # Check out repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Get full git history for better analysis
+      
+      # Configure Node.js with matrix version
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      # Install dependencies with clean install
+      - name: Install dependencies
+        run: npm ci
+      
+      # Run tests with coverage reporting
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          # OS-specific environment variable
+          TEST_TIMEOUT: ${{ matrix.os == 'windows-latest' && '10000' || '5000' }}
+      
+      # Upload coverage reports as artifacts
+      - name: Upload coverage reports
+        if: matrix.os == 'ubuntu-latest' && matrix.node-version == '18'
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7  # Keep artifacts for 7 days
+  
+  # Separate job to check code quality
+  code-quality:
+    runs-on: ubuntu-latest
+    # This job needs the test matrix to complete first
+    needs: test-matrix
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      # Run security audit on dependencies
+      - name: Security audit
+        run: npm audit --audit-level=moderate
+      
+      # Check for outdated packages
+      - name: Check outdated packages
+        run: npm outdated || true  # Don't fail on outdated packages

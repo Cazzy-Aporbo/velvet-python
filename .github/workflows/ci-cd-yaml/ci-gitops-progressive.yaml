@@ -1,0 +1,629 @@
+# Enterprise GitOps Progressive Deployment Pipeline with Full Observability
+# Purpose: Complete CI/CD with GitOps, canary deployments, feature flags, and observability
+# Triggers: Push, PR, scheduled compliance checks, API triggers
+# Use Case: Large-scale production systems requiring gradual rollouts and instant rollbacks
+
+name: GitOps Progressive Deployment
+
+on:
+  push:
+    branches: [ main, release/*, hotfix/* ]
+  pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review ]
+  schedule:
+    # Compliance and drift detection every 4 hours
+    - cron: '0 */4 * * *'
+  repository_dispatch:
+    # Allow external systems to trigger deployments
+    types: [ deploy-production, rollback-production ]
+  workflow_call:
+    # Allow this workflow to be called by other workflows
+    inputs:
+      deployment_percentage:
+        required: false
+        type: number
+        default: 10
+      target_environment:
+        required: false
+        type: string
+        default: 'production'
+
+# Permissions for OIDC and advanced features
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+  deployments: write
+  statuses: write
+  pull-requests: write
+  issues: write
+
+env:
+  # Feature flags and deployment configuration
+  ENABLE_CANARY: true
+  CANARY_PERCENTAGE: ${{ github.event.inputs.deployment_percentage || 10 }}
+  ROLLBACK_THRESHOLD_ERROR_RATE: 5  # Percentage
+  ROLLBACK_THRESHOLD_LATENCY: 2000  # Milliseconds
+  PROGRESSIVE_INTERVALS: "10,25,50,75,100"  # Traffic percentages
+  FLAGGER_NAMESPACE: istio-system
+  PROMETHEUS_URL: http://prometheus:9090
+
+jobs:
+  # Job 1: Intelligent change detection and impact analysis
+  analyze-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services_changed: ${{ steps.detect.outputs.services }}
+      deploy_strategy: ${{ steps.strategy.outputs.strategy }}
+      risk_score: ${{ steps.risk.outputs.score }}
+      requires_approval: ${{ steps.risk.outputs.requires_approval }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Need full history for analysis
+      
+      # Detect which services changed
+      - name: Detect service changes
+        id: detect
+        run: |
+          # Identify changed services based on file paths
+          changed_services=$(git diff --name-only ${{ github.event.before }}...${{ github.sha }} | \
+            grep -E '^services/' | \
+            cut -d'/' -f2 | \
+            sort -u | \
+            jq -R -s -c 'split("\n")[:-1]')
+          
+          echo "services=$changed_services" >> $GITHUB_OUTPUT
+          echo "Changed services: $changed_services"
+      
+      # Calculate deployment risk and strategy
+      - name: Calculate risk score and deployment strategy
+        id: risk
+        run: |
+          # Risk calculation based on various factors
+          risk_score=0
+          
+          # Check for database migrations
+          if git diff --name-only ${{ github.event.before }}...${{ github.sha }} | grep -q 'migrations/'; then
+            risk_score=$((risk_score + 30))
+            echo "Database migrations detected: +30 risk"
+          fi
+          
+          # Check for breaking API changes
+          if git diff ${{ github.event.before }}...${{ github.sha }} | grep -q 'BREAKING CHANGE'; then
+            risk_score=$((risk_score + 40))
+            echo "Breaking changes detected: +40 risk"
+          fi
+          
+          # Check for configuration changes
+          if git diff --name-only ${{ github.event.before }}...${{ github.sha }} | grep -q 'config/'; then
+            risk_score=$((risk_score + 20))
+            echo "Configuration changes detected: +20 risk"
+          fi
+          
+          # Check commit message for emergency markers
+          if git log --format=%B -n 1 ${{ github.sha }} | grep -qE 'EMERGENCY|HOTFIX|URGENT'; then
+            risk_score=$((risk_score - 30))
+            echo "Emergency deployment: -30 risk"
+          fi
+          
+          echo "score=$risk_score" >> $GITHUB_OUTPUT
+          
+          # Determine if manual approval needed
+          if [ $risk_score -gt 50 ]; then
+            echo "requires_approval=true" >> $GITHUB_OUTPUT
+          else
+            echo "requires_approval=false" >> $GITHUB_OUTPUT
+          fi
+      
+      # Determine deployment strategy based on risk
+      - name: Select deployment strategy
+        id: strategy
+        run: |
+          risk_score=${{ steps.risk.outputs.score }}
+          
+          if [ $risk_score -lt 20 ]; then
+            echo "strategy=blue-green" >> $GITHUB_OUTPUT
+          elif [ $risk_score -lt 50 ]; then
+            echo "strategy=canary" >> $GITHUB_OUTPUT
+          else
+            echo "strategy=progressive" >> $GITHUB_OUTPUT
+          fi
+
+  # Job 2: Comprehensive testing with contract and chaos testing
+  advanced-testing:
+    needs: analyze-changes
+    runs-on: ubuntu-latest
+    services:
+      # Spin up test infrastructure
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup test environment
+        run: |
+          # Install all testing tools
+          npm ci
+          npm install -g @pact-foundation/pact-node
+          pip install chaos-toolkit
+      
+      # Contract testing between services
+      - name: Run contract tests
+        run: |
+          # Provider verification
+          npm run test:pact:provider
+          
+          # Consumer tests
+          npm run test:pact:consumer
+          
+          # Publish pacts to broker
+          npm run pact:publish -- \
+            --broker-base-url=${{ secrets.PACT_BROKER_URL }} \
+            --broker-token=${{ secrets.PACT_BROKER_TOKEN }} \
+            --consumer-version=${{ github.sha }}
+      
+      # Mutation testing for code quality
+      - name: Run mutation tests
+        run: |
+          npm run test:mutation -- \
+            --threshold=80 \
+            --reporters=html,dashboard
+      
+      # Load testing with gradual ramp-up
+      - name: Run load tests
+        run: |
+          npm run test:load -- \
+            --duration=300 \
+            --rate=100 \
+            --ramp-up=60
+      
+      # Chaos engineering tests
+      - name: Run chaos experiments
+        run: |
+          # Run chaos experiments in test environment
+          chaos run experiments/network-latency.json
+          chaos run experiments/pod-failure.json
+          chaos run experiments/cpu-stress.json
+      
+      # Security penetration testing
+      - name: Run security tests
+        run: |
+          # DAST with OWASP ZAP
+          docker run -v $(pwd):/zap/wrk/:rw \
+            owasp/zap2docker-stable zap-baseline.py \
+            -t https://test.example.com \
+            -r security-report.html
+
+  # Job 3: Build with supply chain security
+  secure-build:
+    needs: [analyze-changes, advanced-testing]
+    runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.build.outputs.images }}
+      attestation: ${{ steps.sign.outputs.attestation }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Generate provenance for supply chain security
+      - name: Generate SLSA provenance
+        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.4.0
+        with:
+          image: ${{ secrets.REGISTRY_URL }}/app
+          digest: ${{ steps.build.outputs.digest }}
+      
+      # Build multiple service images
+      - name: Build service images
+        id: build
+        run: |
+          images=()
+          for service in $(echo '${{ needs.analyze-changes.outputs.services_changed }}' | jq -r '.[]'); do
+            # Build each service with buildkit
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --tag ${{ secrets.REGISTRY_URL }}/${service}:${{ github.sha }} \
+              --tag ${{ secrets.REGISTRY_URL }}/${service}:canary \
+              --build-arg SERVICE_NAME=${service} \
+              --build-arg BUILD_NUMBER=${{ github.run_number }} \
+              --cache-from type=registry,ref=${{ secrets.REGISTRY_URL }}/${service}:buildcache \
+              --cache-to type=registry,ref=${{ secrets.REGISTRY_URL }}/${service}:buildcache,mode=max \
+              --push \
+              services/${service}
+            
+            images+=("${service}")
+          done
+          
+          echo "images=${images[@]}" >> $GITHUB_OUTPUT
+      
+      # Sign images with cosign for verification
+      - name: Sign container images
+        id: sign
+        env:
+          COSIGN_EXPERIMENTAL: 1
+        run: |
+          # Install cosign
+          curl -Lo cosign https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+          chmod +x cosign
+          
+          # Sign each image
+          for service in $(echo '${{ needs.analyze-changes.outputs.services_changed }}' | jq -r '.[]'); do
+            ./cosign sign --yes ${{ secrets.REGISTRY_URL }}/${service}:${{ github.sha }}
+            
+            # Attach SBOM attestation
+            ./cosign attest --yes \
+              --predicate sbom.json \
+              --type spdx \
+              ${{ secrets.REGISTRY_URL }}/${service}:${{ github.sha }}
+          done
+
+  # Job 4: GitOps update and sync
+  gitops-update:
+    needs: [analyze-changes, secure-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      # Checkout GitOps repository
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository_owner }}/gitops-config
+          token: ${{ secrets.GITOPS_TOKEN }}
+          path: gitops
+      
+      # Update manifests with new image versions
+      - name: Update Kubernetes manifests
+        run: |
+          cd gitops
+          
+          # Update kustomization with new images
+          for service in $(echo '${{ needs.analyze-changes.outputs.services_changed }}' | jq -r '.[]'); do
+            # Update production overlays
+            cd environments/production
+            kustomize edit set image ${service}=${{ secrets.REGISTRY_URL }}/${service}:${{ github.sha }}
+            
+            # Update canary overlays
+            cd ../canary
+            kustomize edit set image ${service}=${{ secrets.REGISTRY_URL }}/${service}:${{ github.sha }}
+            cd ../..
+          done
+          
+          # Update Helm values
+          yq eval -i '.global.image.tag = "${{ github.sha }}"' environments/production/values.yaml
+      
+      # Create pull request for GitOps changes
+      - name: Create GitOps PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          path: gitops
+          token: ${{ secrets.GITOPS_TOKEN }}
+          commit-message: "Deploy ${{ github.sha }} to production"
+          title: "Deploy ${{ github.sha }} - Risk Score: ${{ needs.analyze-changes.outputs.risk_score }}"
+          body: |
+            ## Deployment Information
+            - **Commit**: ${{ github.sha }}
+            - **Risk Score**: ${{ needs.analyze-changes.outputs.risk_score }}
+            - **Strategy**: ${{ needs.analyze-changes.outputs.deploy_strategy }}
+            - **Changed Services**: ${{ needs.analyze-changes.outputs.services_changed }}
+            
+            ## Deployment Checklist
+            - [ ] Security scans passed
+            - [ ] Contract tests verified
+            - [ ] Load tests successful
+            - [ ] Rollback plan reviewed
+            - [ ] Monitoring alerts configured
+            
+            /deploy-when-ready
+          branch: deploy/${{ github.sha }}
+          base: main
+
+  # Job 5: Progressive canary deployment with automatic rollback
+  progressive-deployment:
+    needs: [gitops-update, analyze-changes]
+    runs-on: ubuntu-latest
+    if: needs.analyze-changes.outputs.requires_approval != 'true' || github.event_name == 'repository_dispatch'
+    environment:
+      name: production
+      url: https://app.example.com
+    
+    steps:
+      # Setup Flagger for progressive delivery
+      - name: Configure Flagger canary
+        run: |
+          # Install fluxctl
+          curl -s https://toolkit.fluxcd.io/install.sh | sudo bash
+          
+          # Configure kubectl
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+          
+          # Create Flagger canary resource
+          for service in $(echo '${{ needs.analyze-changes.outputs.services_changed }}' | jq -r '.[]'); do
+            cat <<EOF | kubectl apply -f -
+            apiVersion: flagger.app/v1beta1
+            kind: Canary
+            metadata:
+              name: ${service}
+              namespace: production
+            spec:
+              targetRef:
+                apiVersion: apps/v1
+                kind: Deployment
+                name: ${service}
+              progressDeadlineSeconds: 600
+              service:
+                port: 80
+                targetPort: 8080
+                gateways:
+                - public-gateway
+                hosts:
+                - ${service}.example.com
+              analysis:
+                interval: 1m
+                threshold: 5
+                maxWeight: 100
+                stepWeight: ${{ env.CANARY_PERCENTAGE }}
+                metrics:
+                - name: request-success-rate
+                  thresholdRange:
+                    min: 99
+                  interval: 1m
+                - name: request-duration
+                  thresholdRange:
+                    max: 500
+                  interval: 1m
+                webhooks:
+                - name: acceptance-test
+                  url: http://flagger-loadtester.production/
+                  timeout: 5m
+                  metadata:
+                    type: bash
+                    cmd: "curl -sd 'canary' http://${service}-canary:80/check | grep ok"
+                - name: load-test
+                  url: http://flagger-loadtester.production/
+                  timeout: 5m
+                  metadata:
+                    cmd: "hey -z 2m -q 10 -c 2 http://${service}-canary.production:80/"
+            EOF
+          done
+      
+      # Monitor canary progress
+      - name: Monitor progressive deployment
+        run: |
+          # Watch canary progress
+          for service in $(echo '${{ needs.analyze-changes.outputs.services_changed }}' | jq -r '.[]'); do
+            echo "Monitoring ${service} canary deployment..."
+            
+            # Wait for canary to complete or fail
+            kubectl wait canary/${service} \
+              --for=condition=Promoted \
+              --timeout=30m \
+              -n production || {
+                echo "Canary deployment failed for ${service}"
+                
+                # Capture failure metrics
+                kubectl describe canary/${service} -n production
+                
+                # Trigger automatic rollback
+                kubectl set image deployment/${service} \
+                  ${service}=${{ secrets.REGISTRY_URL }}/${service}:stable \
+                  -n production
+                
+                exit 1
+              }
+            
+            echo "${service} successfully deployed!"
+          done
+      
+      # Feature flag progressive rollout
+      - name: Progressive feature flag rollout
+        run: |
+          # Update feature flags progressively
+          for percentage in 10 25 50 75 100; do
+            echo "Rolling out to ${percentage}% of users"
+            
+            # Update LaunchDarkly feature flags
+            curl -X PATCH \
+              https://app.launchdarkly.com/api/v2/flags/default/new-feature \
+              -H "Authorization: ${{ secrets.LAUNCHDARKLY_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "patch": [{
+                  "op": "replace",
+                  "path": "/environments/production/fallthrough/rollout/variations/0/weight",
+                  "value": '${percentage}'000
+                }]
+              }'
+            
+            # Wait and monitor metrics
+            sleep 300  # 5 minutes between increases
+            
+            # Check error rates from Datadog
+            error_rate=$(curl -s -X GET \
+              "https://api.datadoghq.com/api/v1/query?query=avg:app.error.rate{env:production}" \
+              -H "DD-API-KEY: ${{ secrets.DATADOG_API_KEY }}" \
+              -H "DD-APPLICATION-KEY: ${{ secrets.DATADOG_APP_KEY }}" | \
+              jq -r '.series[0].pointlist[-1][1]')
+            
+            if (( $(echo "$error_rate > ${{ env.ROLLBACK_THRESHOLD_ERROR_RATE }}" | bc -l) )); then
+              echo "Error rate ${error_rate}% exceeds threshold, rolling back"
+              
+              # Rollback feature flags
+              curl -X PATCH \
+                https://app.launchdarkly.com/api/v2/flags/default/new-feature \
+                -H "Authorization: ${{ secrets.LAUNCHDARKLY_TOKEN }}" \
+                -d '{"patch": [{"op": "replace", "path": "/environments/production/on", "value": false}]}'
+              
+              exit 1
+            fi
+          done
+
+  # Job 6: Post-deployment observability and validation
+  observability-validation:
+    needs: progressive-deployment
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      # Set up comprehensive monitoring
+      - name: Configure enhanced monitoring
+        run: |
+          # Create custom Datadog dashboard
+          curl -X POST "https://api.datadoghq.com/api/v1/dashboard" \
+            -H "DD-API-KEY: ${{ secrets.DATADOG_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d @- <<EOF
+          {
+            "title": "Deployment ${{ github.sha }}",
+            "widgets": [
+              {
+                "definition": {
+                  "type": "timeseries",
+                  "requests": [{
+                    "q": "avg:app.request.duration{env:production,version:${{ github.sha }}}"
+                  }],
+                  "title": "Request Latency"
+                }
+              },
+              {
+                "definition": {
+                  "type": "query_value",
+                  "requests": [{
+                    "q": "sum:app.error.count{env:production,version:${{ github.sha }}}.as_rate()"
+                  }],
+                  "title": "Error Rate"
+                }
+              }
+            ]
+          }
+          EOF
+          
+          # Configure PagerDuty alerts
+          curl -X POST "https://api.pagerduty.com/alerts" \
+            -H "Authorization: Token token=${{ secrets.PAGERDUTY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "alert": {
+                "type": "deployment",
+                "summary": "Deployment ${{ github.sha }} completed",
+                "source": "github-actions",
+                "severity": "info"
+              }
+            }'
+      
+      # Distributed tracing validation
+      - name: Validate distributed tracing
+        run: |
+          # Send test requests and verify tracing
+          npm install -g @opentelemetry/auto-instrumentations-node
+          
+          # Run synthetic transactions
+          node -r @opentelemetry/auto-instrumentations-node/register \
+            scripts/synthetic-transactions.js
+          
+          # Verify traces in Jaeger
+          sleep 30
+          trace_count=$(curl -s "http://jaeger.example.com:16686/api/traces?service=app&limit=10" | \
+            jq '.data | length')
+          
+          if [ "$trace_count" -lt 10 ]; then
+            echo "Warning: Distributed tracing may not be working correctly"
+          fi
+      
+      # SLO validation
+      - name: Validate SLO compliance
+        run: |
+          # Check if deployment meets SLO targets
+          slo_budget=$(curl -s "https://api.datadoghq.com/api/v1/slo/${{ secrets.SLO_ID }}" \
+            -H "DD-API-KEY: ${{ secrets.DATADOG_API_KEY }}" | \
+            jq -r '.data.attributes.slo_budget_remaining')
+          
+          if (( $(echo "$slo_budget < 0.1" | bc -l) )); then
+            echo "Warning: SLO budget is critically low at ${slo_budget}%"
+            
+            # Send alert to Slack
+            curl -X POST ${{ secrets.SLACK_WEBHOOK }} \
+              -H 'Content-Type: application/json' \
+              -d '{
+                "text": "⚠️ SLO budget critically low after deployment",
+                "attachments": [{
+                  "color": "warning",
+                  "fields": [{
+                    "title": "Remaining Budget",
+                    "value": "'${slo_budget}'%",
+                    "short": true
+                  }]
+                }]
+              }'
+          fi
+      
+      # Generate deployment report
+      - name: Generate deployment report
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Collect deployment metrics
+            const deploymentData = {
+              sha: '${{ github.sha }}',
+              duration: Math.round((Date.now() - Date.parse('${{ github.event.head_commit.timestamp }}')) / 1000),
+              strategy: '${{ needs.analyze-changes.outputs.deploy_strategy }}',
+              riskScore: ${{ needs.analyze-changes.outputs.risk_score }},
+              services: ${{ needs.analyze-changes.outputs.services_changed }}
+            };
+            
+            // Create deployment summary
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: 'success',
+              log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: 'Progressive deployment completed successfully',
+              environment_url: 'https://app.example.com',
+              auto_inactive: false
+            });
+            
+            // Comment on PR with metrics
+            if (context.eventName === 'pull_request') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `## 🚀 Deployment Complete
+                
+                **Performance Metrics:**
+                - Deployment Duration: ${deploymentData.duration}s
+                - Strategy Used: ${deploymentData.strategy}
+                - Risk Score: ${deploymentData.riskScore}
+                
+                **Monitoring:**
+                - [Datadog Dashboard](https://app.datadoghq.com/dashboard)
+                - [Grafana](https://grafana.example.com)
+                - [Jaeger Traces](https://jaeger.example.com)
+                
+                **Rollback Command:**
+                \`\`\`bash
+                gh workflow run rollback.yml -f sha=${{ github.sha }}
+                \`\`\``
+              });
+            }

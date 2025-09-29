@@ -1,0 +1,311 @@
+# Advanced Security Scanning and Multi-Region Deployment Pipeline
+# Purpose: Comprehensive security checks with parallel multi-region deployments
+# Triggers: Push to main, pull requests, scheduled scans, and manual dispatch
+# Use Case: Production-ready pipeline with security gates and global deployment
+
+name: Secure Multi-Region Deployment
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:  # Don't trigger on documentation changes
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scan every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      regions:
+        description: 'Regions to deploy (comma-separated: us-east,eu-west,ap-south)'
+        required: false
+        default: 'us-east,eu-west,ap-south'
+      skip_security:
+        description: 'Skip security scans (not recommended)'
+        type: boolean
+        default: false
+
+# Global environment variables
+env:
+  DOCKER_BUILDKIT: 1  # Enable Docker BuildKit
+  COMPOSE_DOCKER_CLI_BUILD: 1  # Use Docker CLI for compose
+  TRIVY_NO_PROGRESS: true  # Cleaner Trivy output
+
+jobs:
+  # Job 1: Static code analysis and dependency scanning
+  security-analysis:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.skip_security != 'true'
+    permissions:
+      contents: read
+      security-events: write  # Required for uploading SARIF results
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for better analysis
+      
+      # Secret scanning to prevent credential leaks
+      - name: Secret scanning with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # SAST (Static Application Security Testing)
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          languages: javascript, typescript
+          queries: security-and-quality
+      
+      # Dependency vulnerability scanning
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high --fail-on=upgradable
+      
+      # Software composition analysis
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'app'
+          path: '.'
+          format: 'ALL'
+          args: >
+            --enableRetired
+            --enableExperimental
+      
+      # License compliance check
+      - name: License scanning
+        run: |
+          npm install -g license-checker
+          license-checker --production --summary --failOn 'GPL;AGPL;LGPL'
+      
+      # Upload all security results
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            dependency-check-report.html
+            snyk-report.json
+            license-report.json
+
+  # Job 2: Build application with security hardening
+  build-secure:
+    needs: security-analysis
+    runs-on: ubuntu-latest
+    outputs:
+      image_digest: ${{ steps.build.outputs.digest }}
+      sbom_attestation: ${{ steps.sbom.outputs.attestation }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      # Generate Software Bill of Materials
+      - name: Generate SBOM
+        id: sbom
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx-json
+          output-file: sbom.spdx.json
+      
+      # Multi-stage Docker build with security layers
+      - name: Build hardened Docker image
+        id: build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: Dockerfile.secure  # Use security-hardened Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/app:${{ github.sha }}
+            ${{ secrets.REGISTRY_URL }}/app:latest
+          # Security labels
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+          # Build arguments for security
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+            NODE_ENV=production
+            ENABLE_SECURITY_HEADERS=true
+            CSP_NONCE=${{ github.run_id }}
+          # Security scanning during build
+          secrets: |
+            "npmrc=${{ secrets.NPM_TOKEN }}"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      # Container image scanning
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.REGISTRY_URL }}/app:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'  # Fail on critical vulnerabilities
+      
+      # Upload scanning results to GitHub
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Job 3: Parallel multi-region deployment
+  deploy-regions:
+    needs: build-secure
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    strategy:
+      matrix:
+        # Deploy to multiple regions in parallel
+        region: [us-east, eu-west, ap-south]
+      max-parallel: 3  # Deploy to all regions simultaneously
+    environment:
+      name: production-${{ matrix.region }}
+      url: https://${{ matrix.region }}.app.example.com
+    
+    steps:
+      # Regional deployment configuration
+      - name: Configure AWS credentials for ${{ matrix.region }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets[format('AWS_ACCESS_KEY_{0}', matrix.region)] }}
+          aws-secret-access-key: ${{ secrets[format('AWS_SECRET_KEY_{0}', matrix.region)] }}
+          aws-region: ${{ matrix.region }}
+      
+      # Deploy to ECS with blue-green deployment
+      - name: Deploy to ECS ${{ matrix.region }}
+        run: |
+          # Update task definition with new image
+          aws ecs register-task-definition \
+            --family app-${{ matrix.region }} \
+            --container-definitions '[{
+              "name": "app",
+              "image": "${{ secrets.REGISTRY_URL }}/app:${{ github.sha }}",
+              "memory": 2048,
+              "cpu": 1024,
+              "essential": true,
+              "healthCheck": {
+                "command": ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3
+              }
+            }]'
+          
+          # Update service with new task definition
+          aws ecs update-service \
+            --cluster production-${{ matrix.region }} \
+            --service app-service \
+            --task-definition app-${{ matrix.region }} \
+            --deployment-configuration "maximumPercent=200,minimumHealthyPercent=100" \
+            --force-new-deployment
+          
+          # Wait for deployment to stabilize
+          aws ecs wait services-stable \
+            --cluster production-${{ matrix.region }} \
+            --services app-service
+      
+      # Regional health checks
+      - name: Verify deployment health ${{ matrix.region }}
+        run: |
+          endpoint="https://${{ matrix.region }}.app.example.com"
+          max_attempts=10
+          attempt=0
+          
+          while [ $attempt -lt $max_attempts ]; do
+            if curl -f "$endpoint/health" > /dev/null 2>&1; then
+              echo "Health check passed for ${{ matrix.region }}"
+              break
+            fi
+            attempt=$((attempt + 1))
+            echo "Attempt $attempt/$max_attempts failed, retrying..."
+            sleep 30
+          done
+          
+          if [ $attempt -eq $max_attempts ]; then
+            echo "Health check failed for ${{ matrix.region }}"
+            exit 1
+          fi
+      
+      # Performance testing per region
+      - name: Run performance tests ${{ matrix.region }}
+        run: |
+          npm install -g artillery
+          artillery quick \
+            --count 100 \
+            --num 10 \
+            https://${{ matrix.region }}.app.example.com/api/test
+
+  # Job 4: Post-deployment validation
+  validate-deployment:
+    needs: deploy-regions
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      # Run end-to-end tests across all regions
+      - name: Global E2E tests
+        run: |
+          npm ci
+          npm run test:e2e:global
+        env:
+          REGIONS: 'us-east,eu-west,ap-south'
+          TEST_TIMEOUT: 300000  # 5 minutes
+      
+      # Monitor key metrics
+      - name: Check deployment metrics
+        run: |
+          # Query CloudWatch for error rates
+          for region in us-east eu-west ap-south; do
+            echo "Checking metrics for $region"
+            aws cloudwatch get-metric-statistics \
+              --namespace AWS/ECS \
+              --metric-name CPUUtilization \
+              --dimensions Name=ClusterName,Value=production-$region \
+              --statistics Average \
+              --start-time $(date -u -d '10 minutes ago' +%Y-%m-%dT%H:%M:%S) \
+              --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+              --period 300 \
+              --region $region
+          done
+      
+      # Create release notes
+      - name: Generate release notes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: commits } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before,
+              head: context.sha
+            });
+            
+            const releaseNotes = commits.commits.map(c => `- ${c.commit.message}`).join('\n');
+            
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${new Date().toISOString().split('T')[0]}-${context.sha.substring(0, 7)}`,
+              name: `Production Release ${new Date().toISOString().split('T')[0]}`,
+              body: `## Changes\n${releaseNotes}\n\n## Deployment\n- Regions: us-east, eu-west, ap-south\n- Image: ${{ needs.build-secure.outputs.image_digest }}`,
+              draft: false,
+              prerelease: false
+            });

@@ -1,0 +1,49 @@
+# Basic Continuous Integration Pipeline
+# Purpose: Simple build and test workflow for a Node.js application
+# Triggers: Runs on every push to main branch and pull requests
+# Use Case: Perfect for small projects that need basic quality checks
+
+name: Basic Build and Test
+
+# When this workflow runs
+on:
+  push:
+    branches: [ main ]  # Triggers when code is pushed to main
+  pull_request:
+    branches: [ main ]  # Triggers when PRs target main branch
+
+# Define the jobs that will run
+jobs:
+  # Single job that handles everything
+  build-and-test:
+    # The type of machine to run on (Ubuntu latest version)
+    runs-on: ubuntu-latest
+    
+    # Sequential steps that execute in order
+    steps:
+      # First, get the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      # Set up Node.js environment with version 18
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'  # Cache dependencies for faster builds
+      
+      # Install all project dependencies
+      - name: Install dependencies
+        run: npm ci  # ci is faster than install for automated environments
+        
+      # Run linting to check code quality
+      - name: Run linter
+        run: npm run lint
+        
+      # Execute all unit tests
+      - name: Run tests
+        run: npm test
+        
+      # Build the application to ensure it compiles
+      - name: Build application
+        run: npm run build

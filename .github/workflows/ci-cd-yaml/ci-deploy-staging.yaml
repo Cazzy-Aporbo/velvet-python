@@ -1,0 +1,175 @@
+# Build, Test, and Deploy to Staging Pipeline
+# Purpose: Automated deployment to staging environment after tests pass
+# Triggers: Push to develop branch and manual workflow dispatch
+# Use Case: Continuous deployment for preview/staging environments
+
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]  # Auto-deploy on develop branch updates
+  workflow_dispatch:  # Allow manual triggering from GitHub UI
+    inputs:
+      deploy_message:
+        description: 'Deployment message'
+        required: false
+        default: 'Manual staging deployment'
+
+# Cancel in-progress runs if a new one starts
+concurrency:
+  group: staging-deployment-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # First job: Run all quality checks
+  quality-checks:
+    runs-on: ubuntu-latest
+    # Output values that other jobs can use
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      # Cache node_modules for faster builds
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      # Run multiple checks in parallel
+      - name: Run linting
+        run: npm run lint
+      
+      - name: Run type checking
+        run: npm run type-check
+        
+      - name: Run unit tests
+        run: npm run test:unit
+      
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      
+      # Extract version for tagging
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      
+      # Determine if we should deploy
+      - name: Check deployment criteria
+        id: check
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]] || [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Second job: Build Docker image
+  build-image:
+    needs: quality-checks
+    if: needs.quality-checks.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Setup Docker Buildx for advanced features
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      # Login to container registry
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      
+      # Build and push Docker image with multiple tags
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/app:staging
+            ${{ secrets.REGISTRY_URL }}/app:${{ needs.quality-checks.outputs.version }}
+            ${{ secrets.REGISTRY_URL }}/app:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.REGISTRY_URL }}/app:buildcache
+          cache-to: type=registry,ref=${{ secrets.REGISTRY_URL }}/app:buildcache,mode=max
+          build-args: |
+            NODE_ENV=staging
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            VCS_REF=${{ github.sha }}
+
+  # Third job: Deploy to staging environment
+  deploy-staging:
+    needs: [quality-checks, build-image]
+    runs-on: ubuntu-latest
+    environment:
+      name: staging  # GitHub environment for approvals and secrets
+      url: https://staging.example.com  # Environment URL shown in GitHub
+    
+    steps:
+      # Deploy using Kubernetes
+      - name: Deploy to Kubernetes
+        run: |
+          # Install kubectl
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          
+          # Configure kubectl with staging cluster
+          echo "${{ secrets.STAGING_KUBECONFIG }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+          
+          # Update deployment with new image
+          ./kubectl set image deployment/app app=${{ secrets.REGISTRY_URL }}/app:${{ github.sha }} -n staging
+          
+          # Wait for rollout to complete
+          ./kubectl rollout status deployment/app -n staging --timeout=5m
+      
+      # Run smoke tests against staging
+      - name: Run smoke tests
+        run: |
+          npm ci
+          npm run test:smoke
+        env:
+          TEST_URL: https://staging.example.com
+          TEST_API_KEY: ${{ secrets.STAGING_API_KEY }}
+      
+      # Notify team about deployment
+      - name: Send deployment notification
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            const message = `${status} Staging deployment ${status === '✅' ? 'completed' : 'failed'}`;
+            
+            // Create deployment status
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: '${{ job.status }}',
+              environment_url: 'https://staging.example.com',
+              description: message
+            });
