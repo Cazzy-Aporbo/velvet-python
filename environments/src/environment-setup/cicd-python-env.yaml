@@ -1,0 +1,833 @@
+# Complete CI/CD Pipeline for Python Environment Management
+# Purpose: Automated testing, building, and deployment with proper environment handling
+# Supports: GitHub Actions, GitLab CI, Jenkins, Azure DevOps
+# Use Case: Production-grade Python application deployment with environment isolation
+
+# ==============================================================================
+# GITHUB ACTIONS WORKFLOW
+# ==============================================================================
+
+name: Python Environment CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, 'release/**' ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run nightly builds to catch dependency issues
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+      python_version:
+        description: 'Python version override'
+        required: false
+        default: '3.10'
+
+# Environment variables available to all jobs
+env:
+  PYTHON_VERSION: '3.10'
+  CACHE_NUMBER: 0  # Increment to reset cache
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  PIP_NO_CACHE_DIR: 1
+  PYTHONUNBUFFERED: 1
+  PYTHONDONTWRITEBYTECODE: 1
+
+jobs:
+  # ==============================================================================
+  # JOB 1: Environment Setup and Validation
+  # ==============================================================================
+  
+  setup-environment:
+    name: Setup Python Environment
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+        include:
+          # Include specific environment type for each OS
+          - os: ubuntu-latest
+            env-type: venv
+          - os: windows-latest
+            env-type: venv
+          - os: macos-latest
+            env-type: conda
+      fail-fast: false
+    
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+      environment-path: ${{ steps.env-path.outputs.path }}
+    
+    steps:
+      # Checkout repository code
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for better analysis
+      
+      # Setup Python with specific version
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+      
+      # Setup Conda (for macOS matrix)
+      - name: Setup Miniconda
+        if: matrix.env-type == 'conda'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: test-env
+          environment-file: environment.yml
+          auto-activate-base: false
+          miniconda-version: "latest"
+      
+      # Cache pip dependencies
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.cache/pipenv
+            ~/.local/share/virtualenvs
+            ~/Library/Caches/pip
+            ~/AppData/Local/pip/Cache
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt', '**/Pipfile.lock', '**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+      
+      # Cache conda packages (if using conda)
+      - name: Cache conda packages
+        if: matrix.env-type == 'conda'
+        uses: actions/cache@v3
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ matrix.python-version }}-${{ hashFiles('**/environment.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ matrix.python-version }}-
+            ${{ runner.os }}-conda-
+      
+      # Create virtual environment based on type
+      - name: Create virtual environment (venv)
+        if: matrix.env-type == 'venv'
+        run: |
+          python -m venv .venv
+          echo "VIRTUAL_ENV=${{ github.workspace }}/.venv" >> $GITHUB_ENV
+          echo "${{ github.workspace }}/.venv/bin" >> $GITHUB_PATH
+        shell: bash
+      
+      # Activate Windows environment
+      - name: Activate Windows environment
+        if: runner.os == 'Windows' && matrix.env-type == 'venv'
+        run: |
+          .venv\Scripts\activate
+          echo "${{ github.workspace }}\.venv\Scripts" >> $GITHUB_PATH
+        shell: cmd
+      
+      # Upgrade core packages
+      - name: Upgrade pip and setuptools
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip --version
+      
+      # Install dependencies with different strategies
+      - name: Install dependencies
+        run: |
+          # Try multiple requirement files
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          fi
+          
+          if [ -f setup.py ]; then
+            pip install -e .
+          fi
+          
+          # Install testing dependencies
+          pip install pytest pytest-cov pytest-xdist pytest-timeout black flake8 mypy
+        shell: bash
+      
+      # Verify environment
+      - name: Verify environment setup
+        run: |
+          echo "Python location: $(which python)"
+          echo "Python version: $(python --version)"
+          echo "Pip location: $(which pip)"
+          echo "Installed packages:"
+          pip list
+          
+          # Check for common issues
+          pip check || true
+          
+          # Output environment info for debugging
+          python -c "import sys; print('Python path:', sys.path)"
+          python -c "import site; print('Site packages:', site.getsitepackages())"
+        shell: bash
+      
+      # Generate cache key for later jobs
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          echo "key=${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}" >> $GITHUB_OUTPUT
+      
+      # Output environment path
+      - name: Output environment path
+        id: env-path
+        run: |
+          if [ "${{ matrix.env-type }}" == "conda" ]; then
+            echo "path=$CONDA_PREFIX" >> $GITHUB_OUTPUT
+          else
+            echo "path=${{ github.workspace }}/.venv" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+  # ==============================================================================
+  # JOB 2: Code Quality and Security Checks
+  # ==============================================================================
+  
+  code-quality:
+    name: Code Quality Checks
+    needs: setup-environment
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      # Restore cached environment
+      - name: Restore cached packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            .venv
+          key: ${{ needs.setup-environment.outputs.cache-key }}
+      
+      # Code formatting check with Black
+      - name: Check code formatting (Black)
+        run: |
+          pip install black
+          black --check --diff .
+        continue-on-error: true
+      
+      # Linting with Flake8
+      - name: Lint with flake8
+        run: |
+          pip install flake8 flake8-docstrings flake8-bugbear
+          # Stop build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      
+      # Type checking with mypy
+      - name: Type check with mypy
+        run: |
+          pip install mypy types-requests types-PyYAML
+          mypy --install-types --non-interactive --ignore-missing-imports .
+        continue-on-error: true
+      
+      # Security scanning with Bandit
+      - name: Security scan with Bandit
+        run: |
+          pip install bandit[toml]
+          bandit -r . -f json -o bandit-report.json
+          bandit -r . -f screen
+        continue-on-error: true
+      
+      # Dependency vulnerability scanning
+      - name: Check for vulnerable dependencies
+        run: |
+          pip install safety pip-audit
+          
+          # Safety check
+          safety check --json || true
+          
+          # Pip audit
+          pip-audit --desc || true
+      
+      # License compliance check
+      - name: License compliance check
+        run: |
+          pip install pip-licenses
+          pip-licenses --with-urls --format=json > licenses.json
+          
+          # Check for GPL licenses (example)
+          pip-licenses --fail-on="GPL;LGPL" || echo "Warning: GPL licensed packages found"
+      
+      # SAST with Semgrep
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/python
+            p/django
+            p/flask
+        continue-on-error: true
+
+  # ==============================================================================
+  # JOB 3: Testing with Multiple Environments
+  # ==============================================================================
+  
+  test:
+    name: Run Tests
+    needs: [setup-environment, code-quality]
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.9', '3.10', '3.11']
+        test-type: [unit, integration, e2e]
+    
+    services:
+      # PostgreSQL service for integration tests
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      # Redis service for caching tests
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    env:
+      # Test environment variables
+      DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/test_db
+      REDIS_URL: redis://localhost:6379
+      TESTING: true
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-test.txt
+          pip install pytest pytest-cov pytest-xdist pytest-timeout pytest-mock
+      
+      # Run different test types
+      - name: Run ${{ matrix.test-type }} tests
+        run: |
+          case "${{ matrix.test-type }}" in
+            unit)
+              pytest tests/unit -v --cov=src --cov-report=xml --cov-report=term
+              ;;
+            integration)
+              pytest tests/integration -v --maxfail=5 --timeout=300
+              ;;
+            e2e)
+              pytest tests/e2e -v --timeout=600
+              ;;
+          esac
+        shell: bash
+      
+      # Upload coverage reports
+      - name: Upload coverage to Codecov
+        if: matrix.test-type == 'unit'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-${{ matrix.os }}-${{ matrix.python-version }}
+      
+      # Store test results
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.test-type }}
+          path: |
+            .coverage
+            coverage.xml
+            pytest-report.xml
+
+  # ==============================================================================
+  # JOB 4: Build and Package
+  # ==============================================================================
+  
+  build-package:
+    name: Build Python Package
+    needs: test
+    runs-on: ubuntu-latest
+    
+    outputs:
+      package-version: ${{ steps.version.outputs.version }}
+      wheel-name: ${{ steps.build.outputs.wheel }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build setuptools wheel twine
+      
+      # Extract version
+      - name: Get package version
+        id: version
+        run: |
+          VERSION=$(python setup.py --version)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Package version: $VERSION"
+      
+      # Build distributions
+      - name: Build distributions
+        id: build
+        run: |
+          python -m build
+          
+          # Get wheel filename
+          WHEEL=$(ls dist/*.whl | head -n1 | xargs basename)
+          echo "wheel=$WHEEL" >> $GITHUB_OUTPUT
+          
+          # List built artifacts
+          ls -la dist/
+      
+      # Check package with twine
+      - name: Check package
+        run: |
+          twine check dist/*
+      
+      # Test installation in clean environment
+      - name: Test installation
+        run: |
+          python -m venv test_env
+          source test_env/bin/activate
+          pip install dist/*.whl
+          
+          # Run basic import test
+          python -c "import your_package; print(your_package.__version__)"
+          
+          deactivate
+          rm -rf test_env
+      
+      # Upload artifacts
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-packages
+          path: dist/
+          retention-days: 7
+
+  # ==============================================================================
+  # JOB 5: Container Build with Environment
+  # ==============================================================================
+  
+  build-container:
+    name: Build Docker Container
+    needs: [test, build-package]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Download built packages
+      - name: Download package artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: python-packages
+          path: dist/
+      
+      # Set up Docker Buildx for advanced features
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      # Login to container registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ needs.build-package.outputs.package-version }}
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            PYTHON_VERSION=${{ env.PYTHON_VERSION }}
+            PACKAGE_VERSION=${{ needs.build-package.outputs.package-version }}
+          platforms: linux/amd64,linux/arm64
+      
+      # Scan container for vulnerabilities
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # ==============================================================================
+  # JOB 6: Deploy to Environment
+  # ==============================================================================
+  
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment || 'staging' }}
+    needs: [build-package, build-container]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Setup deployment environment
+      - name: Setup deployment environment
+        run: |
+          # Create deployment directory
+          mkdir -p deployment
+          cd deployment
+          
+          # Create virtual environment for deployment tools
+          python -m venv deploy_env
+          source deploy_env/bin/activate
+          
+          # Install deployment tools
+          pip install ansible fabric kubernetes pyyaml
+      
+      # Deploy based on environment
+      - name: Deploy application
+        id: deploy
+        run: |
+          ENVIRONMENT="${{ github.event.inputs.environment || 'staging' }}"
+          
+          case "$ENVIRONMENT" in
+            development)
+              echo "Deploying to development..."
+              # Deploy to development server
+              echo "url=https://dev.example.com" >> $GITHUB_OUTPUT
+              ;;
+            staging)
+              echo "Deploying to staging..."
+              # Deploy to staging cluster
+              echo "url=https://staging.example.com" >> $GITHUB_OUTPUT
+              ;;
+            production)
+              echo "Deploying to production..."
+              # Deploy to production with extra checks
+              echo "url=https://app.example.com" >> $GITHUB_OUTPUT
+              ;;
+          esac
+      
+      # Run smoke tests
+      - name: Run smoke tests
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          
+          # Wait for deployment to be ready
+          sleep 30
+          
+          # Basic health check
+          curl -f "$URL/health" || exit 1
+          
+          # Run smoke test suite
+          source deployment/deploy_env/bin/activate
+          pip install requests pytest
+          pytest tests/smoke --base-url="$URL"
+      
+      # Notify deployment status
+      - name: Notify deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Deployment to ${{ github.event.inputs.environment || 'staging' }} ${{ job.status }}
+            Version: ${{ needs.build-package.outputs.package-version }}
+            URL: ${{ steps.deploy.outputs.url }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # ==============================================================================
+  # JOB 7: Environment Cleanup
+  # ==============================================================================
+  
+  cleanup:
+    name: Cleanup Old Environments
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install management script
+        run: |
+          pip install -e .
+      
+      - name: Clean up old environments
+        run: |
+          # Run the environment cleanup script
+          python scripts/cleanup_environments.py \
+            --days 30 \
+            --environment staging \
+            --dry-run false
+      
+      - name: Clean up old Docker images
+        run: |
+          # Login to registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          # Get list of images older than 30 days
+          # This is a placeholder - implement actual cleanup logic
+          echo "Cleaning up old Docker images..."
+      
+      - name: Clean up old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        with:
+          age: '30 days'
+          skip-tags: true
+          skip-recent: 5
+
+# ==============================================================================
+# GITLAB CI CONFIGURATION
+# ==============================================================================
+
+# .gitlab-ci.yml
+gitlab-ci:
+  stages:
+    - setup
+    - test
+    - build
+    - deploy
+    - cleanup
+
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PYTHON_VERSION: "3.10"
+
+  # Cache configuration
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-$PYTHON_VERSION"
+    paths:
+      - .cache/pip
+      - venv/
+
+  # Setup Python environment
+  setup:environment:
+    stage: setup
+    image: python:${PYTHON_VERSION}-slim
+    before_script:
+      - apt-get update && apt-get install -y git gcc
+    script:
+      - python -m venv venv
+      - source venv/bin/activate
+      - pip install --upgrade pip setuptools wheel
+      - pip install -r requirements.txt
+      - pip install -r requirements-dev.txt
+    artifacts:
+      paths:
+        - venv/
+      expire_in: 1 day
+
+  # Run tests
+  test:unit:
+    stage: test
+    image: python:${PYTHON_VERSION}-slim
+    dependencies:
+      - setup:environment
+    script:
+      - source venv/bin/activate
+      - pytest tests/unit --cov --cov-report=xml
+    coverage: '/(?i)total.*? ([\d\.]+%)\s*$/'
+    artifacts:
+      reports:
+        coverage_report:
+          coverage_format: cobertura
+          path: coverage.xml
+
+  # Build package
+  build:package:
+    stage: build
+    image: python:${PYTHON_VERSION}-slim
+    dependencies:
+      - setup:environment
+    script:
+      - source venv/bin/activate
+      - python setup.py sdist bdist_wheel
+      - twine check dist/*
+    artifacts:
+      paths:
+        - dist/
+      expire_in: 1 week
+
+  # Deploy to environment
+  deploy:staging:
+    stage: deploy
+    image: python:${PYTHON_VERSION}-slim
+    dependencies:
+      - build:package
+    environment:
+      name: staging
+      url: https://staging.example.com
+    script:
+      - source venv/bin/activate
+      - pip install dist/*.whl
+      - python scripts/deploy.py --environment staging
+    only:
+      - develop
+
+# ==============================================================================
+# JENKINS PIPELINE
+# ==============================================================================
+
+# Jenkinsfile
+jenkins-pipeline: |
+  pipeline {
+      agent any
+      
+      environment {
+          PYTHON_VERSION = '3.10'
+          VENV_DIR = "${WORKSPACE}/venv"
+          PATH = "${VENV_DIR}/bin:${PATH}"
+      }
+      
+      stages {
+          stage('Setup Environment') {
+              steps {
+                  sh '''
+                      python${PYTHON_VERSION} -m venv ${VENV_DIR}
+                      . ${VENV_DIR}/bin/activate
+                      pip install --upgrade pip setuptools wheel
+                      pip install -r requirements.txt
+                  '''
+              }
+          }
+          
+          stage('Code Quality') {
+              parallel {
+                  stage('Linting') {
+                      steps {
+                          sh '''
+                              . ${VENV_DIR}/bin/activate
+                              flake8 .
+                          '''
+                      }
+                  }
+                  stage('Type Checking') {
+                      steps {
+                          sh '''
+                              . ${VENV_DIR}/bin/activate
+                              mypy .
+                          '''
+                      }
+                  }
+              }
+          }
+          
+          stage('Test') {
+              steps {
+                  sh '''
+                      . ${VENV_DIR}/bin/activate
+                      pytest tests/ --junitxml=test-results.xml
+                  '''
+              }
+              post {
+                  always {
+                      junit 'test-results.xml'
+                  }
+              }
+          }
+          
+          stage('Build') {
+              steps {
+                  sh '''
+                      . ${VENV_DIR}/bin/activate
+                      python setup.py sdist bdist_wheel
+                  '''
+              }
+          }
+          
+          stage('Deploy') {
+              when {
+                  branch 'main'
+              }
+              steps {
+                  sh '''
+                      . ${VENV_DIR}/bin/activate
+                      python scripts/deploy.py
+                  '''
+              }
+          }
+      }
+      
+      post {
+          always {
+              cleanWs()
+          }
+      }
+  }
