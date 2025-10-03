@@ -1,13 +1,12 @@
 # logs_exponents_game.py
-# -----------------------------------------------------------------------------
 # Title: Logs & Exponents — Interactive Mastery Lab (Game + Tutor)
-# Author: Cazzy Aporbo, MS
-# Started: December, 2024
+# Author: Cazzy Aporbo
+# Started: December, 2024 Tested October 2025
 # Intent: Teach logarithms and exponentials to high‑schoolers and refresh
 #         undergrads/experts through an interactive terminal game that blends
 #         rules, intuition, proofs, and real‑world modeling. Multiple ways to
 #         solve, careful line‑by‑line narration, and expert sidebars.
-# -----------------------------------------------------------------------------
+
 
 from __future__ import annotations  # allows forward references in type hints
 
@@ -18,9 +17,8 @@ import textwrap  # to wrap long lines in the console
 from dataclasses import dataclass
 from typing import Callable, List, Optional, Tuple
 
-# -----------------------------------------------------------------------------
+
 # Console helpers — readable output that looks like a teaching transcript
-# -----------------------------------------------------------------------------
 
 def block(title: str) -> None:
     """Print a visual section divider so each idea stands on its own."""
@@ -45,10 +43,8 @@ def safe_input(prompt: str, default: Optional[str] = None) -> Optional[str]:
     except (EOFError, OSError):
         return default
 
-# -----------------------------------------------------------------------------
 # Knowledge cards — everything from the brief.
 # Each rule prints: concept, meaning, formula, when to use, and a demo.
-# -----------------------------------------------------------------------------
 
 @dataclass
 class Card:
@@ -244,8 +240,6 @@ def card_graph_logarithm() -> Card:
     )
 
 # Expert sidebars — deeper notes for college/grad refreshers
-# -----------------------------------------------------------------------------
-
 def sidebar_expert_notes() -> None:
     block("Expert Notes — numerical stability and identities you actually use")
     # log1p & expm1 preserve accuracy near zero by avoiding catastrophic cancellation.
@@ -260,10 +254,7 @@ def sidebar_expert_notes() -> None:
     say("Log‑sum‑exp keeps numbers in range when a,b are large — common in ML.")
     print("log‑sum‑exp(1000,1001) ->", lse)
 
-# -----------------------------------------------------------------------------
 # Tutor modes — REVIEW (non‑interactive), FLASHCARDS, QUIZ, and MODEL LABS
-# -----------------------------------------------------------------------------
-
 CARDS: List[Card] = [
     card_logarithm_definition(),
     card_exponential_form(),
@@ -313,8 +304,6 @@ def mode_flashcards() -> None:
 
 
 # Question generators for the quiz — multiple approaches accepted
-# -----------------------------------------------------------------------------
-
 def q_change_of_base() -> Tuple[str, float]:
     b = random.choice([2, 3, 5, 10])
     i = random.choice([2, 3, 4, 5])
@@ -369,10 +358,7 @@ def mode_quiz() -> None:
                 print("Not a number. Expected:", ans)
     print(f"\nScore: {score}/{len(QUESTIONS)}")
 
-# -----------------------------------------------------------------------------
 # Modeling labs — compound growth, half‑life decay, and solving for time
-# -----------------------------------------------------------------------------
-
 def lab_compound_growth(P: float = 1000.0, r: float = 0.05, n: int = 12, t: float = 3.0) -> None:
     """Compound interest A = P*(1+r/n)^(n*t). Show log method to solve for t."""
     block("LAB: Compound Growth — from formula to log‑solved time")
@@ -397,10 +383,7 @@ def lab_half_life(N0: float = 100.0, half_life: float = 5.0, t: float = 12.0) ->
     t_to_M = half_life * math.log(M / N0, 0.5)
     print("t to reach N0/8 ->", t_to_M)
 
-# -----------------------------------------------------------------------------
 # Menu — includes non‑interactive fallback to REVIEW for CI/sandboxes
-# -----------------------------------------------------------------------------
-
 def main() -> int:
     block("Logs & Exponents — Interactive Mastery Lab")
     say("Pick a mode. If input is blocked, we'll auto‑run REVIEW.")
