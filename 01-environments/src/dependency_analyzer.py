@@ -1,8 +1,6 @@
 """
 Dependency Analyzer - Analyze and visualize package dependencies
 
-Author: Cazzy Aporbo, MS
-Created: January 2025
 
 I built this after spending hours trying to figure out why removing one
 package broke three others. Now I can visualize the dependency tree and
@@ -31,7 +29,6 @@ class Package:
     """
     Represents a Python package with its dependencies.
     
-    Author: Cazzy Aporbo, MS
     """
     name: str
     version: str
