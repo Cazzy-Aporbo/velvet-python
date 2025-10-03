@@ -56,7 +56,6 @@ class ConfigLoader:
     - Pipfile / Pipfile.lock (pipenv)
     - poetry.lock (poetry)
     
-    Author: Cazzy Aporbo, MS
     """
     
     # Standard config file names to look for
