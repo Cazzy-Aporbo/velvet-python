@@ -1,7 +1,7 @@
 """
 Environment Tools Benchmarking
 
-Author: Cazzy Aporbo, MS
+Author: Cazzy Aporbo 
 Created: January 2025
 
 I benchmark everything because "fast" is subjective. This module tests
@@ -32,8 +32,6 @@ console = Console()
 class BenchmarkResult:
     """
     Stores the result of a benchmark run.
-    
-    Author: Cazzy Aporbo, MS
     """
     tool: str
     operation: str
@@ -57,7 +55,6 @@ class EnvironmentBenchmark:
     I run these benchmarks periodically to track performance changes
     and validate my tool choices. Real numbers beat opinions.
     
-    Author: Cazzy Aporbo, MS
     """
     
     TOOLS = ['venv', 'virtualenv', 'pipenv', 'poetry', 'conda', 'uv']
