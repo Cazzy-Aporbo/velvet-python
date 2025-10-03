@@ -66,7 +66,7 @@
 
 I began this project after realizing most Python resources fall into two extremes: oversimplified tutorials that don't scale, or production code too complex for learning. This repository bridges that gap with real, working code that demonstrates exactly how concepts perform in practice.
 
-I use this space to measure learn from previous projects, andd to create interactive visualizations that make complex concepts intuitive. When I claim asyncio handles 10,000 connections efficiently, I prove it with benchmarks you can reproduce.
+I use this space to improve upon previous projects, and to create interactive visualizations that make complex concepts intuitive. When I claim asyncio handles 10,000 connections efficiently, I prove it with benchmarks you can reproduce.
 
 </div>
 
