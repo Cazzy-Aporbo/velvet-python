@@ -32,7 +32,6 @@ class ConfigFile:
     """
     Represents a configuration file.
     
-    Author: Cazzy Aporbo, MS
     """
     path: Path
     type: str  # 'toml', 'yaml', 'json', 'ini', 'env', 'requirements'
