@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Architecture of Tomorrow's Medicine | Cazandra Aporbo</title>
+    
+    <!-- Advanced Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Revolutionary Color Palette - Aurora Medicine */
+            --cosmos-black: #0a0e17;
+            --deep-void: #141824;
+            --aurora-cyan: #00ffd5;
+            --plasma-violet: #9945ff;
+            --neural-pink: #ff006e;
+            --quantum-blue: #0096ff;
+            --wisdom-gold: #ffb700;
+            --life-green: #00ff88;
+            --ethereal-white: #f0f4ff;
+            --mist-gray: #8892b0;
+            
+            /* Semantic Gradients */
+            --gradient-aurora: linear-gradient(135deg, #00ffd5 0%, #9945ff 50%, #ff006e 100%);
+            --gradient-neural: linear-gradient(90deg, #0096ff 0%, #00ffd5 50%, #00ff88 100%);
+            --gradient-wisdom: linear-gradient(135deg, #ffb700 0%, #ff006e 50%, #9945ff 100%);
+            --gradient-cosmos: radial-gradient(ellipse at top, #141824 0%, #0a0e17 100%);
+            
+            /* Typography Scale */
+            --font-display: 'Gloock', serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--cosmos-black);
+            color: var(--ethereal-white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--aurora-cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(0,255,213,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Floating Navigation Orbs */
+        nav {
+            position: fixed;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .nav-orb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(20, 24, 36, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 213, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-orb::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, var(--aurora-cyan) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            border-radius: 50%;
+        }
+
+        .nav-orb:hover::before {
+            width: 100px;
+            height: 100px;
+        }
+
+        .nav-orb:hover {
+            transform: scale(1.2);
+            border-color: var(--aurora-cyan);
+            box-shadow: 0 0 30px rgba(0, 255, 213, 0.5);
+        }
+
+        .nav-orb span {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--aurora-cyan);
+            font-weight: 600;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* Hero Universe */
+        .hero-universe {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--gradient-cosmos);
+        }
+
+        /* Particle Field */
+        .particle-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--aurora-cyan);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFade 10s infinite;
+        }
+
+        @keyframes particleFade {
+            0%, 100% { opacity: 0; transform: translateY(0); }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100px); }
+        }
+
+        /* Neural Network Background */
+        .neural-network {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--plasma-violet);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--plasma-violet);
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--plasma-violet), transparent);
+            transform-origin: left center;
+            opacity: 0;
+            animation: pulseConnection 4s infinite;
+        }
+
+        @keyframes pulseConnection {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 60px;
+            background: rgba(10, 14, 23, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 213, 0.1);
+            border-radius: 30px;
+            max-width: 900px;
+            animation: heroFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 1.1;
+            margin-bottom: 30px;
+            background: var(--gradient-aurora);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmerText 8s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(0, 255, 213, 0.5));
+        }
+
+        @keyframes shimmerText {
+            0%, 100% { filter: hue-rotate(0deg) drop-shadow(0 0 30px rgba(0, 255, 213, 0.5)); }
+            50% { filter: hue-rotate(30deg) drop-shadow(0 0 50px rgba(153, 69, 255, 0.8)); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--mist-gray);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        .hero-author {
+            font-size: 1.1rem;
+            color: var(--aurora-cyan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .hero-quote {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            line-height: 1.6;
+            color: var(--ethereal-white);
+            margin: 40px auto;
+            padding: 30px;
+            border-left: 3px solid var(--plasma-violet);
+            max-width: 700px;
+            font-style: italic;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .hero-quote::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 100px;
+            color: var(--plasma-violet);
+            opacity: 0.2;
+            font-family: var(--font-display);
+        }
+
+        /* Quantum Buttons */
+        .quantum-btn {
+            display: inline-block;
+            padding: 18px 40px;
+            margin: 10px;
+            background: linear-gradient(135deg, rgba(0,255,213,0.1) 0%, rgba(153,69,255,0.1) 100%);
+            border: 2px solid var(--aurora-cyan);
+            color: var(--aurora-cyan);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quantum-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--gradient-aurora);
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .quantum-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 255, 213, 0.4);
+            color: var(--cosmos-black);
+        }
+
+        .quantum-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            min-height: 100vh;
+            padding: 100px 40px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            text-align: center;
+            margin-bottom: 80px;
+            background: var(--gradient-neural);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            letter-spacing: -1px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--gradient-aurora);
+            border-radius: 2px;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { width: 100px; opacity: 1; }
+            50% { width: 200px; opacity: 0.6; }
+        }
+
+        /* Holographic Cards */
+        .holo-card {
+            background: rgba(20, 24, 36, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 213, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 1200px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .holo-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(0, 255, 213, 0.1) 50%,
+                transparent 70%
+            );
+            animation: holoSweep 6s infinite;
+        }
+
+        @keyframes holoSweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .holo-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--aurora-cyan);
+            box-shadow: 
+                0 20px 40px rgba(0, 255, 213, 0.2),
+                0 0 60px rgba(153, 69, 255, 0.1);
+        }
+
+        /* Framework Visualization */
+        .framework-viz {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .framework-node {
+            background: rgba(10, 14, 23, 0.8);
+            border: 2px solid var(--plasma-violet);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .framework-node::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-wisdom);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .framework-node:hover::before {
+            opacity: 0.1;
+        }
+
+        .framework-node:hover {
+            transform: scale(1.05) rotateY(5deg);
+            border-color: var(--wisdom-gold);
+            box-shadow: 0 10px 30px rgba(255, 183, 0, 0.3);
+        }
+
+        .framework-letter {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            background: var(--gradient-aurora);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            display: block;
+            animation: letterFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes letterFloat {
+            0%, 100% { transform: translateY(0) rotateZ(0deg); }
+            50% { transform: translateY(-10px) rotateZ(5deg); }
+        }
+
+        .framework-title {
+            font-size: 1.5rem;
+            color: var(--aurora-cyan);
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .framework-description {
+            color: var(--mist-gray);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* Quote Blocks */
+        .wisdom-quote {
+            background: linear-gradient(135deg, rgba(153,69,255,0.05) 0%, rgba(0,255,213,0.05) 100%);
+            border-left: 4px solid var(--plasma-violet);
+            border-radius: 10px;
+            padding: 30px 40px;
+            margin: 40px 0;
+            position: relative;
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: var(--ethereal-white);
+            font-style: italic;
+            overflow: hidden;
+        }
+
+        .wisdom-quote::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-aurora);
+            animation: quoteScan 3s linear infinite;
+        }
+
+        @keyframes quoteScan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .wisdom-quote footer {
+            margin-top: 20px;
+            text-align: right;
+            font-style: normal;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--aurora-cyan);
+            letter-spacing: 1px;
+        }
+
+        /* Data Visualization */
+        .data-viz {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .metric-orb {
+            background: radial-gradient(circle at center, rgba(0,255,213,0.1) 0%, transparent 70%);
+            border: 2px solid var(--aurora-cyan);
+            border-radius: 50%;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .metric-orb:hover {
+            transform: scale(1.1);
+            background: radial-gradient(circle at center, rgba(0,255,213,0.2) 0%, transparent 70%);
+            box-shadow: 0 0 40px rgba(0,255,213,0.5);
+        }
+
+        .metric-value {
+            font-family: var(--font-code);
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: var(--gradient-aurora);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            animation: metricPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes metricPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--mist-gray);
+        }
+
+        /* Timeline */
+        .timeline-container {
+            position: relative;
+            padding: 80px 0;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, var(--plasma-violet), transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-node {
+            position: relative;
+            margin: 60px 0;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline-node.visible {
+            opacity: 1;
+        }
+
+        .timeline-node:nth-child(odd) {
+            transform: translateX(-30px);
+        }
+
+        .timeline-node:nth-child(even) {
+            transform: translateX(30px);
+            text-align: right;
+        }
+
+        .timeline-node.visible:nth-child(odd) {
+            transform: translateX(0);
+        }
+
+        .timeline-node.visible:nth-child(even) {
+            transform: translateX(0);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 30px;
+            width: 20px;
+            height: 20px;
+            background: var(--cosmos-black);
+            border: 3px solid var(--aurora-cyan);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            transition: all 0.4s ease;
+        }
+
+        .timeline-node:hover .timeline-dot {
+            width: 30px;
+            height: 30px;
+            border-color: var(--plasma-violet);
+            box-shadow: 0 0 30px var(--plasma-violet);
+        }
+
+        .timeline-content {
+            background: rgba(20, 24, 36, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 213, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 45%;
+            transition: all 0.4s ease;
+        }
+
+        .timeline-node:nth-child(odd) .timeline-content {
+            margin-right: auto;
+            margin-left: 0;
+        }
+
+        .timeline-node:nth-child(even) .timeline-content {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.02);
+            border-color: var(--aurora-cyan);
+            box-shadow: 0 10px 40px rgba(0, 255, 213, 0.2);
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            color: var(--aurora-cyan);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .timeline-description {
+            color: var(--mist-gray);
+            line-height: 1.8;
+        }
+
+        /* Interactive Table */
+        .data-table {
+            width: 100%;
+            background: rgba(20, 24, 36, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 213, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 40px 0;
+        }
+
+        .data-table thead {
+            background: linear-gradient(135deg, rgba(0,255,213,0.1) 0%, rgba(153,69,255,0.1) 100%);
+        }
+
+        .data-table th {
+            padding: 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--aurora-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            border-bottom: 2px solid rgba(0, 255, 213, 0.2);
+        }
+
+        .data-table td {
+            padding: 20px;
+            color: var(--ethereal-white);
+            border-bottom: 1px solid rgba(0, 255, 213, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 255, 213, 0.05);
+            transform: translateX(5px);
+        }
+
+        .data-table tbody tr:hover td {
+            color: var(--aurora-cyan);
+        }
+
+        /* Citation Links */
+        .citation-link {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(153, 69, 255, 0.2);
+            color: var(--plasma-violet);
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 4px;
+        }
+
+        .citation-link:hover {
+            background: var(--plasma-violet);
+            color: var(--ethereal-white);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(153, 69, 255, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(180deg, transparent, rgba(10, 14, 23, 0.9));
+            color: var(--mist-gray);
+            text-align: center;
+            padding: 80px 20px 40px;
+            margin-top: 100px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-aurora);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                right: 20px;
+            }
+            
+            .nav-orb {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .timeline-content {
+                max-width: 80%;
+            }
+            
+            .timeline-node:nth-child(even) {
+                text-align: left;
+            }
+            
+            .timeline-line {
+                left: 30px;
+            }
+            
+            .timeline-dot {
+                left: 30px;
+            }
+            
+            .framework-viz {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--cosmos-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-helix {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            animation: helixRotate 2s linear infinite;
+        }
+
+        @keyframes helixRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .helix-strand {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--aurora-cyan);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .helix-strand:nth-child(2) {
+            transform: rotateY(60deg);
+            border-color: var(--plasma-violet);
+        }
+
+        .helix-strand:nth-child(3) {
+            transform: rotateY(120deg);
+            border-color: var(--neural-pink);
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loader">
+        <div class="loading-helix">
+            <div class="helix-strand"></div>
+            <div class="helix-strand"></div>
+            <div class="helix-strand"></div>
+        </div>
+    </div>
+
+    <!-- Floating Navigation -->
+    <nav>
+        <a href="#hero" class="nav-orb"><span>ORIGIN</span></a>
+        <a href="#frameworks" class="nav-orb"><span>ROAD</span></a>
+        <a href="#fairness" class="nav-orb"><span>ADAPT</span></a>
+        <a href="#implementation" class="nav-orb"><span>BUILD</span></a>
+        <a href="#ethics" class="nav-orb"><span>TRUTH</span></a>
+        <a href="#vision" class="nav-orb"><span>FUTURE</span></a>
+    </nav>
+
+    <!-- Hero Universe -->
+    <section class="hero-universe" id="hero">
+        <div class="particle-field" id="particleField"></div>
+        <div class="neural-network" id="neuralNetwork"></div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title">The Architecture of Tomorrow's Medicine</h1>
+            <p class="hero-subtitle">Where Human Wisdom Meets Machine Precision</p>
+            <p class="hero-author">Cazandra Aporbo, MS</p>
+            
+            <div class="hero-quote">
+                The paradox is unavoidable: the closer AI gets to autonomy, 
+                the more indispensable human judgment becomes.
+            </div>
+            
+            <a href="#frameworks" class="quantum-btn">Begin Journey</a>
+            <a href="#vision" class="quantum-btn">See Future</a>
+        </div>
+    </section>
+
+    <!-- Frameworks Section -->
+    <section class="content-section" id="frameworks">
+        <h2 class="section-title">The R.O.A.D. Framework</h2>
+        
+        <div class="holo-card">
+            <div class="wisdom-quote">
+                "Requirements force us to name what is at stake. Operationalizing data forces us to confront bias not as a nuisance variable but as a mirror of our society. Development makes fairness, drift, and calibration inseparable from accuracy. Deployment reminds us that intelligence without humility becomes surveillance."
+                <footer>— Building Tomorrow's Systems</footer>
+            </div>
+            
+            <div class="framework-viz">
+                <div class="framework-node">
+                    <span class="framework-letter">R</span>
+                    <h3 class="framework-title">Requirements</h3>
+                    <p class="framework-description">
+                        Define the moral weight of decisions. Name accountability before algorithms.
+                    </p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">O</span>
+                    <h3 class="framework-title">Operationalize</h3>
+                    <p class="framework-description">
+                        Transform fragmented histories into structured truth. Face bias as inheritance.
+                    </p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">A</span>
+                    <h3 class="framework-title">Algorithm</h3>
+                    <p class="framework-description">
+                        Build fairness into DNA, not patches. Make drift visible, calibration continuous.
+                    </p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">D</span>
+                    <h3 class="framework-title">Deployment</h3>
+                    <p class="framework-description">
+                        Silent runs first, randomized reveal second. Learning never stops.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--aurora-cyan); margin-bottom: 30px; font-size: 2rem;">The LLM Truth Protocol</h3>
+            
+            <div class="wisdom-quote">
+                "If a model couldn't show me a DOI, PubMed link, or a ClinicalTrials.gov number for an RCT, I treated the claim as unproven. Confident words without matching evidence got marked down; cautious language with clear sources scored higher."
+                <footer>— Evaluating Machine Claims</footer>
+            </div>
+            
+            <div class="data-viz">
+                <div class="metric-orb">
+                    <span class="metric-value">DOI</span>
+                    <span class="metric-label">Primary Source</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">RCT</span>
+                    <span class="metric-label">Gold Standard</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">NCT</span>
+                    <span class="metric-label">Trial Registry</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">P→S→P</span>
+                    <span class="metric-label">Patient→Surrogate→Process</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fairness Section -->
+    <section class="content-section" id="fairness">
+        <h2 class="section-title">Contextual Fairness</h2>
+        
+        <div class="holo-card">
+            <div class="wisdom-quote">
+                "Bias is not an algorithmic crime; it's a social inheritance. Fairness is not a checkbox; it's a practice we rehearse until the system learns empathy."
+                <footer>— The Mirror of Society</footer>
+            </div>
+            
+            <h3 style="color: var(--plasma-violet); margin: 40px 0; font-size: 2rem; text-align: center;">The ADAPT Framework</h3>
+            
+            <div class="framework-viz">
+                <div class="framework-node">
+                    <span class="framework-letter">A</span>
+                    <h3 class="framework-title">Awareness</h3>
+                    <p class="framework-description">
+                        Recognize bias as inherited from healthcare systems, not algorithmic flaws.
+                    </p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">D</span>
+                    <h3 class="framework-title">Diversify</h3>
+                    <p class="framework-description">
+                        Ensure data represents all voices. Missingness is a social signal.
+                    </p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">A</span>
+                    <h3 class="framework-title">Audit</h3>
+                    <p class="framework-description">
+                        Continuous calibration checks across protected classes.
+                    </p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">P</span>
+                    <h3 class="framework-title">Publish</h3>
+                    <p class="framework-description">
+                        Make bias visible. Report confidence intervals for fairness gaps.
+                    </p>
+                </div>
+                
+                <div class="framework-node" style="grid-column: span 2;">
+                    <span class="framework-letter">T</span>
+                    <h3 class="framework-title">Transform</h3>
+                    <p class="framework-description">
+                        Reshape systems that produce data. Build accountability into workflows.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--life-green); margin-bottom: 30px; font-size: 2rem;">Living Dashboard</h3>
+            
+            <div class="data-viz">
+                <div class="metric-orb">
+                    <span class="metric-value">0.92</span>
+                    <span class="metric-label">Calibration</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">0.05</span>
+                    <span class="metric-label">Disparity Gap</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">98%</span>
+                    <span class="metric-label">Coverage</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">0.88</span>
+                    <span class="metric-label">Fairness Index</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Section -->
+    <section class="content-section" id="implementation">
+        <h2 class="section-title">Strategic Implementation</h2>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--quantum-blue); margin-bottom: 30px; font-size: 2rem;">Surgical Autonomy Paradox</h3>
+            
+            <div class="wisdom-quote">
+                "Machines can learn gestures; they can suture with remarkable precision. But they cannot integrate the lived complexity of a patient. They cannot weigh how comorbidities, fatigue, or subtle physiological cues change decisions. They cannot hold the ethical trade-offs of risk and benefit."
+                <footer>— The Operating Room Frontier</footer>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title">Level 1: da Vinci</h4>
+                        <p class="timeline-description">Complete human control. Steadying the surgeon's hand.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title">Level 2: GRACE</h4>
+                        <p class="timeline-description">Camera optimization. 20% reduction in procedure time.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title">Level 3: STAR</h4>
+                        <p class="timeline-description">Outperformed surgeons in suturing. The accountability question emerges.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-node">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4 class="timeline-title">The Boundary</h4>
+                        <p class="timeline-description">"Autonomy must stop at irreversible action, where accountability belongs to humans."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--wisdom-gold); margin-bottom: 30px; font-size: 2rem;">Beyond Accuracy</h3>
+            
+            <div class="wisdom-quote">
+                "Accuracy in isolation leaves you blind to the parts of the story that actually matter for patient safety and ethics. A model can reach 95% accuracy by always predicting 'no sepsis' and miss every single patient who has the condition."
+                <footer>— The Metrics That Matter</footer>
+            </div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Context</th>
+                        <th>Metric Priority</th>
+                        <th>Why</th>
+                        <th>Trade-off</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sepsis Detection</td>
+                        <td>Recall (Sensitivity)</td>
+                        <td>Missing a case = potential death</td>
+                        <td>Accept false positives</td>
+                    </tr>
+                    <tr>
+                        <td>Mental Health Triage</td>
+                        <td>Precision</td>
+                        <td>False positives overwhelm resources</td>
+                        <td>Balance with recall</td>
+                    </tr>
+                    <tr>
+                        <td>Readmission</td>
+                        <td>F1 Score</td>
+                        <td>Both errors have moderate cost</td>
+                        <td>Seek balance</td>
+                    </tr>
+                    <tr>
+                        <td>Cancer Screening</td>
+                        <td>Calibration + AUC</td>
+                        <td>Trust in probabilities critical</td>
+                        <td>Time to diagnosis</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--life-green); margin-bottom: 30px; font-size: 2rem;">Epidemic Sensitivity</h3>
+            
+            <div class="wisdom-quote">
+                "What fascinates me most about epidemics is not that they spread, but how little it takes to alter their trajectory. A one-point change in isolation compliance, a slightly shorter latent period, or a modest increase in R₀ can redraw the entire future of a community."
+                <footer>— Parameter Space</footer>
+            </div>
+            
+            <div class="data-viz">
+                <div class="metric-orb">
+                    <span class="metric-value">R₀</span>
+                    <span class="metric-label">Dictates Peak</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">Isolation</span>
+                    <span class="metric-label">Flattens Curve</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">Deaths</span>
+                    <span class="metric-label">Steadier Anchor</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">Society</span>
+                    <span class="metric-label">Not Noise, Signal</span>
+                </div>
+            </div>
+            
+            <div class="wisdom-quote">
+                "Two neighborhoods can share a virus and live two different pandemics. Not because the pathogen rewrote its genome at the county line, but because people's choices are pre-scripted by constraints."
+                <footer>— The Social Reality</footer>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ethics Section -->
+    <section class="content-section" id="ethics">
+        <h2 class="section-title">Ethical Architecture</h2>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--neural-pink); margin-bottom: 30px; font-size: 2rem;">Core Principles</h3>
+            
+            <div class="framework-viz">
+                <div class="framework-node">
+                    <span class="framework-letter">∞</span>
+                    <h3 class="framework-title">Interdependent Ownership</h3>
+                    <p class="framework-description">Models belong to populations whose data trained them.</p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">⟳</span>
+                    <h3 class="framework-title">Ethics of Ephemerality</h3>
+                    <p class="framework-description">Right to be forgotten equals right to be remembered.</p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">∿</span>
+                    <h3 class="framework-title">Intergenerational Ethics</h3>
+                    <p class="framework-description">Future patients inherit today's biases.</p>
+                </div>
+                
+                <div class="framework-node">
+                    <span class="framework-letter">◈</span>
+                    <h3 class="framework-title">Transparency as Compassion</h3>
+                    <p class="framework-description">Models that show limits respect humans.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--aurora-cyan); margin-bottom: 30px; font-size: 2rem;">The $40 Problem</h3>
+            
+            <div class="wisdom-quote">
+                "If this were a new drug, one case would not move policy. The same standard should apply to AI. A paid add-on turns risk prediction into a benefit for people who can afford it. If the tool is good enough to help, it belongs in the base pathway. If it is not ready for the base pathway, it is not ready to sell."
+                <footer>— Clinical Medicine Ethics</footer>
+            </div>
+        </div>
+        
+        <div class="holo-card">
+            <h3 style="color: var(--plasma-violet); margin-bottom: 30px; font-size: 2rem;">What NOT to Do</h3>
+            
+            <div style="display: grid; gap: 20px; margin-top: 30px;">
+                <div style="padding: 20px; background: rgba(255, 0, 110, 0.1); border-left: 4px solid var(--neural-pink); border-radius: 10px;">
+                    <strong>Never:</strong> Deploy black-box models without calibrated probabilities
+                </div>
+                <div style="padding: 20px; background: rgba(255, 0, 110, 0.1); border-left: 4px solid var(--neural-pink); border-radius: 10px;">
+                    <strong>Never:</strong> Scale algorithms trained on single-site retrospective data
+                </div>
+                <div style="padding: 20px; background: rgba(255, 0, 110, 0.1); border-left: 4px solid var(--neural-pink); border-radius: 10px;">
+                    <strong>Never:</strong> Trust LLM claims without primary source verification
+                </div>
+                <div style="padding: 20px; background: rgba(255, 0, 110, 0.1); border-left: 4px solid var(--neural-pink); border-radius: 10px;">
+                    <strong>Never:</strong> Allow autonomy for irreversible surgical decisions
+                </div>
+                <div style="padding: 20px; background: rgba(255, 0, 110, 0.1); border-left: 4px solid var(--neural-pink); border-radius: 10px;">
+                    <strong>Never:</strong> Rely on accuracy alone without considering recall/precision trade-offs
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="content-section" id="vision">
+        <h2 class="section-title">The Learning Health System</h2>
+        
+        <div class="holo-card">
+            <div class="wisdom-quote">
+                "Our learning health systems of the future will not be fast or flawless. They will be slow enough to listen, humble enough to adapt, and transparent enough to be held accountable. They will turn evaluation into a rhythm of care."
+                <footer>— The Future We Build</footer>
+            </div>
+            
+            <div class="data-viz" style="margin-top: 40px;">
+                <div class="metric-orb">
+                    <span class="metric-value">∞</span>
+                    <span class="metric-label">Continuous Learning</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">↔</span>
+                    <span class="metric-label">Bidirectional Wisdom</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">◉</span>
+                    <span class="metric-label">Human Center</span>
+                </div>
+                <div class="metric-orb">
+                    <span class="metric-value">✧</span>
+                    <span class="metric-label">Amplified Care</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="holo-card" style="background: var(--gradient-aurora); color: var(--cosmos-black);">
+            <h3 style="color: var(--cosmos-black); margin-bottom: 30px; font-size: 2.5rem; text-align: center;">The Path Forward</h3>
+            
+            <div style="font-size: 1.3rem; line-height: 2; text-align: center; font-weight: 500;">
+                "AI will not make clinicians obsolete.<br>
+                It will make their presence more vital,<br>
+                their decisions more consequential,<br>
+                and their responsibility more visible.<br><br>
+                
+                That is the future worth striving for."
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Cazandra Aporbo, MS</p>
+        <p>Building Ethical AI for Equitable Healthcare</p>
+        <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
+            "Fairness is not an algorithmic achievement. It's a moral practice,<br>
+            one that begins every time we ask who our data has forgotten."
+        </p>
+    </footer>
+
+    <script>
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX + 'px';
+                cursorFollower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+
+        // Particle Field Generation
+        function createParticleField() {
+            const field = document.getElementById('particleField');
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 20) + 's';
+                field.appendChild(particle);
+            }
+        }
+
+        // Neural Network Generation
+        function createNeuralNetwork() {
+            const network = document.getElementById('neuralNetwork');
+            const nodes = [];
+            
+            // Create nodes
+            for (let i = 0; i < 20; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                node.style.left = x + '%';
+                node.style.top = y + '%';
+                network.appendChild(node);
+                nodes.push({element: node, x, y});
+            }
+            
+            // Create connections
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    if (Math.random() > 0.7) {
+                        const connection = document.createElement('div');
+                        connection.className = 'neural-connection';
+                        
+                        const dx = nodes[j].x - nodes[i].x;
+                        const dy = nodes[j].y - nodes[i].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                        
+                        connection.style.width = distance + '%';
+                        connection.style.left = nodes[i].x + '%';
+                        connection.style.top = nodes[i].y + '%';
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        connection.style.animationDelay = Math.random() * 4 + 's';
+                        
+                        network.appendChild(connection);
+                    }
+                }
+            }
+        }
+
+        // Loading Screen
+        window.addEventListener('load', () => {
+            createParticleField();
+            createNeuralNetwork();
+            
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Section Animation on Scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.content-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Timeline Animation
+        const timelineObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 200);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.timeline-node').forEach(node => {
+            timelineObserver.observe(node);
+        });
+
+        // Dynamic Metric Animation
+        const metricObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.animated) {
+                    const value = entry.target.querySelector('.metric-value');
+                    if (value && !isNaN(parseFloat(value.textContent))) {
+                        const target = parseFloat(value.textContent);
+                        const duration = 2000;
+                        const start = performance.now();
+                        
+                        const animate = (now) => {
+                            const elapsed = now - start;
+                            const progress = Math.min(elapsed / duration, 1);
+                            const current = progress * target;
+                            
+                            if (value.textContent.includes('%')) {
+                                value.textContent = Math.floor(current) + '%';
+                            } else if (value.textContent.includes('.')) {
+                                value.textContent = current.toFixed(2);
+                            } else {
+                                value.textContent = Math.floor(current);
+                            }
+                            
+                            if (progress < 1) {
+                                requestAnimationFrame(animate);
+                            }
+                        };
+                        
+                        requestAnimationFrame(animate);
+                        entry.target.dataset.animated = 'true';
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.metric-orb').forEach(orb => {
+            metricObserver.observe(orb);
+        });
+
+        // Hover Effects for Framework Nodes
+        document.querySelectorAll('.framework-node').forEach(node => {
+            node.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) rotateY(5deg)';
+            });
+            
+            node.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotateY(0deg)';
+            });
+        });
+
+        // Active Navigation Highlighting
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.content-section, .hero-universe');
+            const scrollY = window.scrollY + 200;
+            
+            sections.forEach(section => {
+                const sectionHeight = section.offsetHeight;
+                const sectionTop = section.offsetTop;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+                    document.querySelectorAll('.nav-orb').forEach(orb => {
+                        orb.style.borderColor = 'rgba(0, 255, 213, 0.2)';
+                    });
+                    
+                    const activeOrb = document.querySelector(`.nav-orb[href="#${sectionId}"]`);
+                    if (activeOrb) {
+                        activeOrb.style.borderColor = 'var(--aurora-cyan)';
+                        activeOrb.style.boxShadow = '0 0 20px rgba(0, 255, 213, 0.5)';
+                    }
+                }
+            });
+        });
+
+        // Dynamic Background Gradient
+        let gradientAngle = 135;
+        setInterval(() => {
+            gradientAngle = (gradientAngle + 1) % 360;
+            document.documentElement.style.setProperty('--gradient-aurora', 
+                `linear-gradient(${gradientAngle}deg, #00ffd5 0%, #9945ff 50%, #ff006e 100%)`);
+        }, 100);
+    </script>
+</body>
+</html>
