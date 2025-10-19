@@ -15,7 +15,7 @@
 <img src="https://readme-typing-svg.demolab.com?font=Georgia&weight=500&size=22&duration=3000&pause=1000&color=8B7D8B&center=true&vCenter=true&multiline=true&width=800&height=80&lines=Every+pattern+tested+and+benchmarked;Interactive+visualizations+for+deep+understanding;Started+January+2025+as+my+learning+journey" alt="Typing Animation"/>
 
 </div
-   
+
 
 <!-- Advanced statistics cards with pastel ombre -->
 <div align="center">
@@ -884,6 +884,13 @@ flowchart LR
 <a href="https://github.com/Cazzy-Aporbo/velvet-python/fork">
 <img src="https://img.shields.io/badge/Fork-Contribute-F0E6FF?style=for-the-badge&labelColor=8B7D8B" />
 </a>
+
+<div align="center">
+
+### [View Data Science & Machine Learning Platform](https://htmlpreview.github.io/?https://github.com/Cazzy-Aporbo/PearlMind-ML-Journey/blob/main/ds-ml-guide.html)
+<sub>Interactive educational platform featuring comprehensive data science, machine learning theory, and advanced algorithm visualizations with real-time demonstrations</sub>
+
+</div>
 
 <br><br>
 
