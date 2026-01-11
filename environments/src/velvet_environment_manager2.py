@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Advanced Environment Management System for Velvet Python
-Author: Cazandra Aporbo
-Version: 3.0.0
+Advanced Environment Management System
 
-More comprehensive environment setup with automatic dependency resolution,
+A comprehensive environment setup with automatic dependency resolution,
 virtual environment management, and intelligent package installation.
 Handles conda, pip, poetry, and system-level dependencies.
+
 """
 
 import os
