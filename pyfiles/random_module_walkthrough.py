@@ -1,5 +1,5 @@
 # random_module_walkthrough.py
-# -----------------------------------------------------------------------------
+# 
 # Title: Python Random Module — From Beginner to Expert
 # Author: Cazandra Aporbo
 # Started: February 2023
@@ -9,7 +9,7 @@
 #         way, as though I'm walking you through it live.
 # Promise: I do my best at explaining randomness in Python
 #          the way I wish someone had explained it to me.
-# -----------------------------------------------------------------------------
+
 
 import random
 
@@ -18,9 +18,9 @@ def block(title: str) -> None:
     print(title)
     print("-" * 78)
 
-# -----------------------------------------------------------------------------
+# 
 # SECTION 1 — Core Randomness (seed, state, bits)
-# -----------------------------------------------------------------------------
+# 
 
 def lesson_random_core():
     block("1) Core Randomness: seed, state, and bits")
@@ -41,9 +41,9 @@ def lesson_random_core():
     # getrandbits(): generate raw bits
     print("8 random bits as integer:", random.getrandbits(8))
 
-# -----------------------------------------------------------------------------
+# 
 # SECTION 2 — Everyday Picks (randint, randrange, choice, choices, shuffle, sample)
-# -----------------------------------------------------------------------------
+# 
 
 def lesson_random_everyday():
     block("2) Everyday Picks: random integers and selections")
@@ -71,9 +71,9 @@ def lesson_random_everyday():
     letters = ['a','b','c','d','e']
     print("random.sample(letters,3) ->", random.sample(letters,3))
 
-# -----------------------------------------------------------------------------
+# 
 # SECTION 3 — Floats and Continuous Distributions
-# -----------------------------------------------------------------------------
+
 
 def lesson_random_floats():
     block("3) Continuous Randomness: floats and distributions")
@@ -87,9 +87,9 @@ def lesson_random_floats():
     # triangular(): skewed toward midpoint
     print("random.triangular(1,5,3) ->", random.triangular(1,5,3))
 
-# -----------------------------------------------------------------------------
+# 
 # SECTION 4 — Advanced Distributions (statistical modeling)
-# -----------------------------------------------------------------------------
+# 
 
 def lesson_random_distributions():
     block("4) Advanced Distributions: modeling with math")
@@ -104,9 +104,7 @@ def lesson_random_distributions():
     print("Pareto (alpha=2.5):", random.paretovariate(2.5))
     print("Weibull (alpha=2, beta=3):", random.weibullvariate(2,3))
 
-# -----------------------------------------------------------------------------
 # Master runner
-# -----------------------------------------------------------------------------
 
 def run_all_random_lessons():
     lesson_random_core()
