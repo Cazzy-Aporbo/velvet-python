@@ -49,9 +49,9 @@ from folium.plugins import MarkerCluster, MiniMap, Fullscreen, MeasureControl, D
 from branca.colormap import LinearColormap
 
 
-# -----------------------------------------------------------------------------
+# 
 # 0) Shared pastel ombré palette + small helpers
-# -----------------------------------------------------------------------------
+# 
 def ombre_pastel_palette_cazzy() -> Dict[str, str]:
     """
     My project palette (soft pastels). I keep hexes human-readable and on-brand.
@@ -89,9 +89,9 @@ def write_html_and_print_path_cazzy(the_map: folium.Map, filename: str) -> None:
     print(f"[saved] {filename}")
 
 
-# -----------------------------------------------------------------------------
+# 
 # 1) Beginner: a first, friendly map (center, zoom, tiles, labels)
-# -----------------------------------------------------------------------------
+# 
 def build_simple_intro_map_cazzy() -> None:
     """
     I start with the simplest mental model: a map is a canvas.
@@ -135,9 +135,9 @@ def build_simple_intro_map_cazzy() -> None:
     write_html_and_print_path_cazzy(map_canvas_intro_cazzy, "01_basics_pastel_map.html")
 
 
-# -----------------------------------------------------------------------------
+# 
 # 2) Beginner → Intermediate: markers, tooltips, popups, circles
-# -----------------------------------------------------------------------------
+# 
 def build_markers_and_popups_map_cazzy() -> None:
     """
     Now I layer points, tooltips, and popups. I also use Circle for numeric radius.
@@ -191,9 +191,9 @@ def build_markers_and_popups_map_cazzy() -> None:
     write_html_and_print_path_cazzy(map_canvas_markers_cazzy, "02_markers_popups_pastel_map.html")
 
 
-# -----------------------------------------------------------------------------
+# 
 # 3) Intermediate: choropleth with built-in Folium.Choropleth
-# -----------------------------------------------------------------------------
+# 
 def build_builtin_choropleth_map_cazzy(
     optional_geojson_path_cazzy: str = "",
     optional_csv_path_cazzy: str = ""
@@ -304,9 +304,9 @@ def build_builtin_choropleth_map_cazzy(
     write_html_and_print_path_cazzy(base_map_choro_cazzy, "03_choropleth_builtin_pastel_map.html")
 
 
-# -----------------------------------------------------------------------------
+# 
 # 4) Intermediate → Advanced: a custom choropleth with GeoJson + style_function
-# -----------------------------------------------------------------------------
+# 
 def build_custom_choropleth_map_cazzy() -> None:
     """
     Here I avoid pandas entirely and style polygons myself with a function.
@@ -386,9 +386,9 @@ def build_custom_choropleth_map_cazzy() -> None:
     write_html_and_print_path_cazzy(map_canvas_custom_cazzy, "04_choropleth_custom_pastel_map.html")
 
 
-# -----------------------------------------------------------------------------
+# 
 # 5) Advanced → Expert: layered controls, drawing tools, measurement, clustering
-# -----------------------------------------------------------------------------
+# 
 def build_advanced_controls_map_cazzy() -> None:
     """
     At this level I combine multiple interaction patterns:
@@ -450,9 +450,8 @@ def build_advanced_controls_map_cazzy() -> None:
     write_html_and_print_path_cazzy(complex_map_cazzy, "05_advanced_layers_controls_pastel_map.html")
 
 
-# -----------------------------------------------------------------------------
 # Main: I run each stage so you can open and compare the HTML outputs.
-# -----------------------------------------------------------------------------
+# 
 def main_cazzy():
     build_simple_intro_map_cazzy()
     build_markers_and_popups_map_cazzy()
