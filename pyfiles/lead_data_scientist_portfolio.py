@@ -14,9 +14,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report
 
-# -----------------------------
 # 1. Generate Synthetic Healthcare Data
-# -----------------------------
 fake = faker.Faker()
 num_patients = 500
 random.seed(42)
@@ -44,9 +42,7 @@ df.loc[df.sample(frac=0.02).index, "diagnosis"] = np.nan
 df.to_csv("synthetic_healthcare_raw.csv", index=False)
 print("Synthetic raw data generated: synthetic_healthcare_raw.csv")
 
-# -----------------------------
 # 2. Read Back and Clean
-# -----------------------------
 try:
     df = pd.read_csv("synthetic_healthcare_raw.csv")
     print("Dataset loaded successfully")
@@ -63,9 +59,7 @@ df["diagnosis"].fillna(df["diagnosis"].mode()[0], inplace=True)
 # Encode gender
 df["gender_encoded"] = df["gender"].map({"Male":0,"Female":1})
 
-# -----------------------------
 # 3. Exploratory Data Analysis
-# -----------------------------
 print("\n=== Summary Statistics ===")
 print(df.describe())
 
@@ -82,18 +76,14 @@ sns.heatmap(df[["age","bmi","blood_pressure","cholesterol","visits_per_year"]].c
 plt.title("Correlation Matrix")
 plt.show()
 
-# -----------------------------
 # 4. Feature Engineering
-# -----------------------------
 # Risk Score as combination of BMI, BP, Cholesterol
 df["risk_score"] = 0.3*df["bmi"] + 0.4*(df["blood_pressure"]/100) + 0.3*(df["cholesterol"]/200)
 
 # Binary classification: High Risk if risk_score > median
 df["high_risk"] = (df["risk_score"] > df["risk_score"].median()).astype(int)
 
-# -----------------------------
 # 5. Predictive Modeling
-# -----------------------------
 # Regression: Predict visits per year
 features = ["age","gender_encoded","bmi","blood_pressure","cholesterol","risk_score"]
 X = df[features]
@@ -118,15 +108,11 @@ print("\n=== Classification Results ===")
 print(f"Accuracy: {accuracy_score(y_test, y_pred_clf):.3f}")
 print(classification_report(y_test, y_pred_clf))
 
-# -----------------------------
 # 6. Business Insight Example
-# -----------------------------
 top_risk_patients = df.sort_values("risk_score", ascending=False).head(10)
 print("\nTop 10 High-Risk Patients")
 print(top_risk_patients[["patient_id","risk_score","diagnosis","bmi","blood_pressure"]])
 
-# -----------------------------
 # 7. Export Cleaned & Modeled Data
-# -----------------------------
 df.to_csv("synthetic_healthcare_cleaned_modeled.csv", index=False)
 print("\nCleaned and modeled dataset exported: synthetic_healthcare_cleaned_modeled.csv")

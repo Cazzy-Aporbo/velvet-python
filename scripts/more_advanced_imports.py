@@ -6,9 +6,7 @@ for advanced scientific computing, machine learning, visualization, simulation, 
 topological data analysis, and domain-specific applications.
 """
 
-# ------------------------
 # High-Performance Numerical Computing
-# ------------------------
 import jax
 import jax.numpy as jnp
 import cupy
@@ -30,9 +28,7 @@ import tensornetwork
 import einops
 import nvidia-pip
 
-# ------------------------
 # Advanced Machine Learning / AI
-# ------------------------
 import diffusers
 import accelerate
 import transformers
@@ -59,9 +55,7 @@ import pymc3
 import bambi
 import scikit-optimize
 
-# ------------------------
 # Graphs, Networks & Topology
-# ------------------------
 import networkx
 import graph_tool.all as gt
 import igraph
@@ -78,9 +72,7 @@ import hypernetx
 import h3
 import scikit-network as skn
 
-# ------------------------
 # Advanced Visualization
-# ------------------------
 import plotly
 import plotly.figure_factory as ff
 import holoviews as hv
@@ -102,9 +94,7 @@ import ipyvolume as ipv
 import pythreejs
 import vtk
 
-# ------------------------
 # Advanced Geospatial & GIS
-# ------------------------
 import geopandas as gpd
 import fiona
 import rioxarray
@@ -122,9 +112,7 @@ import h3
 import mapclassify
 import pydeck
 
-# ------------------------
 # Time Series, Forecasting & Streaming
-# ------------------------
 import sktime
 import darts
 import neuralprophet
@@ -140,9 +128,7 @@ import trino
 import apache_beam
 import faust
 
-# ------------------------
 # Bioinformatics & Scientific Computing
-# ------------------------
 import biopython
 import pybiomart
 import pysam
@@ -156,9 +142,7 @@ import mudata
 import scanorama
 import scanorama
 
-# ------------------------
 # Quantum Computing & Simulations
-# ------------------------
 import qiskit
 import cirq
 import braket.aws
@@ -173,9 +157,7 @@ import quilc.qpu
 import tensorflow_quantum as tfq
 import tensornetwork as tn
 
-# ------------------------
 # Advanced Optimization & Control
-# ------------------------
 import cvxpy
 import cvxopt
 import gekko
@@ -188,9 +170,7 @@ import gym
 import bullet3
 import topopt
 
-# ------------------------
 # File Handling, Pipelines, Streaming & Data Formats
-# ------------------------
 import h5py
 import zarr
 import netCDF4
@@ -215,9 +195,7 @@ import streamz.dataframe as sdf
 import dask
 import dask.distributed as ddist
 
-# ------------------------
 # Miscellaneous Experimental Tools
-# ------------------------
 import rich
 from rich.console import Console
 from rich.table import Table

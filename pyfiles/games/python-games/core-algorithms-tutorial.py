@@ -1552,7 +1552,7 @@ def demonstrate_all_algorithms():
     ])
     
     print("1. LINEAR REGRESSION")
-    print("-" * 50)
+    print()
     print("Use when: Linear relationships, interpretability needed, baseline model")
     print("Watch for: R-squared, residual patterns, multicollinearity\n")
     
@@ -1567,7 +1567,7 @@ def demonstrate_all_algorithms():
     print("Interpretation: Higher R-squared = better fit, watch for patterns in residuals\n")
     
     print("2. LOGISTIC REGRESSION")
-    print("-" * 50)
+    print()
     print("Use when: Binary classification, need probabilities, interpretable baseline")
     print("Watch for: Log loss convergence, probability calibration, class imbalance\n")
     
@@ -1583,7 +1583,7 @@ def demonstrate_all_algorithms():
     print("Interpretation: Well-calibrated probabilities should match actual frequencies\n")
     
     print("3. DECISION TREE")
-    print("-" * 50)
+    print()
     print("Use when: Non-linear patterns, mixed features, need interpretable rules")
     print("Watch for: Tree depth (overfitting), min samples per leaf, feature importance\n")
     
@@ -1596,7 +1596,7 @@ def demonstrate_all_algorithms():
     print("Warning signs: 100% training accuracy often means overfitting\n")
     
     print("4. RANDOM FOREST")
-    print("-" * 50)
+    print()
     print("Use when: Robust tabular performance, reduce overfitting, feature importance")
     print("Watch for: Number of trees, max features, OOB error, training time\n")
     
@@ -1610,7 +1610,7 @@ def demonstrate_all_algorithms():
     print("Tip: Use OOB score for validation without separate set\n")
     
     print("5. GRADIENT BOOSTING")
-    print("-" * 50)
+    print()
     print("Use when: Maximum accuracy needed, competitions, complex patterns")
     print("Watch for: Learning rate vs n_estimators, early stopping, overfitting\n")
     
@@ -1624,7 +1624,7 @@ def demonstrate_all_algorithms():
     print("XGBoost/LightGBM/CatBoost offer optimized implementations\n")
     
     print("6. K-NEAREST NEIGHBORS")
-    print("-" * 50)
+    print()
     print("Use when: Simple baseline, low dimensions, local patterns matter")
     print("Watch for: Optimal K, distance metric, MUST scale features, curse of dimensionality\n")
     
@@ -1638,7 +1638,7 @@ def demonstrate_all_algorithms():
     print("Warning: Performance degrades badly in high dimensions (>20)\n")
     
     print("7. SUPPORT VECTOR MACHINE")
-    print("-" * 50)
+    print()
     print("Use when: Clear margin exists, high dimensions OK, robust to outliers")
     print("Watch for: C parameter, kernel choice, gamma (RBF), support vectors count\n")
     
@@ -1652,7 +1652,7 @@ def demonstrate_all_algorithms():
     print("Scaling: ESSENTIAL for SVM - features must be standardized\n")
     
     print("8. NAIVE BAYES")
-    print("-" * 50)
+    print()
     print("Use when: Text classification, high dimensions, speed matters, small data")
     print("Watch for: Feature independence assumption, smoothing parameter\n")
     
@@ -1666,7 +1666,7 @@ def demonstrate_all_algorithms():
     print("Weakness: Independence assumption rarely holds exactly\n")
     
     print("9. PRINCIPAL COMPONENT ANALYSIS (PCA)")
-    print("-" * 50)
+    print()
     print("Use when: Dimensionality reduction, visualization, decorrelation, compression")
     print("Watch for: Explained variance, scree plot elbow, interpretability loss\n")
     
@@ -1681,7 +1681,7 @@ def demonstrate_all_algorithms():
     print("Remember: Always center data, consider scaling if different units\n")
     
     print("10. K-MEANS CLUSTERING")
-    print("-" * 50)
+    print()
     print("Use when: Known K, spherical clusters, similar sizes, fast clustering")
     print("Watch for: Elbow method for K, silhouette score, initialization sensitivity\n")
     
@@ -1695,7 +1695,7 @@ def demonstrate_all_algorithms():
     print("Tip: Run multiple times with different seeds, k-means++ helps\n")
     
     print("11. GAUSSIAN MIXTURE MODEL (EM)")
-    print("-" * 50)
+    print()
     print("Use when: Overlapping clusters, soft assignments, different shapes/sizes")
     print("Watch for: Number of components (BIC/AIC), covariance type, convergence\n")
     
@@ -1708,7 +1708,7 @@ def demonstrate_all_algorithms():
     print("Model selection: Use BIC/AIC to choose number of components\n")
     
     print("12. GRADIENT DESCENT OPTIMIZATION")
-    print("-" * 50)
+    print()
     print("Use when: Differentiable objectives, large-scale problems, neural nets")
     print("Watch for: Learning rate, convergence, local minima, gradient explosion\n")
     
@@ -1727,7 +1727,7 @@ def demonstrate_all_algorithms():
     print("Modern optimizers: Adam combines momentum + adaptive LR\n")
     
     print("13. NEURAL NETWORK (MLP)")
-    print("-" * 50)
+    print()
     print("Use when: Complex patterns, lots of data, end-to-end learning")
     print("Watch for: Architecture, activation functions, overfitting, gradients\n")
     
@@ -1742,7 +1742,7 @@ def demonstrate_all_algorithms():
     print("- Batch norm: Helps with deep networks\n")
     
     print("ALGORITHM SELECTION GUIDE")
-    print("=" * 50)
+    print()
     print("\nFor REGRESSION:")
     print("  Start with: Linear Regression (baseline)")
     print("  Then try: Random Forest, Gradient Boosting")
@@ -2043,7 +2043,7 @@ class AdvancedTips:
 
 if __name__ == "__main__":
     # Run comprehensive demonstration
-    print("\n" + "=" * 70)
+    print()
     print("CORE ALGORITHMS FOR DS/AI/ML ENGINEERS")
     print("Comprehensive Implementation and Learning Guide")
     print("=" * 70 + "\n")
@@ -2052,9 +2052,9 @@ if __name__ == "__main__":
     success = demonstrate_all_algorithms()
     
     if success:
-        print("\n" + "=" * 70)
+        print()
         print("ADDITIONAL LEARNING RESOURCES")
-        print("=" * 70)
+        print()
         
         # Show feature engineering tips
         fe_tips = AdvancedTips.feature_engineering_tips()
@@ -2068,9 +2068,9 @@ if __name__ == "__main__":
         prod_tips = AdvancedTips.production_tips()
         print(prod_tips)
         
-        print("\n" + "=" * 70)
+        print()
         print("SUMMARY: KEY TAKEAWAYS")
-        print("=" * 70)
+        print()
         print("""
         1. START SIMPLE: Always establish baseline with simple models
         2. UNDERSTAND DATA: EDA is crucial before model selection

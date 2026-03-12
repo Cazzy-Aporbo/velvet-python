@@ -21,10 +21,8 @@ from typing import Callable, List, Optional, Tuple
 # Console helpers — readable output that looks like a teaching transcript
 
 def block(title: str) -> None:
-    """Print a visual section divider so each idea stands on its own."""
-    print("\n" + "=" * 78)
-    print(title)
-    print("-" * 78)
+    """Print a section header for console lessons."""
+    print(f"\n  {title}\n")
 
 
 def say(text: str, width: int = 78) -> None:
@@ -417,9 +415,7 @@ def main() -> int:
         say("Good study. Re‑run to try other modes.")
     return 0
 
-# -----------------------------------------------------------------------------
 # Self‑checks — small asserts to guard math identities
-# -----------------------------------------------------------------------------
 
 def _tests() -> None:
     # Change of base correctness

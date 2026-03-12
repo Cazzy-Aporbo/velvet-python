@@ -2,7 +2,6 @@
 Linear Regression — Four Ways, with Progressive Visualization
 
 What this program does
-----------------------
 1) Builds a simple 1D regression dataset with noise + a few outliers so we can
    practice modeling and diagnostics.
 2) Fits linear regression in FOUR distinct ways:
@@ -19,7 +18,6 @@ What this program does
    F4: Residual vs Fitted view + quick diagnostics (learn: assumptions)
 
 Skills highlighted
-------------------
 Math: normal equation, gradient descent update rule, residuals, R^2, MAE/MSE
 Data: intercept trick, feature scaling (for GD), outlier detection via z-scores
 Programming: top-down orchestration, bottom-up utilities, palette generation,
@@ -33,7 +31,6 @@ $ python linear_regression_four_ways.py
 
 from __future__ import annotations
 
-# ---- Imports (top-only, as requested) ---------------------------------------
 import os
 import sys
 import math
@@ -58,7 +55,6 @@ except Exception:
     HAS_STATSMODELS = False
 
 
-# ---- Data structures ---------------------------------------------------------
 @dataclass
 class FitResult:
     name: str
@@ -70,7 +66,6 @@ class FitResult:
     mae: float
 
 
-# ---- Utility: palette + ombre ------------------------------------------------
 def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
     """'#RRGGBB' -> (R, G, B) ints."""
     hex_color = hex_color.strip().lstrip("#")
@@ -127,7 +122,6 @@ def choose_palette() -> Dict[str, List[str]]:
     return {"scatter": scatter_ombre, "line": line_ombre}
 
 
-# ---- Data generation ---------------------------------------------------------
 def build_dataset(n: int = 120, random_state: int = 7) -> Tuple[np.ndarray, np.ndarray]:
     """
     Create a 1D linear dataset with noise and a few deliberate outliers.
@@ -153,7 +147,6 @@ def build_dataset(n: int = 120, random_state: int = 7) -> Tuple[np.ndarray, np.n
     return X.astype(float), y.astype(float)
 
 
-# ---- Modeling: 4 ways --------------------------------------------------------
 def fit_normal_equation(X: np.ndarray, y: np.ndarray) -> FitResult:
     """
     Closed-form OLS via normal equation: beta = (X'X)^(-1) X'y
@@ -223,7 +216,6 @@ def fit_statsmodels(X: np.ndarray, y: np.ndarray) -> FitResult | None:
     return _summarize_fit("OLS (statsmodels)", y, y_pred, np.array([intercept, slope]))
 
 
-# ---- Helpers -----------------------------------------------------------------
 def _summarize_fit(name: str, y_true: np.ndarray, y_pred: np.ndarray, beta: np.ndarray) -> FitResult:
     r2 = r2_score(y_true, y_pred)
     mse = mean_squared_error(y_true, y_pred)
@@ -271,7 +263,6 @@ def ensure_output_dir(path: str | None = None) -> str:
 
 
 
-# ---- Plotting (four increasingly advanced figures) ---------------------------
 def fig1_basic_scatter_and_line(
     X: np.ndarray, y: np.ndarray, result: FitResult, palette: Dict[str, List[str]], outdir: str
 ) -> None:
@@ -426,7 +417,6 @@ def fig4_residuals_vs_fitted(
     print(f"Saved {path} — (learn: model assumptions via residuals)")
 
 
-# ---- Orchestration -----------------------------------------------------------
 def main() -> int:
     # 0) Palette choice and output dir
     palette = choose_palette()

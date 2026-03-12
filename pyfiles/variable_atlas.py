@@ -1,5 +1,4 @@
 # _variable_atlas.py
-# -----------------------------------------------------------------------------
 # Title: Variable Atlas — Teaching Variables in Python by Building a Model
 # Author: Cazandra Aporbo
 # Started: February 9 2023
@@ -10,7 +9,6 @@
 #         to Python variables with strong habits (validation, clarity,
 #         reproducibility). Multiple approaches are shown side-by-side.
 #         The file runs end-to-end without any third-party installs.
-# -----------------------------------------------------------------------------
 
 from __future__ import annotations  # allow forward refs in type hints
 
@@ -27,22 +25,16 @@ try:
 except Exception:  # if NumPy isn't available, we set a sentinel
     _np = None
 
-# -----------------------------------------------------------------------------
 # Console formatting helpers — so the program reads like a guided lesson.
-# -----------------------------------------------------------------------------
 
 def block(title: str) -> None:
-    print("\n" + "=" * 78)  # visual separator for sections
-    print(title)
-    print("-" * 78)
+    print(f"\n  {title}\n")
 
 
 def say(text: str, width: int = 78) -> None:
     print("\n".join(textwrap.wrap(text, width=width)))
 
-# -----------------------------------------------------------------------------
 # PART 1 — Variables as *Contracts*: names + shapes + meaning (not just boxes)
-# -----------------------------------------------------------------------------
 # Many beginners treat variables as boxes. I treat them as contracts:
 #   • a name (so humans can talk about it),
 #   • a shape (so code can validate it),
@@ -70,9 +62,7 @@ class VarSpec:
         if self.notes:
             say("  notes: " + self.notes)
 
-# -----------------------------------------------------------------------------
 # PART 2 — A tiny linear-algebra core (pure Python) so we can compute β two ways
-# -----------------------------------------------------------------------------
 # I write a minimal matrix toolkit to avoid external dependencies.
 # It is not meant to be the fastest; it's meant to be readable.
 
@@ -158,9 +148,7 @@ def ridge_inverse(XTX: Matrix, lam: float) -> Matrix:
         A[i][i] += lam
     return invert(A)
 
-# -----------------------------------------------------------------------------
 # PART 3 — A dataset factory: builds y, X with an intercept column 1_n
-# -----------------------------------------------------------------------------
 
 @dataclass
 class LinearDataset:
@@ -192,9 +180,7 @@ class LinearDataset:
         # X_j accessor to match the math symbol X_j
         return [row[j] for row in self.X]
 
-# -----------------------------------------------------------------------------
 # PART 4 — Two paths to β: (A) pure Python normal equations, (B) NumPy (optional)
-# -----------------------------------------------------------------------------
 
 @dataclass
 class OLSResult:
@@ -286,9 +272,7 @@ def ols_numpy(ds: LinearDataset, ridge_lambda: float = 0.0) -> Optional[OLSResul
     se_beta = list(_np.sqrt(_np.clip(_np.diag(Inv) * sigma2, 0.0, _np.inf)))
     return OLSResult(list(beta), list(fitted), list(resid), sigma2, r2, aic, bic, se_beta, loglik)
 
-# -----------------------------------------------------------------------------
 # PART 5 — Gradient descent: a third path to β (to contrast with closed form)
-# -----------------------------------------------------------------------------
 # Why: variables aren't just values; they evolve by update rules. I show a very
 # small gradient descent for OLS to highlight β as an evolving variable with
 # learning rate and stopping criteria. Educational, not production.
@@ -314,9 +298,7 @@ def ols_gradient_descent(ds: LinearDataset, lr: float = 0.01, iters: int = 2000)
             break
     return beta
 
-# -----------------------------------------------------------------------------
 # PART 6 — Build a tiny synthetic dataset so every symbol in the brief appears
-# -----------------------------------------------------------------------------
 
 
 def make_toy_dataset(n: int = 20, seed: int = 7) -> LinearDataset:
@@ -333,9 +315,7 @@ def make_toy_dataset(n: int = 20, seed: int = 7) -> LinearDataset:
         X_no_intercept.append([x1, x2])
     return LinearDataset(y=y, X_no_intercept=X_no_intercept, add_intercept=True)
 
-# -----------------------------------------------------------------------------
 # PART 7 — A variable ledger: show each symbol with its Python face and role
-# -----------------------------------------------------------------------------
 
 
 def show_variable_ledger(ds: LinearDataset, res: OLSResult) -> None:
@@ -397,9 +377,7 @@ def show_variable_ledger(ds: LinearDataset, res: OLSResult) -> None:
     for vs in ledger:
         vs.show()
 
-# -----------------------------------------------------------------------------
 # PART 8 — Lesson: variables, scope, mutability, and safer patterns
-# -----------------------------------------------------------------------------
 
 # I anchor the ML variables above with core Python variable behavior here, so
 # "variable" means the same thing whether it's a scalar or a whole matrix.
@@ -432,9 +410,7 @@ def lesson_core_variable_habits() -> None:
     f = maker()
     print("closure reads x from outer scope — f() ->", f())
 
-# -----------------------------------------------------------------------------
 # PART 9 — Demonstration driver tying it all together
-# -----------------------------------------------------------------------------
 
 def run_demo() -> None:
     block("Variable Atlas — building β three ways and reading every symbol")
@@ -497,9 +473,7 @@ def run_demo() -> None:
     say("• Showed three β methods to teach equivalence of roles, not of tools.")
     say("• Avoided global state; passed variables explicitly to teach scope.")
 
-# -----------------------------------------------------------------------------
 # PART 10 — Lightweight tests (so the lesson guards itself)
-# -----------------------------------------------------------------------------
 
 def _tests() -> None:
     ds = make_toy_dataset(n=12, seed=3)

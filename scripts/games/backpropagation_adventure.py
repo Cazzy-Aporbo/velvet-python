@@ -20,13 +20,13 @@ class BackpropagationGame:
         
     def welcome_screen(self):
         """Welcome the player to the backpropagation adventure!"""
-        print("=" * 60)
+        print()
         print("🎮 WELCOME TO BACKPROPAGATION ADVENTURE! 🎮")
-        print("=" * 60)
+        print()
         print("🧠 Learn how neural networks learn through backpropagation!")
         print("🎯 Complete challenges to level up your understanding!")
         print("📈 Progress from beginner to advanced concepts!")
-        print("=" * 60)
+        print()
         
         self.player_name = input("Enter your adventurer name: ")
         print(f"\nWelcome, {self.player_name}! Let's begin your journey! 🚀\n")
@@ -37,7 +37,7 @@ class BackpropagationGame:
         print(f"⭐ Level: {self.player_level}")
         print(f"🎯 XP: {self.player_xp}")
         print(f"📚 Lesson: {self.current_lesson}/{self.max_lessons}")
-        print("-" * 40)
+        print()
 
 # LEVEL 1: BASIC CONCEPTS
 class Level1_BasicConcepts:
@@ -49,9 +49,9 @@ class Level1_BasicConcepts:
     def teach_neurons(self):
         """Teach what a neuron is"""
         print(self.title)
-        print("=" * 50)
+        print()
         print("🧠 LESSON 1.1: What is a Neuron?")
-        print("-" * 30)
+        print()
         print("A neuron is like a tiny decision maker!")
         print("It takes inputs, processes them, and gives an output.")
         print("\nThink of it like a recipe:")
@@ -91,7 +91,7 @@ class Level1_BasicConcepts:
     def teach_forward_pass(self):
         """Teach forward propagation"""
         print("\n🧠 LESSON 1.2: Forward Pass - The Journey Forward")
-        print("-" * 50)
+        print()
         print("Forward pass is like following a recipe step by step:")
         print("1. Take inputs")
         print("2. Multiply by weights")
@@ -137,9 +137,9 @@ class Level2_TheProblem:
     def demonstrate_problem(self):
         """Show why random weights don't work"""
         print(self.title)
-        print("=" * 50)
+        print()
         print("🤔 LESSON 2.1: Why Do We Need to Learn?")
-        print("-" * 40)
+        print()
         
         print("Imagine you're teaching a robot to recognize cats vs dogs...")
         print("With random weights, it's just guessing! 🎲")
@@ -152,7 +152,7 @@ class Level2_TheProblem:
         correct = [1, 0, 1, 0, 1]  # 1 for cat, 0 for dog
         
         print("Animal    | Correct | Robot Says | Result")
-        print("-" * 45)
+        print()
         
         correct_count = 0
         for i, (animal, target) in enumerate(zip(animals, correct)):
@@ -176,7 +176,7 @@ class Level2_TheProblem:
     def introduce_loss(self):
         """Introduce the concept of loss/error"""
         print("\n🎯 LESSON 2.2: Measuring Mistakes (Loss Function)")
-        print("-" * 50)
+        print()
         
         print("To improve, we need to measure how wrong we are!")
         print("This is called a LOSS FUNCTION or ERROR FUNCTION")
@@ -191,7 +191,7 @@ class Level2_TheProblem:
         targets = [1.0, 0.0, 1.0, 0.0, 1.0]
         
         print("Prediction | Target | Error | Squared Error")
-        print("-" * 45)
+        print()
         
         total_loss = 0
         for pred, target in zip(predictions, targets):
@@ -217,9 +217,9 @@ class Level3_Derivatives:
     def teach_derivatives_intuition(self):
         """Teach derivatives with intuition"""
         print(self.title)
-        print("=" * 50)
+        print()
         print("🎢 LESSON 3.1: Derivatives - Finding the Slope")
-        print("-" * 45)
+        print()
         
         print("Imagine you're on a hill and want to find the bottom...")
         print("🏔️  The derivative tells you:")
@@ -266,7 +266,7 @@ class Level3_Derivatives:
     def teach_chain_rule(self):
         """Teach the chain rule"""
         print("\n⛓️  LESSON 3.2: The Chain Rule - Connecting the Dots")
-        print("-" * 50)
+        print()
         
         print("The chain rule helps us find derivatives of nested functions!")
         print("Think of it like a chain of cause and effect...")
@@ -324,9 +324,9 @@ class Level4_SimpleBackprop:
     def single_neuron_backprop(self):
         """Implement backprop for one neuron"""
         print(self.title)
-        print("=" * 50)
+        print()
         print("🎯 LESSON 4.1: Backpropagation Step by Step")
-        print("-" * 45)
+        print()
         
         print("Let's implement backpropagation for a single neuron!")
         print("We'll train it to learn a simple pattern...")

@@ -15,9 +15,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report
 from datetime import datetime, timedelta
 
-# -----------------------------
 # 1. Generate Synthetic Appliance Repair Data
-# -----------------------------
 fake = faker.Faker()
 num_customers = 200
 years = 5
@@ -73,9 +71,7 @@ df = pd.concat([df, df.sample(frac=0.02)], ignore_index=True)  # 2% duplicates
 df.to_csv("synthetic_appliance_repair_raw.csv", index=False)
 print("Synthetic raw appliance repair data generated")
 
-# -----------------------------
 # 2. Read Back and Clean
-# -----------------------------
 df = pd.read_csv("synthetic_appliance_repair_raw.csv")
 # Fill missing numeric with median
 for col in ["cost","parts_replaced","duration_hours"]:
@@ -84,9 +80,7 @@ for col in ["cost","parts_replaced","duration_hours"]:
 for col in ["technician","appliance_type","issue"]:
     df[col].fillna(df[col].mode()[0], inplace=True)
 
-# -----------------------------
 # 3. Exploratory Data Analysis
-# -----------------------------
 print(df.describe())
 sns.histplot(df["cost"], bins=30, kde=True)
 plt.title("Service Cost Distribution")
@@ -100,9 +94,7 @@ sns.boxplot(x="technician", y="duration_hours", data=df)
 plt.title("Service Duration by Technician")
 plt.show()
 
-# -----------------------------
 # 4. Feature Engineering
-# -----------------------------
 # Revenue per customer
 df["customer_id"] = df["email"]
 revenue_per_customer = df.groupby("customer_id")["cost"].sum().reset_index().rename(columns={"cost":"total_revenue"})
@@ -111,9 +103,7 @@ df = df.merge(revenue_per_customer, on="customer_id")
 # High-cost service flag
 df["high_cost"] = (df["cost"] > df["cost"].median()).astype(int)
 
-# -----------------------------
 # 5. Predictive Modeling
-# -----------------------------
 # Regression: predict cost
 features = ["parts_replaced","duration_hours"]
 X = df[features]
@@ -134,9 +124,7 @@ y_pred_clf = clf_model.predict(X_test)
 print("\nClassification Accuracy:", accuracy_score(y_clf, y_pred_clf))
 print(classification_report(y_clf, y_pred_clf))
 
-# -----------------------------
 # 6. Business Insights
-# -----------------------------
 # Top 5 technicians by revenue
 top_tech = df.groupby("technician")["cost"].sum().sort_values(ascending=False).head(5)
 print("\nTop 5 Technicians by Revenue:\n", top_tech)
@@ -145,8 +133,6 @@ print("\nTop 5 Technicians by Revenue:\n", top_tech)
 top_issues = df["issue"].value_counts().head(5)
 print("\nTop 5 Most Common Issues:\n", top_issues)
 
-# -----------------------------
 # 7. Export Cleaned & Analyzed Data
-# -----------------------------
 df.to_csv("synthetic_appliance_repair_cleaned.csv", index=False)
 print("\nCleaned and analyzed appliance repair dataset exported")

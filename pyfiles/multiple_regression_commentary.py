@@ -1,5 +1,4 @@
 # multiple_regression_commentary.py  # file name that states purpose clearly
-# ------------------------------------------------------------------------------------  
 # Title: Multiple Regression — A Fully Commented, From-First-Principles Demonstration 
 # Author: Cazandra Aporbo  
 # Completed: August 2025  
@@ -13,7 +12,6 @@
 #   • Depend only on NumPy; fall back to a tiny pure‑Python linear algebra path if   
 #     NumPy is unavailable (small sizes only).                                        
 #   • Zero file I/O and no user input; the script is fully reproducible.              
-# ------------------------------------------------------------------------------------ 
 
 from __future__ import annotations  # allows forward references in type hints for older Python
 
@@ -29,9 +27,7 @@ try:  # begin try block for optional import
 except Exception:  # if NumPy is not available or import fails
     HAS_NUMPY = False  # set flag so we can use the pure‑Python path
 
-# -----------------------------
 # Pure‑Python linear algebra (tiny, educational — used only if NumPy missing)
-# -----------------------------
 # Notes: This is not optimized. It is here to make the demo runnable anywhere.    
 
 Matrix = List[List[float]]  # alias for readability in pure‑Python code
@@ -85,9 +81,7 @@ def _pp_invert(A: Matrix) -> Matrix:  # Gauss–Jordan inverse (educational)
                 Inv[r] = [rv - factor * cv for rv, cv in zip(Inv[r], Inv[col])]  # row op
     return Inv  # finished inverse
 
-# -----------------------------
 # Data generation — small synthetic dataset with: numeric, indicator, nonlinear
-# -----------------------------
 # I simulate an outcome influenced by square footage, bedrooms, a categorical
 # neighborhood (as indicators), and a nonlinear term (time_on_market^2).         # scenario rationale
 
@@ -139,9 +133,7 @@ def make_toy_data(n: int = 120, seed: int = 7) -> ToyData:  # reproducible gener
         y.append(lin + noise)  # outcome with noise
     return ToyData(X=rows, y=y, names=names)  # package into dataclass and return
 
-# -----------------------------
 # Design matrix builder — add intercept, choose subsets, optionally standardize
-# -----------------------------
 
 @dataclass  # return type for design matrix with metadata
 class Design:  # container for X matrix, y vector, and column names
@@ -163,9 +155,7 @@ def build_design(data: ToyData, use_cols: Optional[List[str]] = None, add_interc
         cols = ["intercept"] + cols  # reflect intercept in names
     return Design(X=X, y=data.y[:], cols=cols)  # return structured design
 
-# -----------------------------
 # OLS estimation — closed form β̂ = (XᵀX)⁻¹ Xᵀy, with diagnostics and metrics
-# -----------------------------
 
 @dataclass  # structure to hold fitted model results
 class OLSResult:  # results object for clarity
@@ -223,9 +213,7 @@ def ols_fit(design: Design) -> OLSResult:  # core OLS routine
         bic = math.log(n) * k - 2 * loglik  # BIC
         return OLSResult(beta=beta, fitted=fitted, residuals=resid, sigma2=sigma2, r2=r2, aic=aic, bic=bic, loglik=loglik)  # pack
 
-# -----------------------------
 # Ridge regression — β̂(λ) = (XᵀX + λI)⁻¹ Xᵀy to illustrate regularization
-# -----------------------------
 
 @dataclass  # structure to hold ridge results with λ value
 class RidgeResult:  # container with diagnostics similar to OLSResult
@@ -268,9 +256,7 @@ def ridge_fit(design: Design, lam: float) -> RidgeResult:  # ridge core
         r2 = 1.0 - (rss / tss if tss > 0 else 0.0)  # R²
         return RidgeResult(lam=lam, beta=beta, r2=r2)  # pack
 
-# -----------------------------
 # K‑fold cross‑validation — estimate out‑of‑sample MSE to avoid overfitting
-# -----------------------------
 
 def kfold_mse(design: Design, k: int = 5, seed: int = 19) -> float:  # CV wrapper
     n = len(design.y)  # number of rows
@@ -295,23 +281,19 @@ def kfold_mse(design: Design, k: int = 5, seed: int = 19) -> float:  # CV wrappe
         mses.append(mse)  # accumulate
     return sum(mses) / len(mses)  # return average MSE across folds
 
-# -----------------------------
 # Pretty printing helpers — readable, aligned output for coefficients and models
-# -----------------------------
 
 def print_model_summary(title: str, cols: List[str], beta: List[float], r2: float, aic: float, bic: float) -> None:  # summary printer
-    print("\n" + "=" * 78)  # section divider
+    print()  # section divider
     print(title)  # model title
-    print("-" * 78)  # underline
+    print()  # underline
     for name, b in zip(cols, beta):  # iterate coefficients with names
         print(f"{name:<18} : {b:>12.6f}")  # aligned name/value
     print(f"R^2   : {r2:.4f}")  # R‑squared display
     print(f"AIC   : {aic:.3f}")  # AIC display
     print(f"BIC   : {bic:.3f}")  # BIC display
 
-# -----------------------------
 # Main narrative — build variants that reflect the outline and compare them
-# -----------------------------
 
 def main() -> int:  # program entry point
     data = make_toy_data(n=160, seed=11)  # build synthetic dataset with structure
@@ -348,7 +330,7 @@ def main() -> int:  # program entry point
         print(f"ridged {name:<14} : {b:>12.6f}")  # aligned
 
     # Closing notes (printed) — connect back to the study guide in the prompt.   # pedagogy
-    print("\n" + "-" * 78)  # divider
+    print()  # divider
     print("Notes:")  # heading
     print("• Indicator variables: we used neigh_B and neigh_C; neigh_A is reference (implicit).")  # dummy variables
     print("• Nonlinear predictors: 'days_sq' captured curvature in time on market.")  # polynomial term

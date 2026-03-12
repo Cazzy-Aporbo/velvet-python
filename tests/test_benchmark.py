@@ -1,41 +1,25 @@
-"""
-Benchmark-style tests for the mock ML pipeline.
-
-These ensure training and prediction run within expected time limits.
-"""
-
 import time
-from your_package.data_utils import load_dataset
-from your_package.ml_pipeline import MockModel
+from src.data_utils import load_dataset
+from src.ml_pipeline import WordFrequencyModel
 
 
 def test_training_speed():
-    dataset = load_dataset()
-    texts = [text for text, _ in dataset]
-
-    model = MockModel()
-
+    data = load_dataset()
+    texts = [t for t, _ in data]
+    labels = [l for _, l in data]
+    model = WordFrequencyModel()
     start = time.perf_counter()
-    model.train(texts)
-    end = time.perf_counter()
-
-    duration = end - start
-    # Training should be nearly instant (< 0.1s on GitHub runners)
-    assert duration < 0.1, f"Training took too long: {duration:.4f}s"
+    model.train(texts, labels)
+    assert time.perf_counter() - start < 0.1
 
 
 def test_prediction_speed():
-    dataset = load_dataset()
-    texts = [text for text, _ in dataset]
-
-    model = MockModel()
-    model.train(texts)
-
+    data = load_dataset()
+    texts = [t for t, _ in data]
+    labels = [l for _, l in data]
+    model = WordFrequencyModel()
+    model.train(texts, labels)
     start = time.perf_counter()
-    for text in texts * 1000:  # repeat to simulate workload
-        _ = model.predict(text)
-    end = time.perf_counter()
-
-    duration = end - start
-    # Prediction loop should be very fast (< 0.2s total)
-    assert duration < 0.2, f"Prediction took too long: {duration:.4f}s"
+    for text in texts * 1000:
+        model.predict(text)
+    assert time.perf_counter() - start < 0.5

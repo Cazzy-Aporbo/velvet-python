@@ -1,6 +1,5 @@
 """
 MOLECULAR CASCADE - A Strategic Chemistry Learning Game
-========================================================
 A unique educational game where players manipulate electron shells and molecular bonds
 to create chain reactions that teach real chemistry concepts through gameplay.
 

@@ -2,7 +2,6 @@
 Matrix Chain Multiplication — Four Ways, with Progressive Visualization
 
 What this program teaches
--------------------------
 1) Why parenthesization matters for chained matrix multiplication (A1·A2·...·An)
    — multiplication is associative (order of grouping matters) but not commutative.
 2) Four approaches:
@@ -19,7 +18,6 @@ What this program teaches
        in the optimal vs greedy orders to show correlation with cost model.
 
 Data model
-----------
 For n matrices A1..An with dimensions:
   A1 is (p0 × p1), A2 is (p1 × p2), ..., An is (p_{n-1} × p_n)
 The "dims" vector is [p0, p1, ..., p_n] (length n+1).
@@ -32,14 +30,12 @@ $ python matrix_chain_four_ways.py
 (choose a palette when prompted; outputs saved to Desktop/MatrixChain_Outputs)
 
 Author’s note
--------------
 Approachable for beginners, still precise for experts. Clean top–down orchestration,
 bottom–up utilities, and guardrails for real-world usage.
 """
 
 from __future__ import annotations
 
-# ----- Imports (top only) -----------------------------------------------------
 import os
 import time
 import math
@@ -50,7 +46,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ----- Palette utilities (ombré gradients) -----------------------------------
 def _hex_to_rgb(h: str) -> Tuple[int, int, int]:
     h = h.strip().lstrip("#")
     return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
@@ -97,7 +92,6 @@ def choose_palette() -> Dict[str, List[str]]:
     return {"scatter": scatter, "line": line, "heat": heat}
 
 
-# ----- Output location: Desktop/MatrixChain_Outputs ---------------------------
 def ensure_output_dir(path: Optional[str] = None) -> str:
     """
     Default: <Desktop>/MatrixChain_Outputs (cross-platform, OneDrive aware).
@@ -117,7 +111,6 @@ def ensure_output_dir(path: Optional[str] = None) -> str:
     return str(out)
 
 
-# ----- Core math helpers ------------------------------------------------------
 def validate_dims(dims: List[int]) -> None:
     """
     dims must be length n+1 and all positive. For A1..An, A_i has shape (dims[i], dims[i+1]).
@@ -136,7 +129,6 @@ def split_cost(dims: List[int], i: int, k: int, j: int) -> int:
     return dims[i] * dims[k + 1] * dims[j + 1]
 
 
-# ----- Four approaches --------------------------------------------------------
 # A) Brute force (enumerate all parenthesizations) — educational; n should be small.
 def brute_force_min_cost(dims: List[int]) -> Tuple[int, str, int]:
     """
@@ -276,7 +268,6 @@ def greedy_bad(dims: List[int]) -> Tuple[int, str]:
     return int(total_cost), exprs[0]
 
 
-# ----- Visualization helpers --------------------------------------------------
 def save_bar_all_parenthesizations(labels: List[str], costs: List[int], best_idx: int,
                                    palette: Dict[str, List[str]], outdir: str, tag: str) -> None:
     plt.figure(figsize=(10, 5.2))
@@ -405,7 +396,6 @@ def save_timing_compare(dims: List[int], best_expr: str, greedy_expr: str,
     print(f"Saved {path} — (learn: cost model correlates with actual runtime)")
 
 
-# ----- Orchestration ----------------------------------------------------------
 def main() -> int:
     palette = choose_palette()
     outdir = ensure_output_dir()
@@ -490,7 +480,6 @@ def main() -> int:
     return 0
 
 
-# ----- Instrumentation helpers for call counting ------------------------------
 def count_calls_naive(dims: List[int]) -> int:
     n = len(dims) - 1
     calls = 0
@@ -524,6 +513,5 @@ def count_calls_memoized(dims: List[int]) -> int:
     return calls
 
 
-# ----- Entrypoint -------------------------------------------------------------
 if __name__ == "__main__":
     raise SystemExit(main())

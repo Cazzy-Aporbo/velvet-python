@@ -531,10 +531,10 @@ class HyperdimensionalVisualizer:
 
 def launch_attractor_engine():
     """Launch the Hyperdimensional Attractor Dynamics Engine"""
-    print("=" * 80)
+    print()
     print("HYPERDIMENSIONAL ATTRACTOR DYNAMICS ENGINE")
     print("Advanced Multi-Attractor System with Full Color Gradients")
-    print("=" * 80)
+    print()
     print()
     print("FEATURES:")
     print("• Multiple interacting strange attractors (Lorenz, Rössler, Hénon, etc.)")

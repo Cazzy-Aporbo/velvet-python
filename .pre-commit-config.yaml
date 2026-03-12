@@ -1,5 +1,4 @@
 # Velvet Python - Pre-commit Hook Configuration
-# ==============================================
 # Author: Cazzy Aporbo, MS
 # Created: January 2025
 #
@@ -32,13 +31,11 @@ ci:
   autofix_prs: false  # Don't automatically fix PRs - I want to review changes
 
 # Hook Repositories
-# -----------------
 # Each repo contains multiple hooks. I've tested dozens of combinations
 # and this set gives the best balance of speed and thoroughness.
 
 repos:
   # Python Code Formatting
-  # -----------------------
   # Black is non-negotiable for me. Consistent formatting = less time arguing about style
   - repo: https://github.com/psf/black
     rev: 24.1.1
@@ -51,7 +48,6 @@ repos:
         verbose: true  # I like seeing what files are being formatted
 
   # Import Sorting
-  # --------------
   # isort keeps imports organized. I used to spend time manually organizing them.
   # Now isort does it perfectly every time.
   - repo: https://github.com/pycqa/isort
@@ -63,7 +59,6 @@ repos:
         additional_dependencies: ['toml']  # Needed to read pyproject.toml
 
   # Fast Python Linting
-  # --------------------
   # Ruff is FAST. It replaced flake8, pylint, and a dozen other tools for me.
   # It catches real issues without being pedantic.
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -80,7 +75,6 @@ repos:
         types_or: [python, pyi, jupyter]
 
   # File and Repository Checks
-  # ---------------------------
   # These catch embarrassing mistakes before they hit the repository
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -154,7 +148,6 @@ repos:
         name: Validate XML files
 
   # Docstring Coverage
-  # ------------------
   # I believe every public function deserves documentation
   - repo: https://github.com/PyCQA/pydocstyle
     rev: 6.3.0
@@ -169,7 +162,6 @@ repos:
         additional_dependencies: ['tomli']
 
   # Type Checking
-  # -------------
   # Static typing catches so many bugs before runtime
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
@@ -189,7 +181,6 @@ repos:
         pass_filenames: false
 
   # Security Scanning
-  # -----------------
   # Catches common security issues in Python code
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.6
@@ -201,7 +192,6 @@ repos:
         # Don't check test code for security issues
 
   # Secrets Detection
-  # -----------------
   # This has saved me from committing API keys multiple times
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
@@ -213,7 +203,6 @@ repos:
         exclude: \.(lock|package-lock\.json)$
 
   # Markdown Formatting
-  # -------------------
   # Keeps documentation consistent
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.38.0
@@ -224,7 +213,6 @@ repos:
         # I'm less strict with markdown - content matters more than format
 
   # Jupyter Notebook Cleaning
-  # --------------------------
   # Strips output from notebooks to keep diffs clean
   - repo: https://github.com/kynan/nbstripout
     rev: 0.6.1
@@ -234,7 +222,6 @@ repos:
         # Notebook outputs can be huge and make diffs unreadable
 
   # Shell Script Checking
-  # ---------------------
   # For any bash scripts in the project
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.9.0.6
@@ -244,7 +231,6 @@ repos:
         # I occasionally write bash scripts for automation
 
   # Dockerfile Linting
-  # ------------------
   # If we add Docker support later
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
@@ -254,7 +240,6 @@ repos:
         # Disabled by default - uncomment when we add Docker
 
   # Custom Local Hooks
-  # ------------------
   # These are specific to our project
   - repo: local
     hooks:
@@ -292,7 +277,6 @@ repos:
         # Ensures consistent file headers (need to create this script)
 
 # Configuration for specific hooks
-# ---------------------------------
 default_language_version:
   python: python3.11  # My preferred Python version
   
@@ -321,7 +305,6 @@ exclude: |
   )$
 
 # End of pre-commit configuration
-# --------------------------------
 # To test: pre-commit run --all-files
 # To update hooks: pre-commit autoupdate
 # To skip: git commit --no-verify (use sparingly!)

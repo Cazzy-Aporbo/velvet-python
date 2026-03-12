@@ -1,6 +1,5 @@
 """
 Velvet Python - Test Suite
-==========================
 
 Author: Cazzy Aporbo, MS
 Created: January 2025

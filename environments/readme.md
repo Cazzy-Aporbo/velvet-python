@@ -336,7 +336,7 @@ Now let me create the module's requirements.txt:
 
 ```txt
 # Environment Management Module - Dependencies
-# =============================================
+# ---------------------------------------------------------------------------
 # Author: Cazzy Aporbo, MS
 # 
 # These are the tools I use for environment management.

@@ -16,13 +16,11 @@ CITATIONS (documentation I reference while coding):
 - Seaborn lineplot: https://seaborn.pydata.org/generated/seaborn.lineplot.html
 """
 
-# ===== Standard Library =====
 import os
 import sys
 from pathlib import Path
 from typing import Tuple, Dict, Any
 
-# ===== Third-party =====
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -35,9 +33,7 @@ except Exception:
     _seaborn_available_cazzy = False
 
 
-# ------------------------------------------------------------------------------
 # A) Pastel ombré theme (once), and a tiny utility for gradient backgrounds
-# ------------------------------------------------------------------------------
 def ombre_palette_core_cazzy() -> Dict[str, str]:
     """My house palette for the lesson: pastel pink → lavender → mint → blue."""
     return {
@@ -118,9 +114,7 @@ def ombre_axes_background_gradient_cazzy(ax_handle, color_sequence: Tuple[str, s
     # After plotting data, we’ll re-tighten the extent to current limits.
 
 
-# ------------------------------------------------------------------------------
 # B) Subplot interface — beginner to intermediate (multiple panels in one figure)
-# ------------------------------------------------------------------------------
 def subplot_quadrants_ensemble_cazzy() -> None:
     """
     I build a 2×2 grid:
@@ -142,7 +136,6 @@ def subplot_quadrants_ensemble_cazzy() -> None:
 
     # Figure + axes array
     figure_tile_symphony, axes_matrix_tiles = plt.subplots(2, 2, figsize=(11, 7))
-    # --- Panel A: Sum line ---
     axes_matrix_tiles[0, 0].plot(
         gridline_theta_bridge, signal_mixture_mint,
         color=pastel["ombre_purple_text_hex"], linewidth=2.0, label="y₁ + y₂"
@@ -157,7 +150,6 @@ def subplot_quadrants_ensemble_cazzy() -> None:
         (pastel["ombre_pink_hex"], pastel["ombre_lavender_hex"], pastel["ombre_mint_hex"], pastel["ombre_blue_hex"])
     )
 
-    # --- Panel B: Scatter + hover annotation (simple built-in event) ---
     scatter_points = axes_matrix_tiles[0, 1].scatter(
         gridline_theta_bridge, signal_mixture_mint,
         s=18, c=pastel["ombre_blue_hex"], edgecolors="white", linewidths=0.5
@@ -198,7 +190,6 @@ def subplot_quadrants_ensemble_cazzy() -> None:
 
     figure_tile_symphony.canvas.mpl_connect("motion_notify_event", on_move_show_value_cazzy)
 
-    # --- Panel C: Components with legend ---
     axes_matrix_tiles[1, 0].plot(
         gridline_theta_bridge, signal_primary_rosa,
         color=pastel["ombre_pink_hex"], linewidth=2.0, label="y₁ = sin(x)"
@@ -217,7 +208,6 @@ def subplot_quadrants_ensemble_cazzy() -> None:
         (pastel["ombre_blue_hex"], pastel["ombre_pink_hex"], pastel["ombre_lavender_hex"], pastel["ombre_mint_hex"])
     )
 
-    # --- Panel D: removed for clean layout ---
     figure_tile_symphony.delaxes(axes_matrix_tiles[1, 1])
 
     figure_tile_symphony.suptitle("Matplotlib Subplot Interface — A Pastel Ombré Tour", color=pastel["ombre_purple_text_hex"])
@@ -227,9 +217,7 @@ def subplot_quadrants_ensemble_cazzy() -> None:
     print("[saved] subplot_quadrants_pastel_demo.png")
 
 
-# ------------------------------------------------------------------------------
 # C) Correlation heatmap (Matplotlib): abalone dataset from UCI (with fallback)
-# ------------------------------------------------------------------------------
 def correlation_abalone_exhibit_cazzy() -> None:
     """
     I calculate a correlation matrix and visualize it as a heatmap.
@@ -295,9 +283,7 @@ def correlation_abalone_exhibit_cazzy() -> None:
     print("[saved] correlation_pastel_heatmap.png")
 
 
-# ------------------------------------------------------------------------------
 # D) Seaborn introduction (with graceful fallbacks), pastel consistent
-# ------------------------------------------------------------------------------
 def seaborn_relplot_gallery_cazzy() -> None:
     """
     I show a few compact Seaborn patterns: relplot for scatter, hue for categories,
@@ -319,7 +305,6 @@ def seaborn_relplot_gallery_cazzy() -> None:
         pastel["ombre_blue_hex"]
     ]))
 
-    # --- Tips dataset relplot: total_bill vs tip ---
     try:
         dataset_tips_cazzy = sns.load_dataset("tips")
     except Exception:
@@ -340,7 +325,6 @@ def seaborn_relplot_gallery_cazzy() -> None:
     plt.close(g_scatter_basic_cazzy.fig)
     print("[saved] seaborn_relplot_basic_pastel.png")
 
-    # --- Hue/style exploration: smoker as hue ---
     g_scatter_hue_cazzy = sns.relplot(
         x="total_bill", y="tip", hue="smoker", style="smoker",
         data=dataset_tips_cazzy, height=5, aspect=1.2
@@ -351,7 +335,6 @@ def seaborn_relplot_gallery_cazzy() -> None:
     plt.close(g_scatter_hue_cazzy.fig)
     print("[saved] seaborn_relplot_hue_style_pastel.png")
 
-    # --- Enhanced with size (party size) ---
     g_scatter_size_cazzy = sns.relplot(
         x="total_bill", y="tip", hue="smoker", style="smoker", size="size",
         data=dataset_tips_cazzy, height=5, aspect=1.2
@@ -362,7 +345,6 @@ def seaborn_relplot_gallery_cazzy() -> None:
     plt.close(g_scatter_size_cazzy.fig)
     print("[saved] seaborn_relplot_hue_style_size_pastel.png")
 
-    # --- fmri time series ---
     try:
         dataset_fmri_cazzy = sns.load_dataset("fmri")
         g_fmri_line_cazzy = sns.relplot(
@@ -390,7 +372,6 @@ def seaborn_relplot_gallery_cazzy() -> None:
         plt.close(fig_ts_fallback)
         print("[saved] seaborn_fmri_fallback_lines_pastel.png")
 
-    # --- Autoformatted dates example ---
     # I generate a local time series and show how Matplotlib handles the tick formatting.
     date_index_construct_cazzy = pd.date_range("2022-01-01", "2022-04-01", freq="1D")
     value_random_walk_cazzy = np.cumsum(np.random.default_rng(11).normal(0, 1, len(date_index_construct_cazzy)))
@@ -411,9 +392,7 @@ def seaborn_relplot_gallery_cazzy() -> None:
     print("[saved] seaborn_time_autodates_pastel.png")
 
 
-# ------------------------------------------------------------------------------
 # Main runner — I keep it explicit, so you can open each saved PNG in order.
-# ------------------------------------------------------------------------------
 def main_driver_cazzy() -> None:
     subplot_quadrants_ensemble_cazzy()
     correlation_abalone_exhibit_cazzy()

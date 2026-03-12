@@ -1274,7 +1274,7 @@ def generate_test_data():
     """Generate comprehensive test data for model validation"""
     
     print("Generating test data for sepsis risk model...")
-    print("=" * 60)
+    print()
     
     test_patients = []
     
@@ -1356,9 +1356,9 @@ def generate_test_data():
 def run_comprehensive_tests():
     """Run comprehensive model testing and validation"""
     
-    print("\n" + "=" * 60)
+    print()
     print("RUNNING COMPREHENSIVE SEPSIS MODEL TESTS")
-    print("=" * 60)
+    print()
     
     # Initialize model
     model = SepsisRiskModel()
@@ -1714,7 +1714,7 @@ def demonstrate_disease_simulations():
         # Display progression summary
         print("\nTime Course:")
         print("Hour | Stage          | Mortality | SOFA | HR  | MAP  | Lactate")
-        print("-" * 65)
+        print()
         
         for point in time_points[::2]:  # Show every 12 hours
             print(f"{point['hour']:4d} | {point['stage']:14s} | {point['mortality_risk']:8.1%} | "
@@ -1747,7 +1747,7 @@ def demonstrate_healthy_heart_monitoring():
     
     # Simulate 24-hour monitoring
     print("\n24-Hour Healthy Heart Monitoring:")
-    print("-" * 50)
+    print()
     
     hours = np.arange(0, 25, 1)
     heart_rates = []
@@ -1786,7 +1786,7 @@ def demonstrate_healthy_heart_monitoring():
     
     # Calculate and display HRV metrics
     print("\nHeart Rate Variability Analysis (Healthy Heart):")
-    print("-" * 50)
+    print()
     
     # Generate high-resolution HR data for HRV
     hr_series_detailed = []
@@ -1805,9 +1805,9 @@ def demonstrate_healthy_heart_monitoring():
     
     # Stress test simulation
     print("\nCardiac Stress Test Simulation:")
-    print("-" * 50)
+    print()
     print("Stage | Time | HR  | BP      | CO    | Status")
-    print("-" * 50)
+    print()
     
     stress_stages = [
         ('Rest', 0, 75),
@@ -1847,7 +1847,7 @@ def demonstrate_healthy_heart_monitoring():
               f"{sbp:3.0f}/{dbp:2.0f} | {co:5.2f} | {status}")
     
     print("\nHealthy Heart Summary:")
-    print("-" * 50)
+    print()
     print("✓ Normal circadian rhythm maintained")
     print("✓ Appropriate HRV (good autonomic function)")
     print("✓ Normal exercise response")

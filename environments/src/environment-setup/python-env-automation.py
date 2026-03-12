@@ -36,9 +36,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ==============================================================================
 # CONFIGURATION AND CONSTANTS
-# ==============================================================================
 
 class EnvType(Enum):
     """Supported environment types"""
@@ -73,9 +71,7 @@ class EnvironmentConfig:
         if self.created_at is None:
             self.created_at = datetime.now().isoformat()
 
-# ==============================================================================
 # ENVIRONMENT MANAGER CLASS
-# ==============================================================================
 
 class PythonEnvironmentManager:
     """
@@ -153,9 +149,7 @@ class PythonEnvironmentManager:
         
         return tools
     
-    # ==============================================================================
     # ENVIRONMENT CREATION
-    # ==============================================================================
     
     def create_environment(
         self, 
@@ -304,9 +298,7 @@ class PythonEnvironmentManager:
         logger.warning(f"Python {version} not found, using system Python")
         return sys.executable
     
-    # ==============================================================================
     # DEPENDENCY MANAGEMENT
-    # ==============================================================================
     
     def analyze_dependencies(self, env_name: str) -> Dict:
         """
@@ -461,9 +453,7 @@ class PythonEnvironmentManager:
         
         return actions
     
-    # ==============================================================================
     # ENVIRONMENT OPERATIONS
-    # ==============================================================================
     
     def activate_environment(self, name: str) -> str:
         """
@@ -588,9 +578,7 @@ class PythonEnvironmentManager:
         logger.info(f"Successfully migrated to: {target_name}")
         return new_config
     
-    # ==============================================================================
     # IMPORT/EXPORT
-    # ==============================================================================
     
     def export_requirements(self, env_name: str, format: str = "pip") -> str:
         """
@@ -682,9 +670,7 @@ class PythonEnvironmentManager:
         logger.info(f"Backup created: {tarball_path}")
         return str(tarball_path)
     
-    # ==============================================================================
     # MONITORING AND HEALTH CHECKS
-    # ==============================================================================
     
     def health_check(self, env_name: str = None) -> Dict:
         """
@@ -842,9 +828,7 @@ class PythonEnvironmentManager:
         
         logger.info(f"Deleted environment: {name}")
     
-    # ==============================================================================
     # UTILITY METHODS
-    # ==============================================================================
     
     def _get_env_config(self, name: str) -> EnvironmentConfig:
         """Get environment configuration by name"""
@@ -973,9 +957,7 @@ class PythonEnvironmentManager:
             bytes /= 1024.0
         return f"{bytes:.2f} PB"
 
-# ==============================================================================
 # CLI INTERFACE
-# ==============================================================================
 
 def main():
     """Command-line interface for the environment manager"""
@@ -1101,9 +1083,9 @@ Examples:
                 if envs:
                     # Print table
                     print("\nEnvironments:")
-                    print("-" * 80)
+                    print()
                     print(f"{'Name':<20} {'Type':<10} {'Python':<10} {'Created':<20} {'Last Used':<20}")
-                    print("-" * 80)
+                    print()
                     for env in envs:
                         created = env['created'][:10] if env['created'] != 'Unknown' else 'Unknown'
                         last_used = env['last_activated'][:10] if env['last_activated'] not in ['Never', 'Unknown'] else env['last_activated']
@@ -1176,7 +1158,7 @@ Examples:
         elif args.command == 'stats':
             stats = manager.get_statistics()
             print("\nEnvironment Statistics:")
-            print("-" * 40)
+            print()
             print(f"Total environments: {stats['total_environments']}")
             print(f"Total disk usage: {stats['total_disk_usage_human']}")
             print(f"\nBy type:")
@@ -1195,7 +1177,7 @@ Examples:
         elif args.command == 'analyze':
             analysis = manager.analyze_dependencies(args.name)
             print(f"\nDependency Analysis for {args.name}:")
-            print("-" * 40)
+            print()
             print(f"Total packages: {analysis['total_packages']}")
             if analysis.get('outdated'):
                 print(f"Outdated packages: {len(analysis['outdated'])}")

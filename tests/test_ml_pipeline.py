@@ -1,52 +1,77 @@
-"""
-Tests for the mock ML pipeline.
-"""
-
 import pytest
-from your_package.ml_pipeline import MockModel, evaluate
+from src.ml_pipeline import WordFrequencyModel, TFIDFModel, evaluate, confusion_matrix
 
 
 @pytest.fixture
-def trained_model():
-    """
-    Fixture that trains a MockModel on sample data.
-    """
-    model = MockModel()
-    training_texts = ["hello world", "hello ai", "machine learning"]
-    model.train(training_texts)
+def trained_freq_model():
+    model = WordFrequencyModel()
+    texts = ["hello world", "hello friend", "machine learning", "deep learning"]
+    labels = ["greeting", "greeting", "tech", "tech"]
+    model.train(texts, labels)
     return model
 
 
-def test_model_training(trained_model):
-    assert trained_model.is_trained
-    assert "hello" in trained_model.word_counts
-    assert trained_model.word_counts["hello"] >= 2
+@pytest.fixture
+def trained_tfidf_model():
+    model = TFIDFModel()
+    texts = ["hello world", "hello friend", "machine learning", "deep learning"]
+    labels = ["greeting", "greeting", "tech", "tech"]
+    model.train(texts, labels)
+    return model
 
 
-def test_prediction_known(trained_model):
-    # The word "hello" was in training data
-    assert trained_model.predict("say hello") == "hello"
+def test_freq_model_training(trained_freq_model):
+    assert trained_freq_model.is_trained
+    assert "greeting" in trained_freq_model.class_frequencies
 
 
-def test_prediction_unknown(trained_model):
-    # The word "goodbye" was not in training data
-    assert trained_model.predict("goodbye now") == "unknown"
+def test_freq_prediction_known(trained_freq_model):
+    assert trained_freq_model.predict("hello there") == "greeting"
 
 
-def test_evaluation_accuracy(trained_model):
+def test_freq_prediction_tech(trained_freq_model):
+    assert trained_freq_model.predict("learning algorithms") == "tech"
+
+
+def test_tfidf_model_training(trained_tfidf_model):
+    assert trained_tfidf_model.is_trained
+    assert len(trained_tfidf_model.centroids) == 2
+
+
+def test_tfidf_prediction(trained_tfidf_model):
+    result = trained_tfidf_model.predict("hello there")
+    assert isinstance(result, str)
+    assert result in ("greeting", "tech", "unknown")
+
+
+def test_evaluation_accuracy(trained_freq_model):
     test_data = [
-        ("hello ai", "hello"),       # should be correct
-        ("world says hello", "hello"),
-        ("totally unseen words", "unknown"),
+        ("hello friend", "greeting"),
+        ("learning models", "tech"),
     ]
-    acc = evaluate(trained_model, test_data)
-    # Accuracy must be between 0 and 1
+    acc = evaluate(trained_freq_model, test_data)
     assert 0.0 <= acc <= 1.0
-    # This dataset ensures accuracy > 0
-    assert acc > 0
+
+
+def test_evaluate_empty_data(trained_freq_model):
+    assert evaluate(trained_freq_model, []) == 0.0
+
+
+def test_confusion_matrix_structure(trained_freq_model):
+    test_data = [("hello", "greeting"), ("learning", "tech")]
+    cm = confusion_matrix(trained_freq_model, test_data)
+    assert isinstance(cm, dict)
+    for actual, preds in cm.items():
+        assert isinstance(preds, dict)
 
 
 def test_model_not_trained():
-    model = MockModel()
+    model = WordFrequencyModel()
+    with pytest.raises(RuntimeError):
+        model.predict("anything")
+
+
+def test_tfidf_not_trained():
+    model = TFIDFModel()
     with pytest.raises(RuntimeError):
         model.predict("anything")

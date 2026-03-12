@@ -2,13 +2,11 @@
 NCoins — Six Ways (Greedy traps, Top/Bottom DP, Graph Search, Bitsets, and a Game)
 
 Perspective
------------
 I wrote this to teach *how pros think*: multiple mental models for the same problem,
 and how to stress-test them with adversarial coin systems. You'll see when greedy
 is perfect, when it quietly fails, and how DP/graph/bitset methods recover optimality.
 
 What’s inside (six distinct solution strategies)
-------------------------------------------------
   1) Greedy baseline                         → fast, intuitive, often wrong in generalized systems
   2) Divide & Conquer (plain recursion)      → clarity over performance; shows exponential blow-up
   3) Top-down DP (memoization)               → same recurrence, optimal substructure, no repeats
@@ -17,13 +15,11 @@ What’s inside (six distinct solution strategies)
   6) Bitset layer-BFS (integer bitset hack)  → O(minCoins·maxAmt/wordsize), elegant for “reachability by k”
 
 Bonus (analysis hooks)
-----------------------
   • Minimal counterexample finder (where Greedy ≠ Optimal for a coin system)
   • Timing harness (same target across methods)
   • Tiny console **game**: predict whether Greedy equals Optimal; guess coin counts
 
 Datasets
---------
 A few coin systems (in cents) that matter pedagogically:
   - Canonical (greedy is optimal): USD classic, EU cents, Binary
   - Non-canonical (greedy fails): add a 12c piece, or {1,3,4}, {1,7,10}, etc.
@@ -366,7 +362,7 @@ def print_table(rows: List[ChangeResult]) -> None:
         console.print(table)
     else:
         print("\nNCoins — Methods Comparison")
-        print("-" * 84)
+        print()
         for r in rows:
             cc = "∞" if math.isinf(r.count) else str(r.count)
             print(f"{r.method:30s} | {cc:>3s} | {pretty_combo(r.combo):40s} | {r.elapsed_ms:8.2f} ms | {r.note}")

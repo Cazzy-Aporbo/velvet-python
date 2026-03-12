@@ -14,9 +14,7 @@
 import random
 
 def block(title: str) -> None:
-    print("\n" + "=" * 78)
-    print(title)
-    print("-" * 78)
+    print(f"\n  {title}\n")
 
 # 
 # SECTION 1 — Core Randomness (seed, state, bits)

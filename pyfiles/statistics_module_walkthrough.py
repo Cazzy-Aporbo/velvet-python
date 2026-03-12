@@ -1,5 +1,4 @@
 # statistics_module_walkthrough.py
-# -----------------------------------------------------------------------------
 # Title: Python statistics Module — From Working Average to Thoughtful Inference
 # Author: Cazandra Aporbo
 # Started: February 7 2023
@@ -8,7 +7,6 @@
 #         line-by-line way. I start with the everyday averages, then move into
 #         population vs. sample thinking, grouped medians, and careful choices
 #         around spread. Every example is runnable and explained.
-# -----------------------------------------------------------------------------
 
 # I import the module once and use its namespace explicitly so it's clear
 # where each function comes from (e.g., statistics.mean instead of mean).
@@ -17,14 +15,10 @@ import statistics
 # Small helper to print clean section headers so the console reads like a lesson.
 
 def block(title: str) -> None:
-    print("\n" + "=" * 78)  # visual divider line so sections pop in the console
-    print(title)             # the section title I'll talk through next
-    print("-" * 78)  # underline for visual rhythm
+    print(f"\n  {title}\n")
 
 
-# -----------------------------------------------------------------------------
 # SECTION 1 — Central Tendencies: mean, median, mode, harmonic_mean
-# -----------------------------------------------------------------------------
 
 def lesson_central_tendency() -> None:
     block("1) Central Tendencies: mean, median, mode, harmonic_mean")
@@ -59,9 +53,7 @@ def lesson_central_tendency() -> None:
     print("harmonic_mean([2,4,8]) ->", round(hmean, 6))  # I round for tidy output
 
 
-# -----------------------------------------------------------------------------
 # SECTION 2 — Grouped Median: median_grouped for binned/continuous data
-# -----------------------------------------------------------------------------
 
 def lesson_grouped_median() -> None:
     block("2) Grouped Medians: median_grouped for binned/continuous data")
@@ -72,9 +64,7 @@ def lesson_grouped_median() -> None:
     print("median_grouped([10,20,30], interval=10) ->", grouped)
 
 
-# -----------------------------------------------------------------------------
 # SECTION 3 — Spread: variance and standard deviation (population vs sample)
-# -----------------------------------------------------------------------------
 
 def lesson_spread() -> None:
     block("3) Spread: variance/std — know your population from your sample")
@@ -102,9 +92,7 @@ def lesson_spread() -> None:
     print("stdev([1,2,3,4,5]) ->", st)
 
 
-# -----------------------------------------------------------------------------
 # SECTION 4 — Mini Reference + When-to-Use Notes
-# -----------------------------------------------------------------------------
 
 def lesson_reference() -> None:
     block("4) Quick Reference: what to reach for and when")
@@ -120,9 +108,7 @@ def lesson_reference() -> None:
     print("variance/stdev: using a sample; denominator N-1 (unbiased estimator).")
 
 
-# -----------------------------------------------------------------------------
 # SECTION 5 — Lightweight Tests (so the lesson is self-checking)
-# -----------------------------------------------------------------------------
 
 def lesson_tests() -> None:
     block("5) Sanity Tests: quick checks for expected values")
@@ -152,9 +138,7 @@ def lesson_tests() -> None:
     print("All tests passed.")
 
 
-# -----------------------------------------------------------------------------
 # MASTER RUNNER — so this reads as a narrative when executed
-# -----------------------------------------------------------------------------
 
 def run_all_statistics_lessons() -> None:
     lesson_central_tendency()

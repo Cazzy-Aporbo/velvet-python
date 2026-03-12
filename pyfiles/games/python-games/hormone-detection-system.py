@@ -1264,18 +1264,18 @@ def run_comprehensive_demonstration():
     Run comprehensive demonstration of the hormone detection system.
     Includes multiple patient scenarios and disease simulations.
     """
-    print("=" * 80)
+    print()
     print("ADVANCED WOMEN'S HORMONE DETECTION SYSTEM - DEMONSTRATION")
-    print("=" * 80)
+    print()
     
     # Initialize components
     simulator = HormoneTestingSimulator(seed=42)
     disease_detector = DiseaseDetectionModel()
     
     # Test Case 1: Healthy Reproductive Age Woman
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 1: HEALTHY REPRODUCTIVE AGE WOMAN")
-    print("=" * 80)
+    print()
     
     patient1 = PatientProfile(
         patient_id="PAT001",
@@ -1304,9 +1304,9 @@ def run_comprehensive_demonstration():
     print("\n" + report1)
     
     # Test Case 2: Pregnant Woman (First Trimester)
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 2: PREGNANT WOMAN - FIRST TRIMESTER")
-    print("=" * 80)
+    print()
     
     patient2 = PatientProfile(
         patient_id="PAT002",
@@ -1356,9 +1356,9 @@ def run_comprehensive_demonstration():
         print(f"  {complication}: {risk:.1%}")
     
     # Test Case 3: Elderly Postmenopausal Woman
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 3: ELDERLY POSTMENOPAUSAL WOMAN")
-    print("=" * 80)
+    print()
     
     patient3 = PatientProfile(
         patient_id="PAT003",
@@ -1401,9 +1401,9 @@ def run_comprehensive_demonstration():
         print(f"  {risk_type}: {risk_value:.1%}")
     
     # Test Case 4: PCOS Patient
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 4: POLYCYSTIC OVARY SYNDROME (PCOS)")
-    print("=" * 80)
+    print()
     
     patient4 = PatientProfile(
         patient_id="PAT004",
@@ -1439,9 +1439,9 @@ def run_comprehensive_demonstration():
             print(f"  {disease.value}: {prob:.1%}")
     
     # Test Case 5: Hormone Kinetics Simulation
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 5: 24-HOUR HORMONE KINETICS SIMULATION")
-    print("=" * 80)
+    print()
     
     patient5 = PatientProfile(
         patient_id="PAT005",
@@ -1483,9 +1483,9 @@ def run_comprehensive_demonstration():
         print(f"    Variation: {((max_val - min_val) / min_val * 100):.1f}%")
     
     # Test Case 6: Time Series Analysis
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 6: TIME SERIES MONITORING")
-    print("=" * 80)
+    print()
     
     patient6 = PatientProfile(
         patient_id="PAT006",
@@ -1519,9 +1519,9 @@ def run_comprehensive_demonstration():
             print("  Status: Abnormal rhythm - possible adrenal dysfunction")
     
     # Test Case 7: Multiple Disease Detection
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 7: COMPLEX CASE - MULTIPLE CONDITIONS")
-    print("=" * 80)
+    print()
     
     patient7 = PatientProfile(
         patient_id="PAT007",
@@ -1624,9 +1624,9 @@ def run_comprehensive_demonstration():
     print("     - Stress reduction techniques (meditation, counseling)")
     
     # Test Case 8: Statistical Analysis Summary
-    print("\n" + "=" * 80)
+    print()
     print("TEST CASE 8: POPULATION STATISTICS DEMONSTRATION")
-    print("=" * 80)
+    print()
     
     # Generate population data
     population_data = []
@@ -1666,7 +1666,7 @@ def run_comprehensive_demonstration():
     pop_df = pd.DataFrame(population_data)
     
     print("\nPopulation Hormone Statistics by Age Group:")
-    print("-" * 60)
+    print()
     
     for group in pop_df['age_group'].unique():
         group_data = pop_df[pop_df['age_group'] == group]
@@ -1683,9 +1683,9 @@ def run_comprehensive_demonstration():
     print(f"  Age vs FSH: r = {pop_df['age'].corr(pop_df['fsh']):.3f}")
     print(f"  BMI vs Estradiol: r = {pop_df['bmi'].corr(pop_df['estradiol']):.3f}")
     
-    print("\n" + "=" * 80)
+    print()
     print("DEMONSTRATION COMPLETE")
-    print("=" * 80)
+    print()
     print("\nSystem Capabilities Summary:")
     print("  - Comprehensive hormone panel analysis (14 key hormones)")
     print("  - Life stage-specific reference ranges")
@@ -1723,7 +1723,7 @@ if __name__ == "__main__":
     success = run_comprehensive_demonstration()
     
     if success:
-        print("\n" + "=" * 80)
+        print()
         print("All test cases executed successfully!")
         print("System ready for clinical deployment.")
-        print("=" * 80)
+        print()

@@ -1895,13 +1895,13 @@ def run_comprehensive_demo():
     Shows when to use each algorithm and interprets results.
     """
     print("COMPREHENSIVE ADVANCED ALGORITHMS DEMONSTRATION")
-    print("=" * 80)
+    print()
     
     np.random.seed(42)  # For reproducibility
     
     # 1. CNN for Image Feature Extraction
     print("\n1. CNN FOR SPATIAL REPRESENTATION LEARNING")
-    print("-" * 40)
+    print()
     print("Use case: Extract features from image data")
     print("When to use: Grid-like data with local patterns (images, spectrograms)")
     
@@ -1917,7 +1917,7 @@ def run_comprehensive_demo():
     
     # 2. LSTM for Sequence Modeling
     print("\n2. LSTM FOR SEQUENCE MODELING WITH MEMORY")
-    print("-" * 40)
+    print()
     print("Use case: Time series prediction, language modeling")
     print("When to use: Sequential data with long-term dependencies")
     
@@ -1936,7 +1936,7 @@ def run_comprehensive_demo():
     
     # 3. Transformer Self-Attention
     print("\n3. TRANSFORMER FOR ATTENTION-BASED MODELING")
-    print("-" * 40)
+    print()
     print("Use case: Machine translation, document understanding")
     print("When to use: Need global context, parallel processing")
     
@@ -1955,7 +1955,7 @@ def run_comprehensive_demo():
     
     # 4. Variational Autoencoder
     print("\n4. VAE FOR PROBABILISTIC GENERATION")
-    print("-" * 40)
+    print()
     print("Use case: Generate new samples, learn latent representations")
     print("When to use: Need uncertainty estimates, interpretable latent space")
     
@@ -1976,7 +1976,7 @@ def run_comprehensive_demo():
     
     # 5. Diffusion Model
     print("\n5. DIFFUSION MODEL FOR HIGH-QUALITY GENERATION")
-    print("-" * 40)
+    print()
     print("Use case: Image synthesis, data augmentation")
     print("When to use: Need diverse, stable generation")
     
@@ -1997,7 +1997,7 @@ def run_comprehensive_demo():
     
     # 6. Q-Learning
     print("\n6. Q-LEARNING FOR DISCRETE ACTIONS")
-    print("-" * 40)
+    print()
     print("Use case: Game AI, robot navigation with discrete actions")
     print("When to use: Small state/action space, need optimal policy")
     
@@ -2014,7 +2014,7 @@ def run_comprehensive_demo():
     
     # 7. Actor-Critic
     print("\n7. ACTOR-CRITIC FOR CONTINUOUS CONTROL")
-    print("-" * 40)
+    print()
     print("Use case: Robotics, continuous control tasks")
     print("When to use: Continuous action space, high-dimensional states")
     
@@ -2033,7 +2033,7 @@ def run_comprehensive_demo():
     
     # 8. DBSCAN Clustering
     print("\n8. DBSCAN FOR DENSITY-BASED CLUSTERING")
-    print("-" * 40)
+    print()
     print("Use case: Anomaly detection, spatial clustering")
     print("When to use: Unknown number of clusters, outliers present")
     
@@ -2056,7 +2056,7 @@ def run_comprehensive_demo():
     
     # 9. Spectral Clustering
     print("\n9. SPECTRAL CLUSTERING FOR COMPLEX GEOMETRIES")
-    print("-" * 40)
+    print()
     print("Use case: Image segmentation, community detection")
     print("When to use: Non-convex clusters, manifold structure")
     
@@ -2070,7 +2070,7 @@ def run_comprehensive_demo():
     
     # 10. Graph Neural Network
     print("\n10. GNN FOR GRAPH-STRUCTURED DATA")
-    print("-" * 40)
+    print()
     print("Use case: Social networks, molecular property prediction")
     print("When to use: Data has explicit relational structure")
     
@@ -2094,7 +2094,7 @@ def run_comprehensive_demo():
     
     # 11. Gradient Boosted Trees
     print("\n11. GRADIENT BOOSTED TREES FOR TABULAR DATA")
-    print("-" * 40)
+    print()
     print("Use case: Kaggle competitions, risk scoring")
     print("When to use: Structured/tabular data, need high accuracy")
     
@@ -2116,7 +2116,7 @@ def run_comprehensive_demo():
     
     # 12. Matrix Factorization Recommender
     print("\n12. MATRIX FACTORIZATION FOR RECOMMENDATIONS")
-    print("-" * 40)
+    print()
     print("Use case: Movie recommendations, e-commerce")
     print("When to use: Sparse user-item interaction data")
     
@@ -2145,7 +2145,7 @@ def run_comprehensive_demo():
     print("Matrix factorization learns latent user/item embeddings")
     print("Similar alternatives: Neural CF for non-linearity, Graph-based RecSys")
     
-    print("\n" + "=" * 80)
+    print()
     print("DEMONSTRATION COMPLETE")
     print("\nKEY TAKEAWAYS:")
     print("1. CNNs excel at spatial/local patterns (images)")

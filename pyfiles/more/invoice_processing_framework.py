@@ -13,9 +13,7 @@ import requests
 # Logging setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
-# -----------------------------
 # 1. Fetch invoice via API or file
-# -----------------------------
 def fetch_invoice(file_path=None, api_url=None, invoice_id=None):
     """
     Fetch an invoice from local file or via API
@@ -37,9 +35,7 @@ def fetch_invoice(file_path=None, api_url=None, invoice_id=None):
     else:
         raise ValueError("Either file_path or api_url + invoice_id must be provided")
 
-# -----------------------------
 # 2. Extract invoice fields using AI Builder
-# -----------------------------
 def extract_invoice_fields(invoice_bytes, ai_builder_api_url, api_key):
     """
     Sends invoice bytes to AI Builder Invoice Processing model and returns extracted fields
@@ -56,9 +52,7 @@ def extract_invoice_fields(invoice_bytes, ai_builder_api_url, api_key):
         logging.error("Error extracting invoice fields: %s", e)
         return {}
 
-# -----------------------------
 # 3. Validate extracted fields
-# -----------------------------
 def validate_invoice_fields(fields):
     """
     Validates mandatory fields like vendor, invoice_date, total_amount
@@ -71,9 +65,7 @@ def validate_invoice_fields(fields):
         logging.info("All mandatory fields present")
     return missing
 
-# -----------------------------
 # 4. Transform and prepare data for downstream system
-# -----------------------------
 def transform_invoice_data(fields):
     """
     Convert fields to structured DataFrame for accounting system or database
@@ -88,9 +80,7 @@ def transform_invoice_data(fields):
     }])
     return df
 
-# -----------------------------
 # 5. Main execution
-# -----------------------------
 if __name__ == "__main__":
     INVOICE_FILE = "example_invoice.pdf"  # Replace with actual file
     AI_BUILDER_API_URL = "https://your-ai-builder-endpoint/invoiceprocessing"

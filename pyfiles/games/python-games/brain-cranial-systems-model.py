@@ -1694,9 +1694,9 @@ def demonstrate_brain_simulation():
     Shows various simulations and analyses
     """
     
-    print("=" * 80)
+    print()
     print("COMPREHENSIVE BRAIN AND CRANIAL SYSTEMS MODELING DEMONSTRATION")
-    print("=" * 80)
+    print()
     
     # Initialize simulator with moderate complexity
     print("\nInitializing brain simulator...")
@@ -1717,9 +1717,9 @@ def demonstrate_brain_simulation():
         print(f"     - Function: {region.function}")
     
     # Run baseline simulation
-    print("\n" + "=" * 60)
+    print()
     print("BASELINE HEALTHY BRAIN SIMULATION")
-    print("=" * 60)
+    print()
     
     baseline_results = simulator.run_simulation(duration_ms=1000)
     
@@ -1739,9 +1739,9 @@ def demonstrate_brain_simulation():
             print(f"  - {band}: {power:.1f}")
     
     # Demonstrate pathology simulations
-    print("\n" + "=" * 60)
+    print()
     print("NEUROLOGICAL PATHOLOGY SIMULATIONS")
-    print("=" * 60)
+    print()
     
     pathologies = [
         ("stroke", 0.6, "Ischemic stroke with 60% severity"),
@@ -1773,9 +1773,9 @@ def demonstrate_brain_simulation():
         print(f"  - Microglial activation: {pathology_results['microglial_activation']:.2f}")
     
     # Demonstrate specific cellular mechanisms
-    print("\n" + "=" * 60)
+    print()
     print("CELLULAR MECHANISM DEMONSTRATIONS")
-    print("=" * 60)
+    print()
     
     # Create single neuron for detailed analysis
     print("\n--- Single Neuron Hodgkin-Huxley Dynamics ---")
@@ -1846,9 +1846,9 @@ def demonstrate_brain_simulation():
     print(f"  - CSF volume: {arachnoid.csf_volume:.1f} mL")
     print(f"  - Net production rate: {(production - absorption) * 60:.3f} mL/min")
     
-    print("\n" + "=" * 80)
+    print()
     print("DEMONSTRATION COMPLETE")
-    print("=" * 80)
+    print()
     print("\nThis comprehensive model demonstrates:")
     print("- Detailed neuronal electrophysiology (Hodgkin-Huxley)")
     print("- Synaptic transmission and plasticity")

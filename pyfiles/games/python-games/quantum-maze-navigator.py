@@ -1,6 +1,5 @@
 """
 QUANTUM MAZE NAVIGATOR - Multi-Dimensional Puzzle Game
-=======================================================
 A comprehensive quantum computing educational game that teaches quantum mechanics
 through navigating mazes that exist in superposition states. Players manipulate
 qubits, apply quantum gates, and use entanglement to solve increasingly complex

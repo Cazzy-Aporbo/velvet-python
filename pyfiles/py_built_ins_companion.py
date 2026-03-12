@@ -1,5 +1,4 @@
 # cazandra_builtins_companion.py
-# -----------------------------------------------------------------------------
 # Title: Python Built-ins — Field Guide from Basics to Mastery
 # Author: Cazandra Aporbo
 # Started: December 2022
@@ -9,17 +8,15 @@
 #         practical patterns, and safe demos you can run locally.
 # Promise: No emojis. No AI-speak. Just me, Cazandra, explaining how I use these.
 # Notes: Standard library only; examples are safe and side‑effect aware.
-# -----------------------------------------------------------------------------
 
 from typing import Any, Dict  # pared imports down to only what is actually used
 import io    # for safe in‑memory file examples with open()
 
 def section(title: str) -> None:
-    print("\n" + "=" * 78)
+    print()
     print(title)
-    print("-" * 78)
+    print()
 
-# --- abs, all, any, ascii, bin, bool -------------------------------------------------
 
 def demo_core_truthiness() -> None:
     section("abs, all, any, ascii, bin, bool")
@@ -36,7 +33,6 @@ def demo_core_truthiness() -> None:
     print("bool([]) (empty is False) ->", bool([]))
     print("bool([0]) (non‑empty is True) ->", bool([0]))
 
-# --- bytearray, bytes, callable, chr --------------------------------------------------
 
 def demo_bytes_and_callables() -> None:
     section("bytearray, bytes, callable, chr")
@@ -51,7 +47,6 @@ def demo_bytes_and_callables() -> None:
     print("callable(42) ->", callable(42))
     print("chr(9731) (snowman) ->", chr(9731))
 
-# --- classmethod, staticmethod, property, super --------------------------------------
 
 def demo_method_kinds() -> None:
     section("classmethod, staticmethod, property, super")
@@ -87,7 +82,6 @@ def demo_method_kinds() -> None:
             return super().greet() + ", world"
     print("Child().greet() ->", Child().greet())
 
-# --- compile, eval, exec --------------------------------------------------------------
 
 def demo_dynamic_code() -> None:
     section("compile, eval, exec — used carefully")
@@ -99,7 +93,6 @@ def demo_dynamic_code() -> None:
     exec("def add(a,b):\n    return a+b", ns, ns)
     print("exec-defined add(2,3) ->", ns["add"](2, 3))
 
-# --- complex, dict, delattr, dir, divmod, enumerate ----------------------------------
 
 def demo_collections_and_introspection() -> None:
     section("complex, dict, delattr, dir, divmod, enumerate")
@@ -126,7 +119,6 @@ def demo_collections_and_introspection() -> None:
     delattr(Tmp, 'z')
     print("hasattr(Tmp,'z') after  ->", hasattr(Tmp, 'z'))
 
-# --- filter, map, frozenset, getattr, globals, hasattr, hash, help --------------------
 
 def demo_higher_order_and_meta() -> None:
     section("filter, map, frozenset, getattr, globals, hasattr, hash, help")
@@ -146,7 +138,6 @@ def demo_higher_order_and_meta() -> None:
     print("hash('key') ->", hash('key'))
     print("Use help(str) or help('modules') in an interactive session.")
 
-# --- hex, id, input, int, isinstance, issubclass, iter, len, list, locals -------------
 
 def demo_types_and_introspection2() -> None:
     section("hex, id, input, int, isinstance, issubclass, iter, len, list, locals")
@@ -170,7 +161,6 @@ def demo_types_and_introspection2() -> None:
     here = locals()
     print("'pretend' in locals()? ->", 'pretend' in here)
 
-# --- max, memoryview, min, next, object, oct, open, ord, pow, print -------------------
 
 def demo_data_access_and_math() -> None:
     section("max, memoryview, min, next, object, oct, open, ord, pow, print")
@@ -194,7 +184,6 @@ def demo_data_access_and_math() -> None:
     print("pow(7, 3, 5) ->", pow(7, 3, 5))
     print("x", "y", "z", sep=", ", end=".\n")
 
-# --- range, repr, reversed, round, set, setattr, slice, sorted ------------------------
 
 def demo_sequences_and_ordering() -> None:
     section("range, repr, reversed, round, set, setattr, slice, sorted")
@@ -216,7 +205,6 @@ def demo_sequences_and_ordering() -> None:
     words = ["Alpha", "beta", "Gamma"]
     print("sorted casefold ->", sorted(words, key=str.casefold))
 
-# --- str, sum, tuple, type, vars, zip -------------------------------------------------
 
 def demo_text_numbers_and_zipping() -> None:
     section("str, sum, tuple, type, vars, zip")
@@ -235,7 +223,6 @@ def demo_text_numbers_and_zipping() -> None:
     scores = [9, 8, 10]
     print("list(zip(names,scores)) ->", list(zip(names, scores)))
 
-# --- Putting it all together ----------------------------------------------------------
 
 def run_all() -> None:
     demo_core_truthiness()

@@ -22,9 +22,7 @@ import logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s [%(levelname)s] %(message)s')
 
-# -----------------------------
 # 1. Data Generation & Validation
-# -----------------------------
 def generate_sample_data(n=200):
     np.random.seed(42)
     base_price = np.random.uniform(10, 100, n)
@@ -59,9 +57,7 @@ def validate_data(data):
     logging.info("Data validation passed.")
 
 
-# -----------------------------
 # 2. Demand Model
-# -----------------------------
 def build_demand_model(data, degree=2):
     """
     Builds a demand model using linear regression with polynomial features.
@@ -91,9 +87,7 @@ def predict_demand(model, poly, base_price, competitor_price, marketing_spend):
     return predicted_demand
 
 
-# -----------------------------
 # 3. Dynamic Pricing Optimization
-# -----------------------------
 def optimal_price(model, poly, competitor_price, marketing_spend,
                   price_range=(10, 100), steps=100):
     best_price = None
@@ -111,9 +105,7 @@ def optimal_price(model, poly, competitor_price, marketing_spend,
     return best_price, max_revenue
 
 
-# -----------------------------
 # 4. Revenue Forecasting
-# -----------------------------
 def forecast_revenue(model, poly, price, competitor_price, marketing_spend, units=1):
     demand = predict_demand(model, poly, price, competitor_price, marketing_spend)
     revenue = demand * price * units
@@ -121,9 +113,7 @@ def forecast_revenue(model, poly, price, competitor_price, marketing_spend, unit
     return revenue
 
 
-# -----------------------------
 # 5. Main Execution
-# -----------------------------
 if __name__ == "__main__":
     # Step 1: Generate data
     data = generate_sample_data(n=300)

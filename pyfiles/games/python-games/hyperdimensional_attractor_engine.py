@@ -684,10 +684,10 @@ class PhDAttractorVisualizer:
 
 def launch_phd_visualization():
     """Launch the PhD-level attractor visualization"""
-    print("=" * 80)
+    print()
     print("PHD-LEVEL HYPERDIMENSIONAL ATTRACTOR SYSTEM")
     print("Advanced Dynamical Systems Analysis")
-    print("=" * 80)
+    print()
     print()
     print("ANALYSIS PANELS:")
     print("1. Main 3D Attractor Field - Rainbow colored surface with particles")

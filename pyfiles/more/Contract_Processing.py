@@ -13,9 +13,7 @@ import requests
 # Logging setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
-# -----------------------------
 # 1. Fetch contract via API or file path
-# -----------------------------
 def fetch_contract(file_path=None, api_url=None, contract_id=None):
     """
     Fetch a contract from local file or via API
@@ -37,9 +35,7 @@ def fetch_contract(file_path=None, api_url=None, contract_id=None):
     else:
         raise ValueError("Either file_path or api_url + contract_id must be provided")
 
-# -----------------------------
 # 2. Extract clauses using AI Builder Contract Processing
-# -----------------------------
 def extract_clauses(contract_bytes, ai_builder_api_url, api_key):
     """
     Sends contract bytes to AI Builder Contract Processing model and returns extracted entities
@@ -56,9 +52,7 @@ def extract_clauses(contract_bytes, ai_builder_api_url, api_key):
         logging.error("Error extracting clauses: %s", e)
         return []
 
-# -----------------------------
 # 3. Risk classification
-# -----------------------------
 def classify_risk(clauses):
     """
     Simple heuristic risk classification
@@ -81,9 +75,7 @@ def classify_risk(clauses):
         })
     return pd.DataFrame(risk_report)
 
-# -----------------------------
 # 4. Generate summary
-# -----------------------------
 def generate_summary(risk_df):
     """
     Creates a summary report counting high and low risk clauses
@@ -92,9 +84,7 @@ def generate_summary(risk_df):
     logging.info("Risk summary generated: %s", summary)
     return summary
 
-# -----------------------------
 # 5. Main execution
-# -----------------------------
 if __name__ == "__main__":
     # Example usage
     CONTRACT_FILE = "example_contract.pdf"  # Replace with actual file

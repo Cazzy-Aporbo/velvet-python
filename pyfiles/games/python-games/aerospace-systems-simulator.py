@@ -1432,16 +1432,16 @@ def example_atmospheric_flight():
 
 if __name__ == "__main__":
     # Run example simulations
-    print("=" * 60)
+    print()
     print("AEROSPACE PHYSICAL SYSTEMS SIMULATOR")
-    print("=" * 60)
+    print()
     
     print("\n1. Orbital Mechanics Simulation")
-    print("-" * 30)
+    print()
     orbital_sim = example_orbital_simulation()
     
     print("\n2. Atmospheric Flight Simulation")
-    print("-" * 30)
+    print()
     atmospheric_sim = example_atmospheric_flight()
     
     print("\nSimulations complete!")

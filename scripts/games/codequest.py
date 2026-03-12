@@ -227,9 +227,9 @@ class CodeQuest:
         }
     
     def start_game(self):
-        print("=" * 60)
+        print()
         print("    WELCOME TO CODEQUEST: THE PYTHON ODYSSEY")
-        print("=" * 60)
+        print()
         print("\nEmbark on an epic journey to master Python programming!")
         print("Battle code challenges, level up your skills, and become a Python Archmage!")
         

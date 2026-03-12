@@ -1541,11 +1541,11 @@ def comprehensive_demonstration():
     Demonstrate all frontier methods with explanations
     """
     print("COMPREHENSIVE FRONTIER ML METHODS DEMONSTRATION")
-    print("=" * 60)
+    print()
     
     # 1. Normalizing Flows
     print("\n1. NORMALIZING FLOWS")
-    print("-" * 40)
+    print()
     print("Purpose: Exact likelihood + flexible distributions")
     print("Key insight: Invertible transformations preserve probability")
     
@@ -1557,7 +1557,7 @@ def comprehensive_demonstration():
     
     # 2. Diffusion Transformers
     print("\n2. DIFFUSION TRANSFORMERS")
-    print("-" * 40)
+    print()
     print("Purpose: High-quality generation with transformers")
     print("Innovation: Attention for denoising instead of U-Net")
     
@@ -1570,7 +1570,7 @@ def comprehensive_demonstration():
     
     # 3. Neural ODEs
     print("\n3. NEURAL ODEs")
-    print("-" * 40)
+    print()
     print("Purpose: Continuous-depth models with memory efficiency")
     print("Key benefit: Adaptive computation, continuous interpolation")
     
@@ -1583,7 +1583,7 @@ def comprehensive_demonstration():
     
     # 4. Graph Transformers
     print("\n4. GRAPH TRANSFORMERS")
-    print("-" * 40)
+    print()
     print("Purpose: Combine graph structure with attention")
     print("Innovation: Structure-aware attention patterns")
     
@@ -1600,7 +1600,7 @@ def comprehensive_demonstration():
     
     # 5. Neural Tangent Kernel
     print("\n5. NEURAL TANGENT KERNEL")
-    print("-" * 40)
+    print()
     print("Purpose: Understand infinite-width network behavior")
     print("Insight: Wide NNs → Gaussian processes")
     
@@ -1616,7 +1616,7 @@ def comprehensive_demonstration():
     
     # 6. Meta-Learning (MAML)
     print("\n6. META-LEARNING (MAML)")
-    print("-" * 40)
+    print()
     print("Purpose: Learn to learn - fast adaptation to new tasks")
     print("Key: Find initialization for quick fine-tuning")
     
@@ -1638,7 +1638,7 @@ def comprehensive_demonstration():
     
     # 7. Bayesian Deep Learning
     print("\n7. BAYESIAN DEEP LEARNING")
-    print("-" * 40)
+    print()
     print("Purpose: Uncertainty quantification in predictions")
     print("Method: Distributions over weights instead of point estimates")
     
@@ -1653,7 +1653,7 @@ def comprehensive_demonstration():
     
     # 8. Contrastive Learning (SimCLR)
     print("\n8. CONTRASTIVE LEARNING")
-    print("-" * 40)
+    print()
     print("Purpose: Self-supervised representation learning")
     print("Principle: Similar examples close, different examples far")
     
@@ -1677,7 +1677,7 @@ def comprehensive_demonstration():
     
     # 9. Energy-Based Models
     print("\n9. ENERGY-BASED MODELS")
-    print("-" * 40)
+    print()
     print("Purpose: Model unnormalized distributions")
     print("Advantage: No partition function during training")
     
@@ -1695,7 +1695,7 @@ def comprehensive_demonstration():
     
     # 10. PPO (Reinforcement Learning)
     print("\n10. PROXIMAL POLICY OPTIMIZATION (PPO)")
-    print("-" * 40)
+    print()
     print("Purpose: Stable policy optimization in RL")
     print("Key: Clipped objective prevents destructive updates")
     
@@ -1714,7 +1714,7 @@ def comprehensive_demonstration():
     
     # 11. Mixture of Experts
     print("\n11. MIXTURE OF EXPERTS")
-    print("-" * 40)
+    print()
     print("Purpose: Conditional computation for efficiency")
     print("Principle: Route inputs to specialized experts")
     
@@ -1728,7 +1728,7 @@ def comprehensive_demonstration():
     
     # 12. Federated Learning
     print("\n12. FEDERATED LEARNING")
-    print("-" * 40)
+    print()
     print("Purpose: Privacy-preserving distributed training")
     print("Key: Data never leaves devices")
     
@@ -1750,7 +1750,7 @@ def comprehensive_demonstration():
     
     # 13. Neural Architecture Search
     print("\n13. NEURAL ARCHITECTURE SEARCH")
-    print("-" * 40)
+    print()
     print("Purpose: Automated model design")
     print("Method: Differentiable search over architectures")
     
@@ -1767,7 +1767,7 @@ def comprehensive_demonstration():
     
     # 14. Curriculum Learning
     print("\n14. CURRICULUM LEARNING")
-    print("-" * 40)
+    print()
     print("Purpose: Improve training by ordering examples")
     print("Strategy: Easy → Hard progression")
     
@@ -1794,12 +1794,12 @@ def comprehensive_demonstration():
     print(f"Current difficulty level: {curriculum.current_difficulty:.2f}")
     print("Benefits: Faster convergence, better generalization, stable training")
     
-    print("\n" + "=" * 60)
+    print()
     print("ADVANCED INSIGHTS AND PATTERNS")
-    print("=" * 60)
+    print()
     
     print("\n1. WHEN TO USE EACH METHOD:")
-    print("-" * 40)
+    print()
     print("• Normalizing Flows: Need exact likelihood + sampling")
     print("• Diffusion Models: High-quality generation tasks")
     print("• Neural ODEs: Continuous processes, irregular time series")
@@ -1816,7 +1816,7 @@ def comprehensive_demonstration():
     print("• Curriculum: Complex tasks with natural difficulty progression")
     
     print("\n2. COMBINATION STRATEGIES:")
-    print("-" * 40)
+    print()
     print("• Diffusion + Transformers = State-of-the-art generation")
     print("• Contrastive + Meta-Learning = Few-shot visual learning")
     print("• Bayesian + Neural ODEs = Uncertainty in dynamics")
@@ -1825,7 +1825,7 @@ def comprehensive_demonstration():
     print("• Curriculum + RL = Stable policy learning")
     
     print("\n3. IMPLEMENTATION TIPS:")
-    print("-" * 40)
+    print()
     print("• Flows: Check invertibility, monitor log-det")
     print("• Diffusion: Tune noise schedule, use DDIM for faster sampling")
     print("• Neural ODEs: Adaptive solvers, adjoint method for memory")
@@ -1841,7 +1841,7 @@ def comprehensive_demonstration():
     print("• Curriculum: Smooth difficulty progression, avoid forgetting")
     
     print("\n4. COMMON PITFALLS TO AVOID:")
-    print("-" * 40)
+    print()
     print("• Flows: Exploding/vanishing gradients in deep flows")
     print("• Diffusion: Mode collapse, slow sampling")
     print("• Neural ODEs: Stiff dynamics, numerical instability")
@@ -1857,7 +1857,7 @@ def comprehensive_demonstration():
     print("• Curriculum: Catastrophic forgetting of easy examples")
     
     print("\n5. RESEARCH FRONTIERS:")
-    print("-" * 40)
+    print()
     print("• Diffusion: Consistency models, flow matching")
     print("• Transformers: Linear attention, state space models")
     print("• Meta-Learning: Meta-gradients, learned optimizers")
@@ -1868,9 +1868,9 @@ def comprehensive_demonstration():
     print("• Federated: Heterogeneous architectures, verification")
     print("• NAS: Zero-shot NAS, hardware-aware search")
     
-    print("\n" + "=" * 60)
+    print()
     print("TRAINING RECOMMENDATIONS")
-    print("=" * 60)
+    print()
     
     print("\n1. Start simple: Baseline → Enhancement → Frontier")
     print("2. Monitor metrics specific to each method")
@@ -1880,20 +1880,20 @@ def comprehensive_demonstration():
     print("6. Document hyperparameters and design choices")
     print("7. Use proper evaluation protocols for each method")
     
-    print("\n" + "=" * 60)
+    print()
     print("Demonstration complete! Each method implemented with key insights.")
     print("Study the code line-by-line to understand the mathematical principles.")
     print("Experiment with combinations to discover new capabilities.")
-    print("=" * 60)
+    print()
 
 
 if __name__ == "__main__":
     # Run comprehensive demonstration
     comprehensive_demonstration()
     
-    print("\n" + "=" * 60)
+    print()
     print("ADDITIONAL EXERCISES FOR DEEP UNDERSTANDING")
-    print("=" * 60)
+    print()
     
     print("\n1. Modify flow architecture to use coupling layers")
     print("2. Implement DDIM sampling for diffusion models")
@@ -1912,4 +1912,4 @@ if __name__ == "__main__":
     
     print("\nCode is fully functional - experiment with each component!")
     print("Remember: Understanding comes from implementation and experimentation.")
-    print("=" * 60)
+    print()

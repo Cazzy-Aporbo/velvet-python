@@ -13,7 +13,6 @@ Every single line is commented to help learners think in terms of:  # Explanatio
 Quit any time with: /quit, /q, or Ctrl+C.  # Usage hint (str)
 """
 
-# ------------------------------ imports (built-in only) ------------------------------
 from __future__ import annotations  # Future import to allow postponed annotations (module-level directive)
 import sys  # System-specific functions and parameters (module)
 import math  # Math functions (module)
@@ -28,7 +27,6 @@ from enum import Enum, auto  # Enumerations (class factory, function)
 from itertools import islice  # Iterator slicing helper (function)
 from collections import Counter, namedtuple  # Data utilities (classes)
 
-# ------------------------------ global configuration & state ------------------------------
 PASTEL = {  # Dict[str,str] — ANSI-ish pastel-ish color codes (basic) for terminal flavor; safe if not supported
     "reset": "\033[0m",  # ANSI reset (str)
     "lav": "\033[95m",  # Lavender-ish (str)
@@ -43,7 +41,6 @@ GLOBAL_COMBO: int = 0  # Global mutable int used to demonstrate global scope upd
 # Namedtuple for immutable lightweight record (type: class returned by factory)
 ScoreTuple = namedtuple("ScoreTuple", ["correct", "total", "streak"])  # Fields are ints
 
-# ------------------------------ utility decorators & helpers ------------------------------
 def banner(text: str) -> None:
     """Pretty banner line with pastel coloring.  # Docstring (str)"""
     # Using str multiplication and concatenation to draw a line — datatype: str
@@ -94,7 +91,6 @@ def call_counter(fn: Callable) -> Callable:  # Higher-order function (callable) 
         # End of wrapper (comment)
     return wrapper  # Return decorated function (callable)
 
-# ------------------------------ OOP showpiece with magic methods ------------------------------
 @dataclass  # Dataclass auto-generates __init__, __repr__, __eq__ (decorator)
 class Vector2D:  # Custom class demonstrating dunder methods (class)
     x: float  # Field x (float)
@@ -125,7 +121,6 @@ class Vector2D:  # Custom class demonstrating dunder methods (class)
     def dot(a: "Vector2D", b: "Vector2D") -> float:  # Dot product (callable)
         return a.x * b.x + a.y * b.y  # Scalar (float)
 
-# ------------------------------ scoring & game state ------------------------------
 @dataclass  # Dataclass for simple container (decorator)
 class ScoreBoard:  # Tracks performance metrics (class)
     correct: int = 0  # Total correct answers (int)
@@ -149,7 +144,6 @@ class Topic(Enum):  # Enumeration base (class)
     ALGO = auto()  # Algorithms (enum member)
     MISC = auto()  # Miscellaneous (enum member)
 
-# ------------------------------ challenge factory functions ------------------------------
 def challenge_arith() -> Tuple[str, Any, str, Topic]:
     """Create an arithmetic challenge.  # Docstring (str)"""
     a = random.randint(5, 25)  # Random int a (int)
@@ -225,7 +219,6 @@ CHALLENGES: List[Callable[[], Tuple[str, Any, str, Topic]]] = [  # Annotated lis
     challenge_misc,  # Misc factory (callable)
 ]
 
-# ------------------------------ global/local scope demo ------------------------------
 def bump_global_combo() -> None:
     """Demonstrate global mutation: adds random 0..2 to GLOBAL_COMBO.  # Docstring (str)"""
     global GLOBAL_COMBO  # Declare that we intend to write to the global (keyword)
@@ -233,7 +226,6 @@ def bump_global_combo() -> None:
     GLOBAL_COMBO += add  # Mutate global int (side-effect)
     print(f"{PASTEL['ink']}[global] combo +={add} -> {GLOBAL_COMBO}{PASTEL['reset']}")  # Show state (I/O)
 
-# ------------------------------ command help ------------------------------
 HELP_TEXT = """  # Multiline help (str)
 Commands:
   /quit or /q       -> exit the game
@@ -244,7 +236,6 @@ Commands:
   /help             -> show this help
 """  # End of help text (str)
 
-# ------------------------------ topic biasing logic ------------------------------
 def pick_challenge(bias: Optional[Topic]) -> Tuple[str, Any, str, Topic]:
     """Pick a challenge, optionally biased to a topic.  # Docstring (str)"""
     # If bias is set, pick matching factory; else uniform random (callable selection)
@@ -259,7 +250,6 @@ def pick_challenge(bias: Optional[Topic]) -> Tuple[str, Any, str, Topic]:
     fn = random.choice(CHALLENGES)  # Choose any factory (callable)
     return fn()  # Produce a challenge (tuple)
 
-# ------------------------------ core game loop ------------------------------
 @call_counter  # Decorated to demonstrate closures and side effects (decorator)
 def play_round(score: ScoreBoard, bias: Optional[Topic]) -> bool:
     """Play one round; return False if player exits, else True.  # Docstring (str)"""
@@ -313,7 +303,6 @@ def play_round(score: ScoreBoard, bias: Optional[Topic]) -> bool:
     print(PASTEL["ink"] + score.pretty() + PASTEL["reset"])  # Show running score (I/O)
     return True  # Continue game (bool)
 
-# ------------------------------ main entrypoint ------------------------------
 def main() -> None:
     """Run the endless loop until the player opts out.  # Docstring (str)"""
     random.seed()  # Seed RNG from system entropy (None)

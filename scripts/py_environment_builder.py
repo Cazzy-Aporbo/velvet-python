@@ -11,18 +11,14 @@ import sys
 import importlib
 import logging
 
-# =========================
 # Setup logging
-# =========================
 logging.basicConfig(
     filename="package_installation_log.txt",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-# =========================
 # List of packages
-# =========================
 all_packages = [
     # Basic utilities
     "numpy", "pandas", "dask", "vaex", "modin", "polars", "pyarrow", "tables", "h5py",
@@ -64,9 +60,7 @@ all_packages = [
     "regex", "fuzzywuzzy", "rapidfuzz", "multipledispatch", "click", "typer", "rich"
 ]
 
-# =========================
 # Function to install a package
-# =========================
 def install_package(package_name):
     """
     Try importing a package, if it fails, attempt pip install.
@@ -85,9 +79,7 @@ def install_package(package_name):
             logging.error(f"Failed to install {package_name}: {error}")
             print(f"Failed to install {package_name}, check log.")
 
-# =========================
 # Main installer loop
-# =========================
 def main():
     """
     Iterate through all packages and ensure they are installed.

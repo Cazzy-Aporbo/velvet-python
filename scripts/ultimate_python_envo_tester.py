@@ -12,18 +12,14 @@ import logging
 import platform
 import warnings
 
-# =========================
 # Logging setup
-# =========================
 logging.basicConfig(
     filename="ultimate_env_test_log.txt",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-# =========================
 # System info
-# =========================
 python_version = sys.version.split()[0]
 system_name = platform.system()
 architecture = platform.architecture()[0]
@@ -32,9 +28,7 @@ print(f"Python version: {python_version}")
 print(f"OS: {system_name}")
 print(f"Architecture: {architecture}")
 
-# =========================
 # Packages to install
-# =========================
 all_packages = [
     "numpy", "pandas", "jax", "jaxlib", "cupy", "torch", "torchvision", "torch-geometric",
     "tensorflow", "tensorflow-probability", "pytorch-lightning", "functorch",
@@ -47,9 +41,7 @@ all_packages = [
     "cvxpy", "pyomo", "gekko", "casadi"
 ]
 
-# =========================
 # Helper functions
-# =========================
 def install_package(pkg):
     try:
         importlib.import_module(pkg.replace("-", "_"))
@@ -130,9 +122,7 @@ def test_distributed():
         logging.error(f"Distributed computing test failed: {e}")
         print("Distributed computing test failed")
 
-# =========================
 # Create requirements.txt
-# =========================
 def create_requirements(packages):
     import pkg_resources
     with open("requirements.txt", "w", encoding="utf-8") as f:
@@ -144,9 +134,7 @@ def create_requirements(packages):
                 f.write(f"{pkg}\n")
     print("requirements.txt created")
 
-# =========================
 # Main installer and tester
-# =========================
 def main():
     print("\nStarting installation and testing of ultimate Python environment...\n")
     

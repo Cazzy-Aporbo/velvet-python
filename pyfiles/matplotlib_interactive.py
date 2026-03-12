@@ -4,7 +4,6 @@ Matplotlib Masterclass — Interactive How-To (advanced, aesthetic, didactic)
 Author: Cazzy Aporbo  •  made September 16, 2025
 
 What this does
---------------
 • Builds a synthetic dataset and lets you explore it via interactive widgets:
   plot type (line / scatter / bar / hist / box / heatmap), style (primary / mono / pastel ombré),
   grid/legend/spines toggles, title editor, and data sliders (freq, noise, n).
@@ -15,7 +14,6 @@ What this does
   to your bullet list).
 
 How to run
-----------
 $ pip install matplotlib numpy
 $ python matplotlib_masterclass_interactive.py
 
@@ -40,7 +38,6 @@ from matplotlib.ticker import FuncFormatter, AutoMinorLocator
 from matplotlib.patches import Rectangle
 import matplotlib.patheffects as pe
 
-# --------------------------- Global knobs (safe defaults) ---------------------------
 
 DEFAULT_DPI = 140
 FIGSIZE = (10.5, 7.2)
@@ -68,7 +65,6 @@ PALETTES = {
                     heatmap="magma",   patch="#f9c7d0"),
 }
 
-# --------------------------- Data model --------------------------------------------
 
 @dataclass
 class DataBundle:
@@ -101,7 +97,6 @@ def synthesize(n: int = 300, f_hz: float = 1.25, noise: float = 0.35, seed: int 
 
     return DataBundle(x=x, y=y, cat_labels=cats, cat_vals=cat_vals, grid_Z=Z, grid_extent=extent)
 
-# --------------------------- Helper: ombré line -------------------------------------
 
 def draw_ombre_line(ax, x, y, cmap_name="viridis", linewidth=2.4):
     """Color a line by progression using a LineCollection (advanced aesthetic)."""
@@ -117,7 +112,6 @@ def draw_ombre_line(ax, x, y, cmap_name="viridis", linewidth=2.4):
     ax.set_ylim(y.min()-ypad, y.max()+ypad)
     return lc
 
-# --------------------------- Interactive application -------------------------------
 
 class MPLPlayground:
     def __init__(self):
@@ -149,7 +143,6 @@ class MPLPlayground:
         # Pick events (click to annotate a nearest point)
         self.fig.canvas.mpl_connect("button_press_event", self._on_click)
 
-    # ----------------------- UI construction -----------------------------------
 
     def _build_widgets(self):
         # Sliders under the main plot
@@ -200,7 +193,6 @@ class MPLPlayground:
         self.notes.axis("off")
         self._update_notes()
 
-    # ----------------------- Event handlers -----------------------------------
 
     def _on_data_change(self, _):
         n = int(self.s_n.val)
@@ -235,7 +227,6 @@ class MPLPlayground:
         i = int(np.argmin(d2))
         self._annotate_point(i)
 
-    # ----------------------- Rendering ----------------------------------------
 
     def _apply_style(self):
         # Clean rcParams that affect colors/axes each redraw
@@ -412,7 +403,6 @@ class MPLPlayground:
         ]
         self.notes.text(0.02, 0.98, "\n".join(lines), va="top", family="monospace")
 
-# --------------------------- Entrypoint --------------------------------------------
 
 def main():
     # Headless safety: fall back to Agg and just render files

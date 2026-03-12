@@ -835,7 +835,7 @@ def main():
     """Main entry point for environment setup."""
     print("Velvet Python Environment Setup")
     print("Author: Cazandra Aporbo")
-    print("-" * 50)
+    print()
     
     setup = EnvironmentSetup()
     

@@ -9,7 +9,6 @@ Author: Cazzy Aporbo  •  December 3, 2024
 Updated: August 13, 2025
 
 What you’ll see (and why it matters)
-------------------------------------
   1) Iterative list build (bottom-up)          → state updates, O(n), tiny RAM
   2) Streaming generator (lazy)                → backpressure-friendly pipelines
   3) Top-down recursion + memoization          → optimal substructure, cache hits
@@ -19,7 +18,6 @@ What you’ll see (and why it matters)
   7) (Bonus) itertools “pair-walk” stream      → functional, compact, beginner-friendly
 
 “Game-style” bits
------------------
  • Quick timing table for each method (same n).
  • A tiny console quiz: guess F(k); I reveal hints and teach estimation.
  • Clear notes on what to look out for: base cases, off-by-one, rounding traps.
@@ -29,7 +27,6 @@ Run
 $ python fibonacci_six_plus_ways.py
 """
 
-# ---- Imports (top only) ------------------------------------------------------
 import sys
 import math
 import time
@@ -56,7 +53,6 @@ except Exception:
     HAS_NUMPY = False
 
 
-# ---- Utility: defensively parse n -------------------------------------------
 def ask_n(prompt="How many Fibonacci numbers do you want? (default 20): ", default=20) -> int:
     raw = input(prompt).strip()
     if not raw:
@@ -71,7 +67,6 @@ def ask_n(prompt="How many Fibonacci numbers do you want? (default 20): ", defau
         return ask_n(prompt, default)
 
 
-# ---- Method 1: Iterative list build (bottom-up) ------------------------------
 def fib_list(n: int):
     """
     Build the first n Fibonacci numbers bottom-up using a list.
@@ -85,7 +80,6 @@ def fib_list(n: int):
     return seq
 
 
-# ---- Method 2: Streaming generator (lazy) ------------------------------------
 def fib_gen(n: int):
     """
     Yield the first n Fibonacci numbers lazily (stream style).
@@ -97,7 +91,6 @@ def fib_gen(n: int):
         a, b = b, a + b
 
 
-# ---- Method 3: Top-down recursion + memoization (lru_cache) ------------------
 @lru_cache(maxsize=None)
 def _fib_td_single(k: int) -> int:
     # Base cases (decide them early; the rest is mechanical)
@@ -114,7 +107,6 @@ def fib_topdown(n: int):
     return [_fib_td_single(k) for k in range(n)]
 
 
-# ---- Method 4: Bottom-up DP (dict and list flavors) --------------------------
 def fib_bottomup_list(n: int):
     """
     Bottom-up DP with a list. Identical values to fib_list; more “DP” in spirit.
@@ -142,7 +134,6 @@ def fib_bottomup_dict(n: int):
     return [d[i] for i in range(n)]
 
 
-# ---- Method 5: Fast doubling (divide & conquer) ------------------------------
 def _fib_fast_doubling(k: int):
     """
     Return (F(k), F(k+1)) using identities:
@@ -169,7 +160,6 @@ def fib_fast_doubling_list(n: int):
     return [_fib_fast_doubling(k)[0] for k in range(n)]
 
 
-# ---- Method 6: 2×2 matrix power (exponentiation by squaring) -----------------
 def _matmul2(A, B):
     # Minimal 2×2 integer multiply (kept explicit to avoid external deps)
     return (
@@ -206,7 +196,6 @@ def fib_matrix_power(n: int):
     return out
 
 
-# ---- Method 7 (Bonus): “pair-walk” stream (functional flavor) ----------------
 def fib_pairwalk(n: int):
     """
     Generator that walks (a,b)->(b,a+b); feels like itertools but stays explicit.
@@ -218,7 +207,6 @@ def fib_pairwalk(n: int):
         a, b = b, a + b
 
 
-# ---- Game-style: tiny console quiz ------------------------------------------
 def quiz_mode(seq):
     """
     Pick a random index and quiz the user. Estimation hint:
@@ -247,7 +235,6 @@ def quiz_mode(seq):
         print(f"Close! True F({k}) = {target}  (you were off by {delta})")
 
 
-# ---- Pretty print / timing harness ------------------------------------------
 def time_method(fn, n: int, label: str):
     t0 = time.perf_counter()
     res = fn(n)
@@ -269,7 +256,7 @@ def show_table(rows):
         console.print(table)
     else:
         print("\nFibonacci — Methods Comparison")
-        print("-" * 72)
+        print()
         for name, seq, dt in rows:
             preview = ", ".join(map(str, seq[:10]))
             print(f"{name:28s} | {dt*1e3:7.2f} ms | {preview}")
@@ -284,7 +271,6 @@ def sanity_check_equal(rows, n: int):
         print("Sanity: ❌ mismatch detected. Investigate rounding or base cases.")
 
 
-# ---- Things to watch out for -------------------------------------------------
 NOTES = """
 What to look out for:
  • Base cases: define F(0)=0, F(1)=1 once; the rest follows.
@@ -297,7 +283,6 @@ What to look out for:
 """
 
 
-# ---- Main menu ---------------------------------------------------------------
 def choose_methods():
     print("\nWhich methods do you want to run?")
     print("  1) Iterative list (bottom-up)")

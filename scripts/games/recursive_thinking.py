@@ -1,6 +1,5 @@
 """
 RECURSIVE THINKING MASTERY: A Progressive Learning System
-========================================================
 
 A comprehensive educational program that teaches recursive thinking through
 increasingly complex challenges, code demonstrations, and practical applications.
@@ -47,9 +46,9 @@ class RecursiveThinkingGame:
         
     def initialize_game(self):
         """Set up the learning environment and gather student information."""
-        print("=" * 80)
+        print()
         print("RECURSIVE THINKING MASTERY SYSTEM")
-        print("=" * 80)
+        print()
         print("\nWelcome to an advanced learning system designed to develop")
         print("deep understanding of recursive thinking patterns.")
         print("\nThis system will guide you through:")
@@ -86,7 +85,7 @@ class Level1_BaseCase:
     def teach_base_case_concept(self):
         """Comprehensive explanation of base cases with multiple examples."""
         print(f"\nLEVEL 1: {self.level_name}")
-        print("-" * 60)
+        print()
         print("CORE CONCEPT: Every recursive function needs a stopping condition")
         print("called a BASE CASE. Without it, the function calls itself forever.")
         
@@ -98,7 +97,7 @@ class Level1_BaseCase:
         input("\nPress Enter to see code examples...")
         
         print("\nEXAMPLE 1: Countdown Function")
-        print("=" * 40)
+        print()
         print("""
 def countdown_broken(n):
     print(n)
@@ -117,7 +116,7 @@ def countdown_correct(n):
         self.demonstrate_countdown(5)
         
         print("\nEXAMPLE 2: Factorial Function")
-        print("=" * 40)
+        print()
         print("""
 def factorial(n):
     # BASE CASE: factorial of 0 or 1 is 1
@@ -198,7 +197,7 @@ def factorial(n):
     def base_case_challenge(self):
         """Interactive challenge to test base case understanding."""
         print("\nCHALLENGE: Identify the Base Case")
-        print("=" * 40)
+        print()
         
         challenges = [
             {
@@ -263,7 +262,7 @@ class Level2_SimpleRecursion:
     def teach_recursive_thinking(self):
         """Develop intuition for thinking recursively about problems."""
         print(f"\nLEVEL 2: {self.level_name}")
-        print("-" * 60)
+        print()
         print("CORE CONCEPT: Recursive thinking means solving a problem by")
         print("solving smaller versions of the same problem.")
         
@@ -273,7 +272,7 @@ class Level2_SimpleRecursion:
         print("3. Handle the base case where no recursion is needed")
         
         print("\nEXAMPLE: Finding the length of a string recursively")
-        print("=" * 50)
+        print()
         
         print("""
 PROBLEM: How long is the string "HELLO"?
@@ -295,7 +294,7 @@ def string_length(s):
         self.trace_string_length("HELLO")
         
         print("\nEXAMPLE: Reversing a string recursively")
-        print("=" * 45)
+        print()
         
         print("""
 PROBLEM: Reverse the string "WORLD"
@@ -320,7 +319,7 @@ def reverse_string(s):
     def trace_string_length(self, s):
         """Detailed execution trace for string length calculation."""
         print(f"\nTRACING: string_length('{s}')")
-        print("=" * 40)
+        print()
         
         original_s = s
         depth = 0
@@ -353,7 +352,7 @@ def reverse_string(s):
     def trace_string_reverse(self, s):
         """Detailed execution trace for string reversal."""
         print(f"\nTRACING: reverse_string('{s}')")
-        print("=" * 40)
+        print()
         
         calls = []
         temp_s = s
@@ -393,7 +392,7 @@ def reverse_string(s):
     def simple_recursion_challenges(self):
         """Progressive challenges to build recursive thinking skills."""
         print("\nRECURSIVE THINKING CHALLENGES")
-        print("=" * 40)
+        print()
         
         challenges = [
             self.challenge_sum_array(),
@@ -416,7 +415,7 @@ def reverse_string(s):
     def challenge_sum_array(self):
         """Challenge: Implement recursive array sum."""
         print("\nCHALLENGE 1: Sum all elements in an array recursively")
-        print("-" * 50)
+        print()
         
         print("PROBLEM: Given an array [1, 2, 3, 4, 5], find the sum recursively.")
         print("\nTHINK RECURSIVELY:")
@@ -466,7 +465,7 @@ def recursive_sum(arr):
     def challenge_find_maximum(self):
         """Challenge: Find maximum element recursively."""
         print("\nCHALLENGE 2: Find the maximum element in an array")
-        print("-" * 50)
+        print()
         
         print("PROBLEM: Find the largest number in [3, 7, 2, 9, 1] recursively.")
         print("\nHINTS:")
@@ -520,7 +519,7 @@ def find_max(arr):
     def challenge_count_occurrences(self):
         """Challenge: Count occurrences of a value."""
         print("\nCHALLENGE 3: Count occurrences of a value in an array")
-        print("-" * 55)
+        print()
         
         print("PROBLEM: Count how many times 'a' appears in ['a', 'b', 'a', 'c', 'a']")
         
@@ -574,13 +573,13 @@ class Level3_TailRecursion:
     def teach_tail_recursion_concept(self):
         """Comprehensive explanation of tail recursion and its benefits."""
         print(f"\nLEVEL 3: {self.level_name}")
-        print("-" * 60)
+        print()
         print("CORE CONCEPT: Tail recursion is a special form where the recursive")
         print("call is the last operation in the function. This allows for")
         print("optimization that prevents stack overflow.")
         
         print("\nREGULAR vs TAIL RECURSION:")
-        print("=" * 40)
+        print()
         
         print("REGULAR RECURSION (not tail recursive):")
         print("""
@@ -610,7 +609,7 @@ def factorial_tail(n, accumulator=1):
     def demonstrate_stack_difference(self):
         """Show the difference in stack usage between regular and tail recursion."""
         print("\nSTACK USAGE COMPARISON:")
-        print("=" * 30)
+        print()
         
         n = 4
         
@@ -643,7 +642,7 @@ def factorial_tail(n, accumulator=1):
     def tail_recursion_challenges(self):
         """Challenges to convert regular recursion to tail recursion."""
         print("\nTAIL RECURSION CONVERSION CHALLENGES")
-        print("=" * 45)
+        print()
         
         challenges = [
             self.challenge_sum_tail(),
@@ -666,7 +665,7 @@ def factorial_tail(n, accumulator=1):
     def challenge_sum_tail(self):
         """Convert array sum to tail recursive form."""
         print("\nCHALLENGE 1: Convert array sum to tail recursion")
-        print("-" * 50)
+        print()
         
         print("REGULAR RECURSIVE SUM:")
         print("""
@@ -722,7 +721,7 @@ def sum_tail(arr, accumulator=0):
     def challenge_fibonacci_tail(self):
         """Convert Fibonacci to tail recursive form."""
         print("\nCHALLENGE 2: Tail recursive Fibonacci")
-        print("-" * 40)
+        print()
         
         print("REGULAR FIBONACCI (very inefficient):")
         print("""
@@ -781,7 +780,7 @@ def fib_tail(n, a=0, b=1):
     def challenge_reverse_tail(self):
         """Convert string reversal to tail recursive form."""
         print("\nCHALLENGE 3: Tail recursive string reversal")
-        print("-" * 45)
+        print()
         
         print("REGULAR RECURSIVE REVERSE:")
         print("""

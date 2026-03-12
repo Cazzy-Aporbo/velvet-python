@@ -47,7 +47,6 @@ except Exception:
     console = None
 
 
-# -------------------------- utilities -----------------------------------------
 
 class Timer:
     """Simple timer for performance tracking"""
@@ -86,7 +85,6 @@ def rng(seed: int = 11) -> np.random.Generator:
     return np.random.default_rng(seed)
 
 
-# -------------------------- dataset builder -----------------------------------
 @dataclass
 class ToyData:
     admin: gpd.GeoDataFrame   # polygons with admin_id
@@ -140,7 +138,6 @@ def build_dataset(seed: int = 11) -> ToyData:
     return ToyData(admin=admin, cities=cities, clinics=clinics)
 
 
-# -------------------------- 1) basics + plot ----------------------------------
 def demo_basics(data: ToyData, out_png: Optional[str] = None) -> None:
     """Basic visualization - always look at your data first"""
     g_admin = make_valid(data.admin)
@@ -180,7 +177,6 @@ def cities_to_admin_rollup(data: ToyData) -> gpd.GeoDataFrame:
     return out
 
 
-# -------------------------- 3) service areas (buffers + overlay) --------------
 def service_areas(data: ToyData, radius_km: float = 25.0):
     """
     Calculate service coverage by buffering clinics and overlaying with admin regions.
@@ -209,8 +205,6 @@ def service_areas(data: ToyData, radius_km: float = 25.0):
     return buf, admin_cov
 
 
-# -------------------------- 4a) nearest via sjoin_nearest ---------------------
-# -------------------------- 4a) nearest via sjoin_nearest ---------------------
 def nearest_facility_sjoin(data: ToyData, max_km: float = 50.0) -> gpd.GeoDataFrame:
     """High-level approach using geopandas sjoin_nearest"""
     laea = local_equal_area_crs(data.cities)
@@ -228,7 +222,6 @@ def nearest_facility_sjoin(data: ToyData, max_km: float = 50.0) -> gpd.GeoDataFr
     return joined
 
 
-# -------------------------- 4b) nearest via sindex.query_nearest --------------
 def nearest_facility_query_manual(data: ToyData) -> pd.DataFrame:
     """
     Manual approach using spatial index directly.
@@ -292,7 +285,6 @@ def nearest_facility_query_manual(data: ToyData) -> pd.DataFrame:
     return out
 
 
-# -------------------------- 5) coverage cross-check ---------------------------
 def coverage_by_overlay(admin_cov: gpd.GeoDataFrame) -> pd.Series:
     """The 'exact' method - we already calculated this via overlay"""
     return admin_cov.set_index("admin_id")["coverage_pct"]
@@ -325,7 +317,6 @@ def coverage_by_weighted_join(data: ToyData, buf: gpd.GeoDataFrame) -> pd.Series
     return pct
 
 
-# -------------------------- 6) windowed nearest (biggish pattern) -------------
 def windowed_join(cities: gpd.GeoDataFrame, clinics: gpd.GeoDataFrame, window_km: float = 80.0) -> pd.DataFrame:
     """
     Windowed nearest neighbor for large datasets.
@@ -398,8 +389,6 @@ def windowed_join(cities: gpd.GeoDataFrame, clinics: gpd.GeoDataFrame, window_km
     return df[["city", "clinic", "dist_m"]]
 
 
-# -------------------------- mini game -----------------------------------------
-# -------------------------- mini game -----------------------------------------
 def game(data: ToyData) -> None:
     """Quick interactive test of coverage estimation skills"""
     laea = local_equal_area_crs(data.admin)
@@ -421,7 +410,6 @@ def game(data: ToyData) -> None:
     print(f"Nearest clinic to {city['name']}: {row[clinic_col]} at {row['dist_m'] / 1000.0:.1f} km")
 
 
-# -------------------------- plotting helper -----------------------------------
 def quick_plot_service(data: ToyData, buf: gpd.GeoDataFrame, admin_cov: gpd.GeoDataFrame, out_png: str) -> None:
     """Create service coverage heatmap"""
     ax = admin_cov.plot(column="coverage_pct", cmap="viridis", legend=True, figsize=(8,7),
@@ -434,7 +422,6 @@ def quick_plot_service(data: ToyData, buf: gpd.GeoDataFrame, admin_cov: gpd.GeoD
     plt.tight_layout(); plt.savefig(out_png, dpi=170); plt.close()
 
 
-# -------------------------- main ----------------------------------------------
 def main() -> int:
     """Run through all six spatial analysis patterns with timing"""
     print("\nGeoPandas Masterclass - by Cazandra Aporbo\n")

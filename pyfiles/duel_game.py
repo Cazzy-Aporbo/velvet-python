@@ -10,7 +10,6 @@ Duel of Sages — a two-player Python terminal duel.
 - Endless by default: play to a target (e.g., 7) or just /quit anytime.
 
 How to play
------------
 1) Run:  python Duel_of_Sages.py
 2) Enter two player names.
 3) Each round draws a challenge + an obstacle (e.g., "Answer must be prime").
@@ -29,7 +28,6 @@ from enum import Enum, auto
 from functools import lru_cache, wraps
 from typing import Any, Callable, Iterable, Optional, Tuple
 
-# ---------- tiny UI layer ----------
 
 C = dict(
     reset="\033[0m",
@@ -56,7 +54,6 @@ def prompt(s: str) -> str:
     except (EOFError, KeyboardInterrupt):
         return "/quit"
 
-# ---------- timing context manager ----------
 
 class tick:
     """with tick("label"): ...  # prints elapsed ms on exit"""
@@ -64,7 +61,6 @@ class tick:
     def __enter__(self): self.t0 = time.perf_counter(); return self
     def __exit__(self, *_): dt = (time.perf_counter() - self.t0) * 1000; line(f"[{self.label}] {dt:.1f} ms", "gray")
 
-# ---------- core datamodel ----------
 
 class Topic(Enum):
     ARITH = auto()
@@ -105,7 +101,6 @@ class Game:
     @property
     def players(self) -> Tuple[Player, Player]: return (self.p1, self.p2)
 
-# ---------- utilities ----------
 
 @lru_cache(maxsize=10_000)
 def is_prime(n: int) -> bool:
@@ -143,7 +138,6 @@ def announce(fn: Callable) -> Callable:
         return fn(*a, **kw)
     return inner
 
-# ---------- obstacles (composable constraints) ----------
 
 def obstacle(name: str, describe: str) -> Callable[[Callable], Obstacle]:
     def binder(wrap_fn: Callable[[Callable], Callable]) -> Obstacle:
@@ -196,7 +190,6 @@ def wrap_with_obstacles(validate: Callable, obs: Iterable[Obstacle]) -> Callable
     for o in obs: validate = o.wrap(validate)
     return validate
 
-# ---------- challenge factories ----------
 
 def ch_arith(rng: random.Random) -> Challenge:
     a, b = rng.randint(10, 99), rng.randint(2, 12)
@@ -280,7 +273,6 @@ def draw_challenge(rng: random.Random) -> Challenge:
 def draw_obstacle(rng: random.Random) -> Obstacle:
     return rng.choice(OBSTACLES)
 
-# ---------- engine ----------
 
 def scoreline(g: Game) -> str:
     return f"{g.p1.name} {g.p1.score} — {g.p2.score} {g.p2.name}"
@@ -393,7 +385,6 @@ def game_loop(g: Game) -> None:
             break
         active, other = other, active
 
-# ---------- main ----------
 
 def main() -> None:
     banner("Set the board")

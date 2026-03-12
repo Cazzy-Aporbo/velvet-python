@@ -1,5 +1,4 @@
 # cazandra_python_mastery_playbook.py
-# -----------------------------------------------------------------------------
 # Title: Python Mastery Playbook — from Basics to Mastery
 # Author: Cazandra Aporbo
 # Started: December 2022
@@ -13,11 +12,8 @@
 # Notes: Everything here uses the Python standard library only. No internet,
 #        no external data, no hidden magic. If you can run Python, you can run
 #        this file.
-# -----------------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------
 # SECTION 0 — Imports I actually use (all from the standard library)
-# -----------------------------------------------------------------------------
 from dataclasses import dataclass  # Lightweight records for clean examples
 from typing import Any, Iterable, Dict, List, Tuple, Set, Optional  # Type hints
 import math  # A few numeric examples (e.g., floor division intuition)
@@ -27,20 +23,14 @@ import sys  # Access to the interpreter and argv
 import os  # Interact with the operating system
 import subprocess  # Safely demonstrate shell commands as strings (no exec)
 
-# -----------------------------------------------------------------------------
 # Helper: tiny print block wrapper so examples are clear in the console
-# -----------------------------------------------------------------------------
 
 def block(title: str) -> None:
-    """Print a nice divider so the console reads like a lesson outline."""
-    print("\n" + "=" * 78)  # Visual divider line for readability
-    print(title)  # The lesson or sub-lesson title
-    print("-" * 78)  # Underline to set off the section
+    """Print a section header for console lessons."""
+    print(f"\n  {title}\n")
 
 
-# -----------------------------------------------------------------------------
 # SECTION 1 — Built-in functions (print, input, int, str, float, isinstance, repr)
-# -----------------------------------------------------------------------------
 
 def lesson_builtins() -> None:
     """
@@ -83,9 +73,7 @@ def lesson_builtins() -> None:
     print("repr(sample) ->", repr(sample))
 
 
-# -----------------------------------------------------------------------------
 # SECTION 2 — Core code constructs (if, else, while, for, range, break, continue, pass)
-# -----------------------------------------------------------------------------
 
 def lesson_code_constructs() -> None:
     """Conditionals and loops with layered, practical examples."""
@@ -131,9 +119,7 @@ def lesson_code_constructs() -> None:
     print("pass used in a placeholder function called todo()")
 
 
-# -----------------------------------------------------------------------------
 # SECTION 3 — Operators (arithmetic, comparison, identity, membership)
-# -----------------------------------------------------------------------------
 
 def lesson_operators() -> None:
     """Show how Python operators behave, with small correctness checks."""
@@ -172,9 +158,7 @@ def lesson_operators() -> None:
     print("x is not y ->", x is not y)
 
 
-# -----------------------------------------------------------------------------
 # SECTION 4 — Data structures (lists, tuples, sets, dicts)
-# -----------------------------------------------------------------------------
 
 def lesson_data_structures() -> None:
     """Work with the core containers, including mutability and idioms."""
@@ -205,9 +189,7 @@ def lesson_data_structures() -> None:
     print("frequency dict pattern:", counts)
 
 
-# -----------------------------------------------------------------------------
 # SECTION 5 — Strings and their methods (upper, lower, capitalize, title, index, count)
-# -----------------------------------------------------------------------------
 
 def lesson_strings() -> None:
     """Practical string manipulations and gotchas."""
@@ -230,9 +212,7 @@ def lesson_strings() -> None:
         print(f"find('{target}') found at ->", idx)
 
 
-# -----------------------------------------------------------------------------
 # SECTION 6 — Command Line 101 (clear/Ctrl+L, pwd, top, man, ls, cd, >, >>, <, |)
-# -----------------------------------------------------------------------------
 
 def lesson_command_line() -> None:
     """
@@ -270,11 +250,9 @@ def lesson_command_line() -> None:
         print("  $", ex)
 
 
-# -----------------------------------------------------------------------------
 # SECTION 7 — Git Flow Essentials (init, clone, add, mv, reset, rm, commit, grep,
 #                                  log, show, status, branch, merge, rebase, diff,
 #                                  bisect, tag, fetch, pull, push, help)
-# -----------------------------------------------------------------------------
 
 def lesson_git() -> None:
     """
@@ -311,9 +289,7 @@ def lesson_git() -> None:
         print(f"{cmd:<40} # {why}")
 
 
-# -----------------------------------------------------------------------------
 # SECTION 8 — Mastery Patterns: tiny recipes that feel like superpowers
-# -----------------------------------------------------------------------------
 
 def lesson_mastery_patterns() -> None:
     """
@@ -358,9 +334,7 @@ def lesson_mastery_patterns() -> None:
     print("dataclass:", p.label())
 
 
-# -----------------------------------------------------------------------------
 # SECTION 9 — A mini-REPL feel: tie lessons together
-# -----------------------------------------------------------------------------
 
 def run_all_lessons() -> None:
     """A single entry point to run all lessons in order."""
@@ -374,8 +348,6 @@ def run_all_lessons() -> None:
     lesson_mastery_patterns()
 
 
-# -----------------------------------------------------------------------------
 # Standard script guard — so imports don’t auto-run everything in other files
-# -----------------------------------------------------------------------------
 if __name__ == "__main__":
     run_all_lessons()  # Fire the full tour when run directly

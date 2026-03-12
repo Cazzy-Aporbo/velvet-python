@@ -6,9 +6,7 @@ for data science, AI, visualization, geospatial work, web scraping, system utili
 Uncomment the ones you need in your project.
 """
 
-# ------------------------
 # Basic Python Utilities
-# ------------------------
 import os
 import sys
 import time
@@ -44,9 +42,7 @@ import types
 import warnings
 import inspect
 
-# ------------------------
 # Data Manipulation
-# ------------------------
 import numpy as np
 import pandas as pd
 import dask.dataframe as dd
@@ -63,9 +59,7 @@ import tinydb
 import redis
 import pymongo
 
-# ------------------------
 # Machine Learning & AI
-# ------------------------
 # Classical ML
 import sklearn
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
@@ -102,9 +96,7 @@ from gensim.models import Word2Vec, LdaModel, FastText
 import transformers
 from transformers import BertTokenizer, BertModel, GPT2Tokenizer, GPT2LMHeadModel
 
-# ------------------------
 # Data Visualization
-# ------------------------
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -120,9 +112,7 @@ import folium
 import cartopy.crs as ccrs
 import networkx as nx
 
-# ------------------------
 # Geospatial & Maps
-# ------------------------
 import shapely
 from shapely.geometry import Point, Polygon, LineString
 import fiona
@@ -134,9 +124,7 @@ import osmnx as ox
 import folium
 import contextily
 
-# ------------------------
 # Web & Networking
-# ------------------------
 import requests
 import urllib
 import urllib.request
@@ -153,9 +141,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import scrapy
 
-# ------------------------
 # Time Series & Finance
-# ------------------------
 import statsmodels.api as sm
 from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -164,9 +150,7 @@ import yfinance as yf
 import quandl
 import prophet
 
-# ------------------------
 # Image, Audio & Video
-# ------------------------
 import cv2
 import PIL
 from PIL import Image, ImageDraw, ImageFilter
@@ -177,9 +161,7 @@ import librosa
 import soundfile as sf
 import moviepy.editor as mp
 
-# ------------------------
 # Scientific Computing
-# ------------------------
 import scipy
 from scipy import stats, optimize, signal, linalg, spatial
 import sympy
@@ -187,17 +169,13 @@ import numba
 import cupy
 import pynvml
 
-# ------------------------
 # Parallel & Distributed
-# ------------------------
 import concurrent.futures
 import ray
 import dask
 import joblib
 
-# ------------------------
 # Database & Big Data
-# ------------------------
 import pymysql
 import psycopg2
 import pyodbc
@@ -206,9 +184,7 @@ from cassandra.cluster import Cluster
 import influxdb
 import happybase
 
-# ------------------------
 # File Formats
-# ------------------------
 import openpyxl
 import xlrd
 import xlwt
@@ -219,9 +195,7 @@ import PyPDF2
 import docx
 import odf
 
-# ------------------------
 # Other Advanced Tools
-# ------------------------
 import regex
 import fuzzywuzzy
 import rapidfuzz

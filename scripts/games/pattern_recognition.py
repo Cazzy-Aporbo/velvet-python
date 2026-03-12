@@ -49,9 +49,9 @@ class MachineThinkingGame:
         
     def initialize_training(self):
         """Initialize the machine thinking training system."""
-        print("=" * 80)
+        print()
         print("MACHINE MIND: ALGORITHMIC THINKING TRAINING SYSTEM")
-        print("=" * 80)
+        print()
         print("\nThis system will teach you to:")
         print("• Recognize patterns like a machine learning algorithm")
         print("• Think systematically through logical steps")
@@ -83,7 +83,7 @@ class Level1_SequentialPatterns:
     def begin_sequential_training(self):
         """Start sequential pattern recognition training."""
         print(f"\nLEVEL 1: {self.level_name}")
-        print("-" * 60)
+        print()
         print("MACHINE THINKING PRINCIPLE:")
         print("Machines excel at finding patterns in sequences by analyzing")
         print("differences, ratios, and transformations between elements.")
@@ -117,7 +117,7 @@ class Level1_SequentialPatterns:
     def arithmetic_sequence_analysis(self):
         """Teach systematic analysis of arithmetic sequences."""
         print("\nCHALLENGE 1: Arithmetic Sequence Analysis")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Calculate differences between consecutive terms")
         
         sequences = [
@@ -200,7 +200,7 @@ class Level1_SequentialPatterns:
     def geometric_pattern_detection(self):
         """Teach recognition of multiplicative patterns."""
         print("\nCHALLENGE 2: Geometric Pattern Detection")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Calculate ratios between consecutive terms")
         
         sequences = [
@@ -252,7 +252,7 @@ class Level1_SequentialPatterns:
     def transformation_rule_discovery(self):
         """Teach discovery of transformation rules in sequences."""
         print("\nCHALLENGE 3: Transformation Rule Discovery")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Analyze how each term transforms to the next")
         
         transformations = [
@@ -354,7 +354,7 @@ class Level1_SequentialPatterns:
     def complex_sequence_prediction(self):
         """Advanced sequence prediction with multiple pattern types."""
         print("\nCHALLENGE 4: Complex Sequence Prediction")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Multi-level pattern analysis")
         
         complex_sequences = [
@@ -412,7 +412,7 @@ class Level1_SequentialPatterns:
     def pattern_confidence_assessment(self):
         """Teach assessment of pattern confidence levels."""
         print("\nCHALLENGE 5: Pattern Confidence Assessment")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Quantify confidence in pattern predictions")
         
         test_cases = [
@@ -483,7 +483,7 @@ class Level2_ParallelProcessing:
     def begin_parallel_training(self):
         """Start parallel processing training."""
         print(f"\nLEVEL 2: {self.level_name}")
-        print("-" * 60)
+        print()
         print("MACHINE THINKING PRINCIPLE:")
         print("Machines process multiple data streams simultaneously, tracking")
         print("relationships between variables and updating states in parallel.")
@@ -516,7 +516,7 @@ class Level2_ParallelProcessing:
     def multi_variable_tracking(self):
         """Teach simultaneous tracking of multiple variables."""
         print("\nCHALLENGE 1: Multi-Variable State Tracking")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Maintain separate counters for each variable")
         
         print("\nSCENARIO: Traffic intersection monitoring")
@@ -536,7 +536,7 @@ class Level2_ParallelProcessing:
         
         print("\nProcessing events in parallel:")
         print("Event | North | South | East | West | Total")
-        print("-" * 45)
+        print()
         
         for i, (direction, action) in enumerate(events):
             if action == "arrive":
@@ -570,7 +570,7 @@ class Level2_ParallelProcessing:
     def concurrent_pattern_analysis(self):
         """Analyze patterns in multiple data streams simultaneously."""
         print("\nCHALLENGE 2: Concurrent Pattern Analysis")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Process multiple sequences in parallel")
         
         # Multiple sequences to analyze simultaneously
@@ -611,7 +611,7 @@ class Level2_ParallelProcessing:
         
         # Display parallel analysis results
         print("\nSequence | Pattern Type    | Next Value")
-        print("-" * 40)
+        print()
         for name in ['A', 'B', 'C', 'D']:
             analysis = analyses[name]
             print(f"    {name}    | {analysis['pattern']:15} | {analysis['next_predicted']:10}")
@@ -654,7 +654,7 @@ class Level2_ParallelProcessing:
     def state_machine_simulation(self):
         """Simulate a state machine with multiple concurrent states."""
         print("\nCHALLENGE 3: State Machine Simulation")
-        print("-" * 45)
+        print()
         print("MACHINE APPROACH: Track state transitions across multiple systems")
         
         print("\nSCENARIO: Smart home automation system")
@@ -712,7 +712,7 @@ class Level2_ParallelProcessing:
         
         print(f"\nProcessing events:")
         print("Event | Lights | Security  | Temperature | Music")
-        print("-" * 50)
+        print()
         
         for system, event in events:
             current_state = systems[system]['state']

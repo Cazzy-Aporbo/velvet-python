@@ -1,10 +1,8 @@
 # python_lesson_suite.py
-# -----------------------------------------------------------------------------
 # Title: The Python Lesson — A Complete Teaching Suite (One Program)
 # Author: Cazandra Aporbo
 # Started: December 14, 2024
 # Last Updated: June 19 2025
-# -----------------------------------------------------------------------------
 
 from __future__ import annotations
 
@@ -20,14 +18,10 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
-# =============================================================================
 # Console helpers — consistent narrative formatting
-# =============================================================================
 
 def block(title: str) -> None:
-    print("\n" + "=" * 78)
-    print(title)
-    print("-" * 78)
+    print(f"\n  {title}\n")
 
 
 def say(text: str, width: int = 78) -> None:
@@ -42,9 +36,7 @@ def safe_input(prompt: str, default: Optional[str] = None) -> Optional[str]:
     except (EOFError, OSError):
         return default
 
-# =============================================================================
 # SECTION A — Built‑ins & Friends (from the Playbook)
-# =============================================================================
 
 def lesson_builtins_extended() -> None:
     block("A) Built‑ins Tour — essentials with quick demos")
@@ -118,9 +110,7 @@ def lesson_builtins_extended() -> None:
     print("type('hi') ->", type("hi"))
     print("list(zip([1,2],[3,4])) ->", list(zip([1, 2], [3, 4])))
 
-# =============================================================================
 # SECTION B — Random Module (from beginner to expert)
-# =============================================================================
 
 def lesson_random_core() -> None:
     block("B1) Random Core: seed/state/bits")
@@ -158,9 +148,7 @@ def lesson_random_distributions() -> None:
     print("paretovariate(2.5) ->", random.paretovariate(2.5))
     print("weibullvariate(2,3) ->", random.weibullvariate(2, 3))
 
-# =============================================================================
 # SECTION C — statistics Module Walkthrough
-# =============================================================================
 
 import statistics
 
@@ -180,9 +168,7 @@ def lesson_statistics() -> None:
     print("variance(sample) ->", statistics.variance(population))
     print("stdev(sample) ->", statistics.stdev(population))
 
-# =============================================================================
 # SECTION D — Recursion Masterclass
-# =============================================================================
 
 def factorial_recursive(n: int) -> int:
     if n < 0: raise ValueError("factorial undefined for negatives")
@@ -249,10 +235,8 @@ def lesson_recursion() -> None:
     print("permutations_backtracking([1,2,3]) ->", permutations_backtracking([1,2,3]))
     print("n_queens(4) solutions ->", n_queens(4))
 
-# =============================================================================
 # SECTION E — Logs & Exponentials Game (cards/quiz/labs)
 #   (Integrated slim version of the standalone game; full logic preserved.)
-# =============================================================================
 
 @dataclass
 class Card:
@@ -354,10 +338,8 @@ def lab_half_life(N0: float = 100.0, half_life: float = 5.0, t: float = 12.0) ->
     M = N0 / 8; t_to_M = half_life * math.log(M / N0, 0.5)
     print("time to reach N0/8 ->", t_to_M)
 
-# =============================================================================
 # SECTION F — Flashcards Quiz Game (DS/ML Q&A condensed)
 #   (Slimmed to essentials to fit in one suite; safe in non‑interactive runs.)
-# =============================================================================
 
 QA_BANK: List[Tuple[str, str]] = [
     ("Build logistic regression?", "Use sklearn.linear_model.LogisticRegression; fit on X,y."),
@@ -390,9 +372,7 @@ def game_mc(limit: Optional[int] = None) -> None:
         total+=1
     print(f"Score: {correct}/{total}")
 
-# =============================================================================
 # Master Menus
-# =============================================================================
 
 def menu_random() -> None:
     block("Random Module Lessons")
@@ -428,9 +408,7 @@ def menu_builtins() -> None:
 def menu_flashcards() -> None:
     game_mc(limit=5)
 
-# =============================================================================
 # Entry point
-# =============================================================================
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="The Python Lesson — unified suite")
@@ -468,9 +446,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif ch=="6": menu_flashcards()
     return 0
 
-# =============================================================================
 # Self‑tests (lightweight)
-# =============================================================================
 
 def _tests() -> None:
     # statistics identities

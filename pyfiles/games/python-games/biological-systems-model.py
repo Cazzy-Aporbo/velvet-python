@@ -1,6 +1,5 @@
 """
 COMPREHENSIVE BIOLOGICAL SYSTEMS MODELING FRAMEWORK
-=====================================================
 A sophisticated computational biology framework that models multiple interconnected
 biological systems including gene regulation, protein folding, metabolic pathways,
 neural networks, immune responses, and evolutionary dynamics.

@@ -6,9 +6,7 @@ data science, mathematics, visualization, machine learning, and scientific compu
 This file includes libraries that most developers may not know about.
 """
 
-# ------------------------
 # Advanced Numerical Computation
-# ------------------------
 import numba
 import cupy
 import bottleneck
@@ -28,9 +26,7 @@ import aesara
 import mpi4py
 import symengine
 
-# ------------------------
 # Advanced Data Science and ML
-# ------------------------
 import lightgbm
 import xgboost
 import catboost
@@ -50,9 +46,7 @@ import detectron2
 import segmentation_models_pytorch
 import skorch
 
-# ------------------------
 # Advanced Visualization
-# ------------------------
 import plotly.figure_factory as ff
 import plotly.io as pio
 import dash
@@ -74,9 +68,7 @@ import folium.plugins
 import cartopy.feature as cfeature
 import datashader as ds
 
-# ------------------------
 # Advanced Geospatial
-# ------------------------
 import rasterstats
 import geopandas
 import fiona
@@ -93,9 +85,7 @@ import h3
 import osmnx as ox
 import movingpandas
 
-# ------------------------
 # Advanced Statistics & Mathematics
-# ------------------------
 import statsmodels.api as sm
 import pingouin
 import linearmodels
@@ -113,9 +103,7 @@ import bottleneck
 import fastcluster
 import networkx.algorithms.community as nx_comm
 
-# ------------------------
 # Time Series & Forecasting
-# ------------------------
 import prophet
 import tbats
 import sktime
@@ -128,9 +116,7 @@ import pyflux
 import tslearn
 import kats
 
-# ------------------------
 # Image, Video & Audio Processing
-# ------------------------
 import skimage
 import skimage.io as skio
 import scikit-image
@@ -145,9 +131,7 @@ import pywavelets
 import moviepy.editor as mp
 import opencv-contrib-python
 
-# ------------------------
 # Advanced Web, Networking & APIs
-# ------------------------
 import selenium
 import playwright.sync_api as pw
 import requests_html
@@ -161,9 +145,7 @@ import twython
 import tweepy
 import googlemaps
 
-# ------------------------
 # Advanced Optimization & Computational Geometry
-# ------------------------
 import scipy.optimize as opt
 import scikit-geometry as skg
 import trimesh
@@ -175,9 +157,7 @@ import pymetis
 import pyomo
 import gekko
 
-# ------------------------
 # Experimental / Cutting-edge Tools
-# ------------------------
 import ray
 import modin.pandas as mpd
 import polars as pl
@@ -196,9 +176,7 @@ import diffusers
 import accelerate
 import transformers
 
-# ------------------------
 # Advanced File Formats & Data Pipelines
-# ------------------------
 import h5py
 import netCDF4
 import zarr
@@ -213,9 +191,7 @@ import PyPDF2
 import python-docx
 import odfpy
 
-# ------------------------
 # Parallelism and High Performance
-# ------------------------
 import dask
 import dask.array as da
 import dask.dataframe as dd

@@ -37,9 +37,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger('EnterpriseGovernance')
 
-# ==============================================================================
 # POLICY DEFINITIONS AND COMPLIANCE RULES
-# ==============================================================================
 
 class PolicyViolationLevel(Enum):
     """Severity levels for policy violations"""
@@ -92,9 +90,7 @@ class EnvironmentAuditRecord:
     recommendations: List[str]
     auditor: str  # User or system that performed audit
 
-# ==============================================================================
 # ENTERPRISE POLICY ENGINE
-# ==============================================================================
 
 class EnterprisePolicyEngine:
     """
@@ -351,9 +347,7 @@ class EnterprisePolicyEngine:
         
         return validators
     
-    # ==============================================================================
     # POLICY CHECK IMPLEMENTATIONS
-    # ==============================================================================
     
     def _check_vulnerable_packages(self, env_path: str) -> Tuple[bool, str, Dict]:
         """Check for packages with known vulnerabilities"""
@@ -649,9 +643,7 @@ class EnterprisePolicyEngine:
             logger.error(f"Error checking outdated packages: {e}")
             return False, f"Failed to check outdated packages: {str(e)}", {}
     
-    # ==============================================================================
     # REMEDIATION IMPLEMENTATIONS
-    # ==============================================================================
     
     def _fix_vulnerable_packages(self, env_path: str, violation_details: Dict) -> Tuple[bool, str]:
         """Automatically fix vulnerable packages"""
@@ -786,9 +778,7 @@ class EnterprisePolicyEngine:
             logger.error(f"Error updating packages: {e}")
             return False, f"Failed to update packages: {str(e)}"
     
-    # ==============================================================================
     # AUDIT AND ENFORCEMENT
-    # ==============================================================================
     
     def audit_environment(self, env_name: str, env_path: str, auto_remediate: bool = None) -> EnvironmentAuditRecord:
         """Perform comprehensive audit of an environment"""
@@ -987,7 +977,6 @@ class EnterprisePolicyEngine:
             
             body = f"""
 Environment Compliance Alert
-============================
 
 Environment: {env_name}
 Status: {audit_record.compliance_status.value.upper()}
@@ -1011,9 +1000,7 @@ View full report: http://governance.example.com/environments/{env_name}
         except Exception as e:
             logger.error(f"Error sending alert: {e}")
     
-    # ==============================================================================
     # REPORTING AND ANALYTICS
-    # ==============================================================================
     
     def generate_compliance_report(self, start_date: str = None, end_date: str = None) -> Dict:
         """Generate compliance report for all environments"""
@@ -1133,9 +1120,7 @@ View full report: http://governance.example.com/environments/{env_name}
                 counts[severity] += 1
         return counts
 
-# ==============================================================================
 # SCHEDULED TASKS AND AUTOMATION
-# ==============================================================================
 
 class GovernanceScheduler:
     """Scheduler for automated governance tasks"""
@@ -1182,9 +1167,7 @@ class GovernanceScheduler:
             schedule.run_pending()
             time.sleep(60)  # Check every minute
 
-# ==============================================================================
 # MAIN EXECUTION
-# ==============================================================================
 
 if __name__ == "__main__":
     # Initialize policy engine

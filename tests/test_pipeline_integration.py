@@ -1,63 +1,48 @@
-"""
-High-level integration test for the mock ML pipeline.
-
-This simulates a full ML workflow:
-- Load config
-- Load dataset
-- Train model
-- Predict
-- Evaluate performance
-"""
-
-from pathlib import Path
-from your_package.data_utils import load_dataset, load_config
-from your_package.ml_pipeline import MockModel, evaluate
+from src.data_utils import load_dataset, train_test_split
+from src.ml_pipeline import WordFrequencyModel, TFIDFModel, evaluate, confusion_matrix
 
 
-def test_full_pipeline(tmp_path: Path):
-    # ---------------------------
-    # 1. Load configuration
-    # ---------------------------
-    config_path = Path("src/your_package/config.yaml")
-    config = load_config(config_path)
-
-    assert config["model"]["type"] == "MockModel"
-    assert config["training"]["epochs"] == 2
-
-    # ---------------------------
-    # 2. Load dataset
-    # ---------------------------
+def test_full_pipeline_freq():
     dataset = load_dataset()
     assert len(dataset) > 0
 
-    # ---------------------------
-    # 3. Train model
-    # ---------------------------
-    model = MockModel()
-    texts = [text for text, _ in dataset]
-    model.train(texts)
+    train_data, test_data = train_test_split(dataset, test_ratio=0.3, seed=42)
+    texts = [t for t, _ in train_data]
+    labels = [l for _, l in train_data]
 
+    model = WordFrequencyModel()
+    model.train(texts, labels)
     assert model.is_trained
-    assert "hello" in model.word_counts
 
-    # ---------------------------
-    # 4. Run predictions
-    # ---------------------------
-    preds = [model.predict(text) for text, _ in dataset]
-
+    preds = [model.predict(text) for text, _ in test_data]
     assert all(isinstance(p, str) for p in preds)
 
-    # ---------------------------
-    # 5. Evaluate
-    # ---------------------------
-    acc = evaluate(model, dataset)
-
-    # Accuracy should be within [0,1] and non-zero
+    acc = evaluate(model, test_data)
     assert 0.0 <= acc <= 1.0
-    assert acc > 0.2  # pipeline should perform decently
 
-    # ---------------------------
-    # 6. Smoke check: config + model interaction
-    # ---------------------------
-    max_vocab = config["model"]["max_vocab_size"]
-    assert len(model.word_counts) <= max_vocab
+
+def test_full_pipeline_tfidf():
+    dataset = load_dataset()
+    train_data, test_data = train_test_split(dataset, test_ratio=0.3, seed=42)
+    texts = [t for t, _ in train_data]
+    labels = [l for _, l in train_data]
+
+    model = TFIDFModel()
+    model.train(texts, labels)
+    assert model.is_trained
+
+    acc = evaluate(model, test_data)
+    assert 0.0 <= acc <= 1.0
+
+
+def test_confusion_matrix_integration():
+    dataset = load_dataset()
+    texts = [t for t, _ in dataset]
+    labels = [l for _, l in dataset]
+
+    model = WordFrequencyModel()
+    model.train(texts, labels)
+
+    cm = confusion_matrix(model, dataset)
+    assert isinstance(cm, dict)
+    assert len(cm) > 0

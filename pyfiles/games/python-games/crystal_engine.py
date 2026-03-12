@@ -902,10 +902,10 @@ class ConsciousnessCrystallizationEngine:
 
 def launch_consciousness_engine():
     """Launch the Consciousness Crystallization Engine"""
-    print("=" * 80)
+    print()
     print("CONSCIOUSNESS CRYSTALLIZATION ENGINE 2025")
     print("A 0.00001% Visualization Experience")
-    print("=" * 80)
+    print()
     print()
     print("FEATURES:")
     print("• Living crystals of pure thought with fractal complexity")

@@ -56,7 +56,6 @@ def plot_quadratic(a, b, c, x1, x2):
     plt.grid(True)
     plt.show()
 
-# --- Main ---
 if __name__ == "__main__":
     print("=== QuadLab: Step-by-Step Quadratic Proofs ===")
     a = float(input("Enter coefficient a: "))

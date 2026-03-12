@@ -8,17 +8,13 @@ Professional data inspection template:
 - Performs HIPAA-related checks for Protected Health Information (PHI)
 """
 
-# -----------------------------
 # 1. Imports
-# -----------------------------
 import pandas as pd
 import numpy as np
 import re
 import matplotlib.pyplot as plt
 
-# -----------------------------
 # 2. Load dataset
-# -----------------------------
 def load_dataset(file_path):
     if file_path.endswith('.csv'):
         df = pd.read_csv(file_path)
@@ -28,9 +24,7 @@ def load_dataset(file_path):
         raise ValueError("Unsupported file type. Use CSV or JSON.")
     return df
 
-# -----------------------------
 # 3. General Data Inspection
-# -----------------------------
 def inspect_data(df):
     print("\n=== Data Info ===")
     print(df.info())
@@ -47,9 +41,7 @@ def inspect_data(df):
     print("\n=== Duplicate Rows ===")
     print(df.duplicated().sum())
 
-# -----------------------------
 # 4. HIPAA / PHI Checks
-# -----------------------------
 HIPAA_KEYWORDS = [
     'name', 'first_name', 'last_name', 'dob', 'date_of_birth',
     'ssn', 'social_security', 'address', 'phone', 'email',
@@ -81,9 +73,7 @@ def check_phi_values(df):
                 findings[col] = key
     return findings
 
-# -----------------------------
 # 5. Visualization (Optional)
-# -----------------------------
 def visualize_numeric(df):
     numeric_cols = df.select_dtypes(include='number').columns
     for col in numeric_cols:
@@ -91,9 +81,7 @@ def visualize_numeric(df):
         plt.title(f"{col} distribution")
         plt.show()
 
-# -----------------------------
 # 6. Main Workflow
-# -----------------------------
 if __name__ == "__main__":
     # Example usage: replace with your dataset path
     file_path = "sample_data.csv"

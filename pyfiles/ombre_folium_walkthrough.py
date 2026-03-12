@@ -34,14 +34,12 @@ CITATIONS (documentation):
 Author: Cazzy Aporbo
 """
 
-# ====== Standard Library (I keep it light and explicit) ======
 import json
 import csv
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 
-# ====== Third-Party (one core library + its built-ins) ======
 import folium
 from folium import Map, Marker, Circle, GeoJson, Choropleth
 from folium.features import DivIcon

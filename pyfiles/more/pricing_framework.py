@@ -12,9 +12,7 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
-# -----------------------------
 # 1. Sample Data Generation
-# -----------------------------
 def generate_sample_data(n=100):
     """
     Generates sample data with base_price, competitor_price, marketing_spend, and demand.
@@ -37,9 +35,7 @@ def generate_sample_data(n=100):
     })
     return data
 
-# -----------------------------
 # 2. Price Elasticity Model
-# -----------------------------
 def price_elasticity_model(data):
     """
     Fits a linear regression model to understand price elasticity.
@@ -60,9 +56,7 @@ def price_elasticity_model(data):
     
     return model, poly
 
-# -----------------------------
 # 3. Dynamic Pricing Strategy
-# -----------------------------
 def optimal_price(model, poly, competitor_price, marketing_spend, price_range=(10, 100)):
     """
     Calculates optimal price to maximize revenue given competitor price and marketing spend.
@@ -83,9 +77,7 @@ def optimal_price(model, poly, competitor_price, marketing_spend, price_range=(1
     
     return best_price, max_revenue
 
-# -----------------------------
 # 4. Main Execution
-# -----------------------------
 if __name__ == "__main__":
     # Generate sample dataset
     data = generate_sample_data(n=200)

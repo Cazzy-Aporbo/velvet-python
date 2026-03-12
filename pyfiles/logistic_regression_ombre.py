@@ -1,5 +1,4 @@
 # logistic_regression_ombre.py
-# -----------------------------------------------------------------------------
 # Title: Logistic Regression Demo — With Ombre Pink↔Purple Visuals
 # Author: Cazandra Aporbo
 # Completed: July 2023 (visuals added)
@@ -11,7 +10,6 @@
 #         • Visuals use a custom ombre (pink→purple) palette only here.
 #         • If matplotlib is unavailable or the environment is headless, the
 #           script degrades by printing metrics and (if needed) saving PNGs.
-# -----------------------------------------------------------------------------
 
 from __future__ import annotations
 
@@ -54,9 +52,7 @@ try:
 except Exception:
     HAS_MPL = False
 
-# -----------------------------------------------------------------------------
 # Small data container types so downstream code is explicit and readable
-# -----------------------------------------------------------------------------
 
 @dataclass
 class FitResult:
@@ -74,9 +70,7 @@ class Metrics:
     threshold: float     # tuned decision threshold
     cm: np.ndarray       # confusion matrix at threshold
 
-# -----------------------------------------------------------------------------
 # Palette and background for the ombre pink↔purple visuals (this file only)
-# -----------------------------------------------------------------------------
 
 def _ombre_cmap() -> "LinearSegmentedColormap":
     """Pink→purple custom colormap (rose→magenta→violet)."""
@@ -104,9 +98,7 @@ def _ombre_background(ax) -> None:
         zorder=0,
     )
 
-# -----------------------------------------------------------------------------
 # Synthetic dataset that still feels realistic: informative + redundant features
-# -----------------------------------------------------------------------------
 
 def make_data(n: int = 1200, seed: int = 7) -> Tuple[np.ndarray, np.ndarray]:
     """Create a binary classification set with clear signal + some redundancy.
@@ -125,9 +117,7 @@ def make_data(n: int = 1200, seed: int = 7) -> Tuple[np.ndarray, np.ndarray]:
     )
     return X.astype(float), y.astype(int)
 
-# -----------------------------------------------------------------------------
 # Fit logistic regression in a disciplined way (scaling+penalty by default)
-# -----------------------------------------------------------------------------
 
 def fit_logreg(X: np.ndarray, y: np.ndarray, seed: int = 11) -> FitResult:
     """Train/evaluate Logistic Regression with scaling and a stable split.
@@ -146,9 +136,7 @@ def fit_logreg(X: np.ndarray, y: np.ndarray, seed: int = 11) -> FitResult:
     proba = pipe.predict_proba(X_test)[:, 1]
     return FitResult(X_train, X_test, y_train, y_test, pipe, proba)
 
-# -----------------------------------------------------------------------------
 # Metrics: threshold-free (AUC) and a tuned-threshold confusion matrix
-# -----------------------------------------------------------------------------
 
 def evaluate_thresholds(y_true: np.ndarray, y_proba: np.ndarray) -> Metrics:
     """Pick a reasonable threshold by maximizing F1 on the PR curve.
@@ -166,9 +154,7 @@ def evaluate_thresholds(y_true: np.ndarray, y_proba: np.ndarray) -> Metrics:
     cm = confusion_matrix(y_true, y_hat)
     return Metrics(auc_roc=auc_roc, auc_pr=auc_pr, threshold=best_thr, cm=cm)
 
-# -----------------------------------------------------------------------------
 # Visuals — ombre pink↔purple, only for this logistic regression demo
-# -----------------------------------------------------------------------------
 
 def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> List[str]:
     """Render ROC, PR, probability hist, and confusion matrix with an
@@ -271,9 +257,7 @@ def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> Li
 
     return saved
 
-# -----------------------------------------------------------------------------
 # Optional: classical inference summary via statsmodels (if available)
-# -----------------------------------------------------------------------------
 
 def classical_inference(fit: FitResult) -> Optional[str]:
     """Return a short statsmodels summary table (string) if available.
@@ -291,15 +275,13 @@ def classical_inference(fit: FitResult) -> Optional[str]:
     except Exception:
         return None
 
-# -----------------------------------------------------------------------------
 # Main execution: fit → metrics → visuals → (optional) classical report
-# -----------------------------------------------------------------------------
 
 def main() -> int:
     warnings.filterwarnings("ignore", category=RuntimeWarning)
-    print("\n" + "=" * 78)
+    print()
     print("Logistic Regression — Demonstration (with ombre visuals)")
-    print("-" * 78)
+    print()
 
     # 1) Data
     X, y = make_data(n=1400, seed=5)

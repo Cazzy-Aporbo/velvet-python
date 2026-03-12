@@ -34,9 +34,7 @@ from velvet_python import VelvetPython
 from velvet_python.cli import app
 
 
-# =============================================================================
 # PYTEST CONFIGURATION
-# =============================================================================
 
 def pytest_configure(config):
     """
@@ -86,9 +84,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.asyncio)
 
 
-# =============================================================================
 # DIRECTORY FIXTURES
-# =============================================================================
 
 @pytest.fixture
 def temp_dir() -> Generator[Path, None, None]:
@@ -142,9 +138,7 @@ author = [{name = "Cazzy Aporbo, MS"}]
     return temp_dir
 
 
-# =============================================================================
 # CLI FIXTURES
-# =============================================================================
 
 @pytest.fixture
 def cli_runner() -> CliRunner:
@@ -175,9 +169,7 @@ def mock_console() -> Mock:
     return mock
 
 
-# =============================================================================
 # DATA FIXTURES
-# =============================================================================
 
 @pytest.fixture
 def sample_requirements() -> list:
@@ -278,9 +270,7 @@ AUTHOR=Cazzy Aporbo, MS
     return files
 
 
-# =============================================================================
 # MOCK OBJECTS
-# =============================================================================
 
 @pytest.fixture
 def mock_velvet_python() -> Mock:
@@ -328,9 +318,7 @@ def mock_subprocess() -> Mock:
     return mock
 
 
-# =============================================================================
 # ENVIRONMENT FIXTURES
-# =============================================================================
 
 @pytest.fixture
 def clean_env() -> Generator[None, None, None]:
@@ -371,9 +359,7 @@ def test_env(clean_env) -> Dict[str, str]:
     return test_vars
 
 
-# =============================================================================
 # ASSERTION HELPERS
-# =============================================================================
 
 @pytest.fixture
 def assert_pastel_colors():
@@ -402,9 +388,7 @@ def assert_pastel_colors():
     return _assert
 
 
-# =============================================================================
 # PERFORMANCE FIXTURES
-# =============================================================================
 
 @pytest.fixture
 def benchmark_timer():
@@ -431,9 +415,7 @@ def benchmark_timer():
     return timer
 
 
-# =============================================================================
 # ASYNC FIXTURES
-# =============================================================================
 
 @pytest.fixture
 async def async_client():
@@ -449,9 +431,7 @@ async def async_client():
         yield client
 
 
-# =============================================================================
 # DATABASE FIXTURES
-# =============================================================================
 
 @pytest.fixture
 def test_db(temp_dir: Path) -> Path:
@@ -487,9 +467,7 @@ def test_db(temp_dir: Path) -> Path:
     return db_path
 
 
-# =============================================================================
 # CLEANUP
-# =============================================================================
 
 @pytest.fixture(autouse=True)
 def cleanup_after_test():
@@ -520,13 +498,10 @@ def cleanup_after_test():
                 path.unlink(missing_ok=True)
 
 
-# =============================================================================
 # DOCSTRING
-# =============================================================================
 
 """
 Available Fixtures:
--------------------
 - temp_dir: Temporary directory (auto-cleaned)
 - project_dir: Mock project structure
 - cli_runner: Click CLI test runner

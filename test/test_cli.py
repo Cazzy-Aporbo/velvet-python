@@ -31,9 +31,7 @@ from velvet_python.cli import app, state, print_header
 from velvet_python import __version__, __author__
 
 
-# =============================================================================
 # BASIC CLI TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestCLIBasics:
@@ -94,9 +92,7 @@ class TestCLIBasics:
         # Typer shows usage information for invalid commands
 
 
-# =============================================================================
 # MODULE MANAGEMENT TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestModuleCommands:
@@ -189,9 +185,7 @@ class TestModuleCommands:
             assert result.exit_code == 0
 
 
-# =============================================================================
 # START COMMAND TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestStartCommand:
@@ -247,9 +241,7 @@ class TestStartCommand:
             assert (module_path / "benchmarks").exists()
 
 
-# =============================================================================
 # TEST COMMAND TESTS  
-# =============================================================================
 
 @pytest.mark.cli
 class TestTestCommand:
@@ -315,9 +307,7 @@ class TestTestCommand:
             assert not any("--cov" in arg for arg in call_args)
 
 
-# =============================================================================
 # FORMAT AND LINT TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestCodeQualityCommands:
@@ -378,9 +368,7 @@ class TestCodeQualityCommands:
             assert mock_subprocess.call_count == 2
 
 
-# =============================================================================
 # UTILITY COMMAND TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestUtilityCommands:
@@ -450,9 +438,7 @@ class TestUtilityCommands:
             assert result.exit_code == 0
 
 
-# =============================================================================
 # RUN COMMAND TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestRunCommand:
@@ -506,9 +492,7 @@ class TestRunCommand:
             mock_subprocess.assert_called_once()
 
 
-# =============================================================================
 # ERROR HANDLING TESTS
-# =============================================================================
 
 @pytest.mark.cli
 class TestErrorHandling:
@@ -575,9 +559,7 @@ class TestErrorHandling:
                 assert result.exit_code == 0
 
 
-# =============================================================================
 # INTEGRATION TESTS
-# =============================================================================
 
 @pytest.mark.integration
 @pytest.mark.cli
@@ -644,9 +626,7 @@ class TestCLIIntegration:
         # but function should run without error
 
 
-# =============================================================================
 # PERFORMANCE TESTS
-# =============================================================================
 
 @pytest.mark.benchmark
 @pytest.mark.cli

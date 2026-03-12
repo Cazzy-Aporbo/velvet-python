@@ -4,17 +4,13 @@ data_inspect_export.py
 Professional data inspection + HIPAA check + multi-format export template
 """
 
-# -----------------------------
 # 1. Imports
-# -----------------------------
 import pandas as pd
 import numpy as np
 import re
 import matplotlib.pyplot as plt
 
-# -----------------------------
 # 2. Load Dataset
-# -----------------------------
 def load_dataset(file_path):
     if file_path.endswith('.csv'):
         df = pd.read_csv(file_path)
@@ -24,9 +20,7 @@ def load_dataset(file_path):
         raise ValueError("Unsupported file type. Use CSV or JSON.")
     return df
 
-# -----------------------------
 # 3. General Data Inspection
-# -----------------------------
 def inspect_data(df):
     print("\n=== Data Info ===")
     print(df.info())
@@ -39,9 +33,7 @@ def inspect_data(df):
     print("\n=== Duplicate Rows ===")
     print(df.duplicated().sum())
 
-# -----------------------------
 # 4. HIPAA / PHI Checks
-# -----------------------------
 HIPAA_KEYWORDS = [
     'name', 'first_name', 'last_name', 'dob', 'date_of_birth',
     'ssn', 'social_security', 'address', 'phone', 'email',
@@ -71,9 +63,7 @@ def check_phi_values(df):
                 findings[col] = key
     return findings
 
-# -----------------------------
 # 5. Visualization
-# -----------------------------
 def visualize_numeric(df):
     numeric_cols = df.select_dtypes(include='number').columns
     for col in numeric_cols:
@@ -81,9 +71,7 @@ def visualize_numeric(df):
         plt.title(f"{col} distribution")
         plt.show()
 
-# -----------------------------
 # 6. Export Functions
-# -----------------------------
 def export_csv(df, filename="output.csv", index=False):
     df.to_csv(filename, index=index)
     print(f"CSV exported: {filename}")
@@ -104,9 +92,7 @@ def export_html(df, filename="output.html"):
     df.to_html(filename, index=False)
     print(f"HTML exported: {filename}")
 
-# -----------------------------
 # 7. Main Workflow
-# -----------------------------
 if __name__ == "__main__":
     # Replace with your dataset path
     file_path = "sample_data.csv"

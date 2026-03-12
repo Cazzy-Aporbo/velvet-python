@@ -718,10 +718,10 @@ class HypersaturatedCrystalVisualizer:
 
 def launch_crystal_universe():
     """Launch the Hypersaturated Crystal Universe"""
-    print("=" * 80)
+    print()
     print("HYPERSATURATED CRYSTAL UNIVERSE 2025")
     print("Real Crystallization Physics with Explosive Colors")
-    print("=" * 80)
+    print()
     print()
     print("FEATURES:")
     print("• Real crystal growth physics: nucleation, dendritic growth, depletion zones")

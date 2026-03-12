@@ -25,7 +25,6 @@ from textwrap import dedent
 import os
 import sys
 
-# ---------- Theme presets ----------
 
 PASTEL_PALETTES = {
     "lavender-pink-mint": ["FFE0F5", "E6E0FF", "D4FFE4", "FDE1C9", "E0FFFF", "FFF8FD"],
@@ -77,7 +76,6 @@ def choose(prompt, options, default_index=0):
         print("Invalid choice.")
 
 
-# ---------- Builders ----------
 
 def capsule_wave_header(title, desc, font_size=88, height=300, colors=CAPSULE_COLORLIST_DEFAULT):
     return dedent(f"""
@@ -216,7 +214,6 @@ def repo_count_badge(user, count_text="Repos", color="E6E0FF", labelColor="FFE0F
     return f'<p align="center">{img}</p>\n'
 
 
-# ---------- Game Flow ----------
 
 def build_badges_interactively():
     badges = []

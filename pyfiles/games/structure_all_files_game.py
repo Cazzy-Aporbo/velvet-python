@@ -114,12 +114,12 @@ class StructureTypingGame:
         title = "STRUCTURE TYPING ARENA"
         subtitle = "Master Your Python File Architecture"
         
-        print("=" * 70)
+        print()
         print()
         print(self.generate_ascii_banner(title).center(70))
         print()
         print(subtitle.center(70))
-        print("=" * 70)
+        print()
         
         print("\n>>> INITIALIZING GAME ENVIRONMENT...")
         time.sleep(1)

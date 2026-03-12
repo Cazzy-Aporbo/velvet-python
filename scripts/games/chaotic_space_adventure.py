@@ -27,9 +27,7 @@ import sys
 # Seed randomness for variety
 random.seed()
 
-# -------------------------
 # Utility functions
-# -------------------------
 
 def randint(a, b):
     return random.randint(a, b)
@@ -88,9 +86,7 @@ def solve_quadratic_verbose(a, b, c):
     steps.append(f"Roots: x1 = {x1}, x2 = {x2}")
     return [x1, x2], steps
 
-# -------------------------
 # Game data classes
-# -------------------------
 
 class Player:
     def __init__(self, name):
@@ -174,9 +170,7 @@ class Sector:
                 lines.append(f"  {p.name}: {p.flavor}")
         return '\n'.join(lines)
 
-# -------------------------
 # Game world generation
-# -------------------------
 WORLD = {}
 
 def gen_sector(x, y):
@@ -218,9 +212,7 @@ for X in range(-2, 3):
     for Y in range(-2, 3):
         gen_sector(X, Y)
 
-# -------------------------
 # Mini games and challenges
-# -------------------------
 
 def asteroid_field_mini(player):
     print("You fly into an asteroid field. You must dodge rocks.")
@@ -370,9 +362,7 @@ def alien_interaction(player, alien):
         print("They do not understand your action and move away.")
         player.reputation -= 1
 
-# -------------------------
 # Core game engine
-# -------------------------
 
 class Game:
     def __init__(self, player):
@@ -650,9 +640,7 @@ class Game:
         else:
             print("Unknown command. Type help for a list of commands.")
 
-# -------------------------
 # Entrypoint
-# -------------------------
 
 def main():
     print("Space Anarchy: a chaotic space adventure")

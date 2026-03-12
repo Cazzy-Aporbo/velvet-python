@@ -11,18 +11,14 @@ import importlib
 import logging
 import platform
 
-# =========================
 # Logging setup
-# =========================
 logging.basicConfig(
     filename="ultimate_env_install_log.txt",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-# =========================
 # Detect Python version and system
-# =========================
 python_version = sys.version.split()[0]
 system_name = platform.system()
 architecture = platform.architecture()[0]
@@ -31,9 +27,7 @@ print(f"Python version detected: {python_version}")
 print(f"Operating system: {system_name}")
 print(f"System architecture: {architecture}")
 
-# =========================
 # GPU detection (CUDA-enabled packages)
-# =========================
 gpu_available = False
 try:
     import torch
@@ -46,9 +40,7 @@ if gpu_available:
 else:
     print("No CUDA-enabled GPU detected or PyTorch not installed.")
 
-# =========================
 # Combined list of packages from all three files
-# =========================
 # Only include pip-installable packages
 all_packages = [
     # Advanced numerical computation
@@ -102,9 +94,7 @@ all_packages = [
     "uvicorn", "starlette", "pydantic"
 ]
 
-# =========================
 # Function to install a package
-# =========================
 def install_package(package_name):
     """
     Attempt to import a package; if missing, install via pip.
@@ -123,9 +113,7 @@ def install_package(package_name):
             logging.error(f"Failed to install {package_name}: {error}")
             print(f"Failed to install {package_name}, check log.")
 
-# =========================
 # Function to create requirements.txt
-# =========================
 def create_requirements_file(package_list):
     """
     Generates a requirements.txt file with installed package versions.
@@ -140,9 +128,7 @@ def create_requirements_file(package_list):
                 req_file.write(f"{package}\n")
     print("requirements.txt created with package versions.")
 
-# =========================
 # Main installer
-# =========================
 def main():
     """
     Install all packages and generate requirements.txt

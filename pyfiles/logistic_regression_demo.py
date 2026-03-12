@@ -1163,7 +1163,7 @@ def main():
     reg_comparison = compare_regularization_strategies(dataset.X, dataset.y, dataset)
     
     print(f"{'Strategy':<20} {'AUC-ROC':<10} {'Accuracy':<10} {'Non-zero':<10} {'L2 Norm':<10}")
-    print("-" * 60)
+    print()
     
     for name, results in reg_comparison.items():
         if 'error' not in results:

@@ -3,9 +3,7 @@
 # Supports: GitHub Actions, GitLab CI, Jenkins, Azure DevOps
 # Use Case: Production-grade Python application deployment with environment isolation
 
-# ==============================================================================
 # GITHUB ACTIONS WORKFLOW
-# ==============================================================================
 
 name: Python Environment CI/CD Pipeline
 
@@ -43,9 +41,7 @@ env:
   PYTHONDONTWRITEBYTECODE: 1
 
 jobs:
-  # ==============================================================================
   # JOB 1: Environment Setup and Validation
-  # ==============================================================================
   
   setup-environment:
     name: Setup Python Environment
@@ -197,9 +193,7 @@ jobs:
           fi
         shell: bash
 
-  # ==============================================================================
   # JOB 2: Code Quality and Security Checks
-  # ==============================================================================
   
   code-quality:
     name: Code Quality Checks
@@ -286,9 +280,7 @@ jobs:
             p/flask
         continue-on-error: true
 
-  # ==============================================================================
   # JOB 3: Testing with Multiple Environments
-  # ==============================================================================
   
   test:
     name: Run Tests
@@ -386,9 +378,7 @@ jobs:
             coverage.xml
             pytest-report.xml
 
-  # ==============================================================================
   # JOB 4: Build and Package
-  # ==============================================================================
   
   build-package:
     name: Build Python Package
@@ -460,9 +450,7 @@ jobs:
           path: dist/
           retention-days: 7
 
-  # ==============================================================================
   # JOB 5: Container Build with Environment
-  # ==============================================================================
   
   build-container:
     name: Build Docker Container
@@ -523,9 +511,7 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # ==============================================================================
   # JOB 6: Deploy to Environment
-  # ==============================================================================
   
   deploy:
     name: Deploy to ${{ github.event.inputs.environment || 'staging' }}
@@ -607,9 +593,7 @@ jobs:
             URL: ${{ steps.deploy.outputs.url }}
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 
-  # ==============================================================================
   # JOB 7: Environment Cleanup
-  # ==============================================================================
   
   cleanup:
     name: Cleanup Old Environments
@@ -653,9 +637,7 @@ jobs:
           skip-tags: true
           skip-recent: 5
 
-# ==============================================================================
 # GITLAB CI CONFIGURATION
-# ==============================================================================
 
 # .gitlab-ci.yml
 gitlab-ci:
@@ -741,9 +723,7 @@ gitlab-ci:
     only:
       - develop
 
-# ==============================================================================
 # JENKINS PIPELINE
-# ==============================================================================
 
 # Jenkinsfile
 jenkins-pipeline: |

@@ -1322,10 +1322,10 @@ class UltimateVisualizationSystem:
 
 def launch_ultimate_system():
     """Launch the ultimate PhD visualization system"""
-    print("=" * 80)
+    print()
     print("ULTIMATE PHD-LEVEL ATTRACTOR DYNAMICS SYSTEM")
     print("Complete Nonlinear Dynamics Analysis Suite")
-    print("=" * 80)
+    print()
     print()
     print("12 ANALYSIS PANELS WITH FULL EXPLAINABILITY:")
     print()
