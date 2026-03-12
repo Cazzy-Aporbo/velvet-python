@@ -18,8 +18,6 @@ from __future__ import annotations
 import math
 import random
 from collections import Counter, defaultdict
-from typing import Dict, List, Optional, Tuple
-
 
 
 def classify_text(text: str) -> str:
@@ -65,15 +63,15 @@ class NaiveBayesClassifier:
 
     def __init__(self, alpha: float = 1.0) -> None:
         self.alpha = alpha
-        self.class_word_counts: Dict[str, Counter] = defaultdict(Counter)
-        self.class_totals: Dict[str, int] = defaultdict(int)
-        self.class_doc_counts: Dict[str, int] = defaultdict(int)
+        self.class_word_counts: dict[str, Counter] = defaultdict(Counter)
+        self.class_totals: dict[str, int] = defaultdict(int)
+        self.class_doc_counts: dict[str, int] = defaultdict(int)
         self.vocab: set = set()
         self.n_docs: int = 0
 
-    def train(self, texts: List[str], labels: List[str]) -> None:
+    def train(self, texts: list[str], labels: list[str]) -> None:
         """Learn word distributions per class from labeled examples."""
-        for text, label in zip(texts, labels):
+        for text, label in zip(texts, labels, strict=False):
             words = text.lower().split()
             self.class_word_counts[label].update(words)
             self.class_totals[label] += len(words)
@@ -108,7 +106,7 @@ class NaiveBayesClassifier:
 
         return best_class
 
-    def predict_proba(self, text: str) -> Dict[str, float]:
+    def predict_proba(self, text: str) -> dict[str, float]:
         """Return normalized probabilities for all classes.
 
         Converts log-scores to probabilities via the log-sum-exp trick
@@ -117,7 +115,7 @@ class NaiveBayesClassifier:
             P(c) = exp(score_c - max_score) / Σ exp(score_i - max_score)
         """
         words = text.lower().split()
-        scores: Dict[str, float] = {}
+        scores: dict[str, float] = {}
         v = len(self.vocab)
 
         for cls in self.class_doc_counts:
@@ -153,9 +151,9 @@ class CosineSimilarityClassifier:
     """
 
     def __init__(self) -> None:
-        self.centroids: Dict[str, Dict[str, float]] = {}
+        self.centroids: dict[str, dict[str, float]] = {}
 
-    def _vectorize(self, text: str) -> Dict[str, float]:
+    def _vectorize(self, text: str) -> dict[str, float]:
         """Convert text to a normalized term-frequency vector."""
         words = text.lower().split()
         counts = Counter(words)
@@ -163,23 +161,23 @@ class CosineSimilarityClassifier:
         return {w: c / total for w, c in counts.items()}
 
     @staticmethod
-    def _dot(a: Dict[str, float], b: Dict[str, float]) -> float:
+    def _dot(a: dict[str, float], b: dict[str, float]) -> float:
         """Sparse dot product — only iterate over shared keys."""
         return sum(a[k] * b[k] for k in a if k in b)
 
     @staticmethod
-    def _norm(v: Dict[str, float]) -> float:
+    def _norm(v: dict[str, float]) -> float:
         """L2 norm of a sparse vector: sqrt(Σ v_i²)."""
         return math.sqrt(sum(x * x for x in v.values()))
 
-    def train(self, texts: List[str], labels: List[str]) -> None:
+    def train(self, texts: list[str], labels: list[str]) -> None:
         """Build centroid vectors by averaging per-class documents."""
-        groups: Dict[str, List[Dict[str, float]]] = defaultdict(list)
-        for text, label in zip(texts, labels):
+        groups: dict[str, list[dict[str, float]]] = defaultdict(list)
+        for text, label in zip(texts, labels, strict=False):
             groups[label].append(self._vectorize(text))
 
         for label, vectors in groups.items():
-            merged: Dict[str, float] = defaultdict(float)
+            merged: dict[str, float] = defaultdict(float)
             for v in vectors:
                 for k, val in v.items():
                     merged[k] += val
@@ -204,12 +202,12 @@ class CosineSimilarityClassifier:
                 best_class = label
         return best_class
 
-    def similarity_scores(self, text: str) -> Dict[str, float]:
+    def similarity_scores(self, text: str) -> dict[str, float]:
         """Return cosine similarity to every class centroid."""
         vec = self._vectorize(text)
         vec_norm = self._norm(vec)
         if vec_norm == 0:
-            return {c: 0.0 for c in self.centroids}
+            return dict.fromkeys(self.centroids, 0.0)
 
         return {
             label: self._dot(vec, cent) / (vec_norm * self._norm(cent))

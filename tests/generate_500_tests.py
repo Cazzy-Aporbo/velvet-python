@@ -6,7 +6,6 @@ Tests are pytest-compatible functions and saved to `tests_generated.py`.
 
 """
 
-import os
 
 # Output file
 OUTPUT_FILE = "tests_generated.py"
@@ -61,7 +60,7 @@ categories = {
 
 # Flatten templates to reach 500 tests
 all_templates = []
-for cat, templates in categories.items():
+for _cat, templates in categories.items():
     all_templates.extend(templates)
 
 # Repeat templates to reach 500

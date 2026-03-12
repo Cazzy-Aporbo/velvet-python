@@ -19,13 +19,11 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
 
 import yaml
 
 
-
-def load_dataset() -> List[Tuple[str, str]]:
+def load_dataset() -> list[tuple[str, str]]:
     """Return a small labeled corpus for testing classifiers.
 
     The data is chosen so that:
@@ -51,10 +49,10 @@ def load_dataset() -> List[Tuple[str, str]]:
 
 
 def train_test_split(
-    data: List[Tuple[str, str]],
+    data: list[tuple[str, str]],
     test_ratio: float = 0.25,
     seed: int = 42,
-) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]]]:
+) -> tuple[list[tuple[str, str]], list[tuple[str, str]]]:
     """Split labeled data into training and test sets.
 
     Uses a deterministic shuffle (seeded) so results are reproducible.
@@ -73,11 +71,11 @@ def train_test_split(
 
 
 def load_csv(
-    path: Union[str, Path],
+    path: str | Path,
     text_col: str = "text",
     label_col: str = "label",
     delimiter: str = ",",
-) -> List[Tuple[str, str]]:
+) -> list[tuple[str, str]]:
     """Load (text, label) pairs from a CSV file.
 
     Validates that both columns exist in the header row.
@@ -109,12 +107,12 @@ def load_csv(
 
 
 
-def load_config(config_path: Union[str, Path]) -> dict:
+def load_config(config_path: str | Path) -> dict:
     """Parse a YAML file and return its contents as a dictionary.
 
     YAML is used here instead of JSON because it supports comments,
     which makes configuration files self-documenting. The trade-off
     is a runtime dependency on PyYAML.
     """
-    with open(config_path, "r", encoding="utf-8") as f:
+    with open(config_path, encoding="utf-8") as f:
         return yaml.safe_load(f) or {}

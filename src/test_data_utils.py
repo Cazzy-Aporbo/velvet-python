@@ -1,5 +1,6 @@
 from pathlib import Path
-from src.data_utils import load_dataset, load_config
+
+from src.data_utils import load_config, load_dataset
 
 
 def test_load_dataset():

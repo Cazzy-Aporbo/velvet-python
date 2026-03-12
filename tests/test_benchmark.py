@@ -1,4 +1,5 @@
 import time
+
 from src.data_utils import load_dataset
 from src.ml_pipeline import WordFrequencyModel
 
@@ -6,7 +7,7 @@ from src.ml_pipeline import WordFrequencyModel
 def test_training_speed():
     data = load_dataset()
     texts = [t for t, _ in data]
-    labels = [l for _, l in data]
+    labels = [label for _, label in data]
     model = WordFrequencyModel()
     start = time.perf_counter()
     model.train(texts, labels)
@@ -16,7 +17,7 @@ def test_training_speed():
 def test_prediction_speed():
     data = load_dataset()
     texts = [t for t, _ in data]
-    labels = [l for _, l in data]
+    labels = [label for _, label in data]
     model = WordFrequencyModel()
     model.train(texts, labels)
     start = time.perf_counter()

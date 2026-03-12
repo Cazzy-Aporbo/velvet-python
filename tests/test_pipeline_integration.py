@@ -1,5 +1,5 @@
 from src.data_utils import load_dataset, train_test_split
-from src.ml_pipeline import WordFrequencyModel, TFIDFModel, evaluate, confusion_matrix
+from src.ml_pipeline import TFIDFModel, WordFrequencyModel, confusion_matrix, evaluate
 
 
 def test_full_pipeline_freq():
@@ -8,7 +8,7 @@ def test_full_pipeline_freq():
 
     train_data, test_data = train_test_split(dataset, test_ratio=0.3, seed=42)
     texts = [t for t, _ in train_data]
-    labels = [l for _, l in train_data]
+    labels = [label for _, label in train_data]
 
     model = WordFrequencyModel()
     model.train(texts, labels)
@@ -25,7 +25,7 @@ def test_full_pipeline_tfidf():
     dataset = load_dataset()
     train_data, test_data = train_test_split(dataset, test_ratio=0.3, seed=42)
     texts = [t for t, _ in train_data]
-    labels = [l for _, l in train_data]
+    labels = [label for _, label in train_data]
 
     model = TFIDFModel()
     model.train(texts, labels)
@@ -38,7 +38,7 @@ def test_full_pipeline_tfidf():
 def test_confusion_matrix_integration():
     dataset = load_dataset()
     texts = [t for t, _ in dataset]
-    labels = [l for _, l in dataset]
+    labels = [label for _, label in dataset]
 
     model = WordFrequencyModel()
     model.train(texts, labels)

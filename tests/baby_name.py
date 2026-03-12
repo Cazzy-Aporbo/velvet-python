@@ -1,4 +1,5 @@
 import random
+
 import requests
 
 API_KEY = "YOUR_API_KEY"
@@ -12,7 +13,7 @@ def fetch_baby_names(gender, limit=100):
         response.raise_for_status()
         data = response.json()
         return [item['name'] for item in data]
-    except:
+    except Exception:
         return []
 
 middle_names = ["James", "Alexander", "Benjamin", "Elijah", "Samuel",

@@ -55,7 +55,7 @@ last_names = [
 
 def generate_students(num_male=300, num_female=300):
     students = []
-    
+
     # Generate male students
     for i in range(1, num_male+1):
         first = random.choice(male_first_names)
@@ -69,7 +69,7 @@ def generate_students(num_male=300, num_female=300):
             "gender": "Male",
             "grade": grade
         })
-    
+
     # Generate female students
     for i in range(1, num_female+1):
         first = random.choice(female_first_names)
@@ -83,7 +83,7 @@ def generate_students(num_male=300, num_female=300):
             "gender": "Female",
             "grade": grade
         })
-    
+
     # Shuffle to mix male and female
     random.shuffle(students)
     return students

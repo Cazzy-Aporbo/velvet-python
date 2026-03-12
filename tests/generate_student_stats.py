@@ -1,6 +1,6 @@
-import random
 import csv
 import math
+import random
 from collections import Counter
 
 male_first_pool = ["Pippit","Hawk","Tiago","Ozias","Chozyn"]
@@ -96,7 +96,8 @@ def median(data):
     mid = n//2
     return (sorted_data[mid-1]+sorted_data[mid])/2 if n%2==0 else sorted_data[mid]
 def mode(data):
-    if not data: return None
+    if not data:
+        return None
     count = Counter(data)
     max_count = max(count.values())
     return [k for k,v in count.items() if v==max_count]

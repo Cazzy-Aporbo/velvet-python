@@ -1,5 +1,6 @@
 import pytest
-from src.ml_pipeline import WordFrequencyModel, TFIDFModel, evaluate, confusion_matrix
+
+from src.ml_pipeline import TFIDFModel, WordFrequencyModel, confusion_matrix, evaluate
 
 
 @pytest.fixture
@@ -61,8 +62,8 @@ def test_confusion_matrix_structure(trained_freq_model):
     test_data = [("hello", "greeting"), ("learning", "tech")]
     cm = confusion_matrix(trained_freq_model, test_data)
     assert isinstance(cm, dict)
-    for actual, preds in cm.items():
-        assert isinstance(preds, dict)
+    for _actual, pred_counts in cm.items():
+        assert isinstance(pred_counts, dict)
 
 
 def test_model_not_trained():

@@ -1,13 +1,15 @@
 import time
+
 import pytest
+
 from src.data_utils import load_dataset
-from src.ml_pipeline import WordFrequencyModel, TFIDFModel
+from src.ml_pipeline import TFIDFModel, WordFrequencyModel
 
 
 @pytest.mark.slow
 def test_freq_training_speed():
     data = load_dataset()
-    texts, labels = [t for t, _ in data], [l for _, l in data]
+    texts, labels = [t for t, _ in data], [label for _, label in data]
     model = WordFrequencyModel()
     start = time.perf_counter()
     model.train(texts, labels)
@@ -17,7 +19,7 @@ def test_freq_training_speed():
 @pytest.mark.slow
 def test_freq_prediction_throughput():
     data = load_dataset()
-    texts, labels = [t for t, _ in data], [l for _, l in data]
+    texts, labels = [t for t, _ in data], [label for _, label in data]
     model = WordFrequencyModel()
     model.train(texts, labels)
     start = time.perf_counter()
@@ -29,7 +31,7 @@ def test_freq_prediction_throughput():
 @pytest.mark.slow
 def test_tfidf_training_speed():
     data = load_dataset()
-    texts, labels = [t for t, _ in data], [l for _, l in data]
+    texts, labels = [t for t, _ in data], [label for _, label in data]
     model = TFIDFModel()
     start = time.perf_counter()
     model.train(texts, labels)

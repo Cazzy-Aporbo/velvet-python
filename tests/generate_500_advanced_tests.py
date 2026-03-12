@@ -5,9 +5,9 @@ Generates 500 advanced Python tests with randomized inputs across multiple topic
 Tests are saved to `advanced_tests_generated.py` and ready for pytest.
 """
 
-import os
 import random
 import string
+
 import numpy as np
 import pandas as pd
 
@@ -33,36 +33,36 @@ templates = [
     ("Test sorting a list", "lst = {lst}; lst.sort(); assert lst == sorted(lst)"),
     ("Test reversing a list", "lst = {lst}; rev = lst[::-1]; assert rev == list(reversed(lst))"),
     ("Test sum of list", "lst = {lst}; assert sum(lst) == {sum_val}"),
-    
+
     # Recursion
-    ("Test factorial function", 
+    ("Test factorial function",
      "def fact(n): return 1 if n<=1 else n*fact(n-1); assert fact({n}) == {fact_val}"),
-    
+
     # OOP
     ("Test class instantiation", "class A: def __init__(self, x): self.x=x; a=A({n}); assert a.x=={n}"),
-    
+
     # Functional programming
     ("Test map function", "lst={lst}; res=list(map(lambda x:x*2,lst)); assert res == [x*2 for x in lst]"),
     ("Test filter function", "lst={lst}; res=list(filter(lambda x:x%2==0,lst)); assert res == [x for x in lst if x%2==0]"),
-    
+
     # NumPy
     ("Test NumPy sum", "mat = np.array({matrix}); assert mat.sum() == {sum_val}"),
-    
+
     # Pandas
     ("Test DataFrame sum", "df = pd.DataFrame({df}); assert df.sum().sum() == {sum_val}"),
-    
+
     # Strings
     ("Test string uppercase", "s='{s}'; assert s.upper() == '{upper_s}'"),
     ("Test string reverse", "s='{s}'; assert s[::-1] == '{rev_s}'"),
-    
+
     # Random / Math
     ("Test random integer in range", "x=random.randint(1,10); assert 1<=x<=10"),
-    
+
     # Error handling
     ("Test ZeroDivisionError", "try: x=1/0; except ZeroDivisionError: x='error'; assert x=='error'"),
-    
+
     # Decorators
-    ("Test decorator doubling", 
+    ("Test decorator doubling",
      "def deco(f): return lambda: f()*2; @deco\ndef f(): return {n}; assert f()=={n2}"),
 ]
 
@@ -72,7 +72,7 @@ while len(tests) < 500:
     t = random.choice(templates)
     desc = t[0]
     code_template = t[1]
-    
+
     # Randomize placeholders
     lst = random_list()
     n = random.randint(2,6)
@@ -83,7 +83,7 @@ while len(tests) < 500:
     upper_s = s.upper()
     rev_s = s[::-1]
     n2 = n*2
-    
+
     code = code_template.format(lst=lst, sum_val=sum_val, n=n, matrix=matrix, df=df,
                                 s=s, upper_s=upper_s, rev_s=rev_s, n2=n2)
     tests.append((desc, code))

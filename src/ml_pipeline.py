@@ -23,8 +23,6 @@ from __future__ import annotations
 
 import math
 from collections import Counter, defaultdict
-from typing import Dict, List, Tuple
-
 
 
 class WordFrequencyModel:
@@ -39,13 +37,13 @@ class WordFrequencyModel:
     """
 
     def __init__(self) -> None:
-        self.class_frequencies: Dict[str, Counter] = {}
+        self.class_frequencies: dict[str, Counter] = {}
         self.is_trained: bool = False
 
-    def train(self, texts: List[str], labels: List[str]) -> None:
+    def train(self, texts: list[str], labels: list[str]) -> None:
         """Build per-class word frequency tables from labeled data."""
-        groups: Dict[str, List[str]] = defaultdict(list)
-        for text, label in zip(texts, labels):
+        groups: dict[str, list[str]] = defaultdict(list)
+        for text, label in zip(texts, labels, strict=False):
             groups[label].append(text)
 
         for label, group_texts in groups.items():
@@ -90,18 +88,18 @@ class TFIDFModel:
     """
 
     def __init__(self) -> None:
-        self.centroids: Dict[str, Dict[str, float]] = {}
-        self.idf: Dict[str, float] = {}
+        self.centroids: dict[str, dict[str, float]] = {}
+        self.idf: dict[str, float] = {}
         self.is_trained: bool = False
 
-    def _compute_tf(self, text: str) -> Dict[str, float]:
+    def _compute_tf(self, text: str) -> dict[str, float]:
         """Term frequency: count(word) / total_words_in_document."""
         words = text.lower().split()
         counts = Counter(words)
         n = len(words) or 1
         return {w: c / n for w, c in counts.items()}
 
-    def _compute_idf(self, documents: List[str]) -> Dict[str, float]:
+    def _compute_idf(self, documents: list[str]) -> dict[str, float]:
         """Inverse document frequency: log(N / docs_containing_term).
 
         Measures how rare a term is across the entire corpus.
@@ -114,20 +112,20 @@ class TFIDFModel:
             df.update(unique_words)
         return {w: math.log(n / count) for w, count in df.items() if count > 0}
 
-    def train(self, texts: List[str], labels: List[str]) -> None:
+    def train(self, texts: list[str], labels: list[str]) -> None:
         """Compute IDF over the corpus, then build class centroids."""
         self.idf = self._compute_idf(texts)
 
         # Group documents by class and compute TF-IDF vectors
-        groups: Dict[str, List[Dict[str, float]]] = defaultdict(list)
-        for text, label in zip(texts, labels):
+        groups: dict[str, list[dict[str, float]]] = defaultdict(list)
+        for text, label in zip(texts, labels, strict=False):
             tf = self._compute_tf(text)
             tfidf = {w: tf_val * self.idf.get(w, 0) for w, tf_val in tf.items()}
             groups[label].append(tfidf)
 
         # Average vectors per class to form centroids
         for label, vectors in groups.items():
-            merged: Dict[str, float] = defaultdict(float)
+            merged: dict[str, float] = defaultdict(float)
             for v in vectors:
                 for k, val in v.items():
                     merged[k] += val
@@ -162,7 +160,7 @@ class TFIDFModel:
 
 
 
-def evaluate(model, data: List[Tuple[str, str]]) -> float:
+def evaluate(model, data: list[tuple[str, str]]) -> float:
     """Compute classification accuracy: correct / total.
 
     Works with any model that implements predict(text) -> str.
@@ -175,8 +173,8 @@ def evaluate(model, data: List[Tuple[str, str]]) -> float:
 
 
 def confusion_matrix(
-    model, data: List[Tuple[str, str]]
-) -> Dict[str, Dict[str, int]]:
+    model, data: list[tuple[str, str]]
+) -> dict[str, dict[str, int]]:
     """Build a confusion matrix: actual → predicted → count.
 
     Reading the matrix:
@@ -186,7 +184,7 @@ def confusion_matrix(
     The diagonal (matrix[c][c]) contains correct predictions.
     Off-diagonal entries reveal systematic misclassification patterns.
     """
-    matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    matrix: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for text, actual in data:
         predicted = model.predict(text)
         matrix[actual][predicted] += 1

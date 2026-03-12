@@ -1,4 +1,5 @@
 import pytest
+
 from src.ai import classify_text, generate_number
 
 
