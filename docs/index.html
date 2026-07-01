@@ -1,283 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="velvet-python atlas: a dynamic GitHub Pages catalog of Python files, learning paths, tests, experiments, and workflow scripts."
-    />
-    <title>velvet-python atlas</title>
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <canvas id="depth-field" aria-hidden="true"></canvas>
-    <div class="aurora aurora-a" aria-hidden="true"></div>
-    <div class="aurora aurora-b" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velvet Python | Dimensional Code Exploration</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap');
 
-    <div class="page-shell">
-      <header class="hero" id="top" data-reveal>
-        <div class="hero-copy glass-panel">
-          <p class="eyebrow">GitHub Pages atlas</p>
-          <h1>velvet-python <span>in full color</span></h1>
-          <p class="hero-text">
-            A living catalog of the Python files in this repository. Search the
-            code, follow learning routes, open the deeper modules, and move
-            through tests, experiments, and scripts without losing the shape of
-            the whole project.
-          </p>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-          <nav class="hero-nav" aria-label="Atlas sections">
-            <a class="mini-link" href="#paths">Learning paths</a>
-            <a class="mini-link" href="#signals">Signals</a>
-            <a class="mini-link" href="#orbit">Featured files</a>
-            <a class="mini-link" href="#catalog">Full catalog</a>
-          </nav>
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-          <div class="hero-actions">
-            <a class="action-button primary" href="#catalog">Enter the catalog</a>
-            <a class="action-button" href="https://github.com/Cazzy-Aporbo/velvet-python">View repository</a>
-            <a class="action-button" href="https://github.com/Cazzy-Aporbo/velvet-python/blob/main/README.md">Read README</a>
-          </div>
+        body {
+            font-family: 'Space Mono', monospace;
+            background: #000000;
+            color: #ffffff;
+            position: relative;
+        }
 
-          <div class="hero-promise">
-            <article class="promise-chip">
-              <strong>Searchable</strong>
-              <span>Every Python file is mapped into the atlas.</span>
-            </article>
-            <article class="promise-chip">
-              <strong>Runnable</strong>
-              <span>Scripts, tests, and core modules stay linked together.</span>
-            </article>
-            <article class="promise-chip">
-              <strong>Learnable</strong>
-              <span>The page is built to help you enter the repo with intent.</span>
-            </article>
-          </div>
+        canvas#bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
 
-          <div class="metric-row" id="hero-stats"></div>
-        </div>
+        .content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-        <aside class="hero-spotlight glass-panel" data-reveal>
-          <div class="spotlight-header">
-            <div>
-              <p class="eyebrow">Rotating spotlight</p>
-              <h2 id="spotlight-title">Loading the atlas</h2>
-            </div>
-            <button class="icon-button" id="next-featured" type="button">
-              Shift orbit
-            </button>
-          </div>
+        header {
+            padding: 3rem 4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(40px);
+            background: rgba(0, 0, 0, 0.3);
+        }
 
-          <p class="spotlight-path" id="spotlight-path"></p>
-          <p class="spotlight-summary" id="spotlight-summary"></p>
-          <div class="tag-row" id="spotlight-tags"></div>
-          <div class="spotlight-grid" id="spotlight-stats"></div>
-          <p class="spotlight-note" id="spotlight-why"></p>
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffd1dc 0%, #b4e7ff 50%, #ffb347 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 8s ease-in-out infinite;
+        }
 
-          <div class="spotlight-actions">
-            <button class="action-button primary outline" id="open-spotlight" type="button">
-              Open details
-            </button>
-            <a class="action-button subtle" id="spotlight-link" href="#">Open on GitHub</a>
-          </div>
+        @keyframes gradient-shift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
 
-          <div class="hero-stage" aria-hidden="true">
-            <div class="orbital-shell">
-              <div class="orbital-ring orbital-ring-a"></div>
-              <div class="orbital-ring orbital-ring-b"></div>
-              <div class="orbital-ring orbital-ring-c"></div>
-              <div class="node-cluster" id="orbit-nodes"></div>
-              <div class="mandala">
-                <svg viewBox="0 0 200 200" role="presentation" aria-hidden="true">
-                  <circle cx="100" cy="100" r="92" class="mandala-ring"></circle>
-                  <circle cx="100" cy="100" r="62" class="mandala-ring faint"></circle>
-                  <path class="mandala-line" d="M100 18 L118 82 L182 100 L118 118 L100 182 L82 118 L18 100 L82 82 Z"></path>
-                  <path class="mandala-line faint" d="M100 42 L110 90 L158 100 L110 110 L100 158 L90 110 L42 100 L90 90 Z"></path>
+        .subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+        }
+
+        .exploration-space {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .node-cluster {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            perspective: 1200px;
+        }
+
+        .node {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .node-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .node:hover .node-inner {
+            transform: rotateY(180deg);
+        }
+
+        .node-front, .node-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .node-back {
+            transform: rotateY(180deg);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .node-label {
+            font-size: 0.75rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            line-height: 1.2;
+            opacity: 0.9;
+        }
+
+        .node-info {
+            font-size: 0.7rem;
+            text-align: center;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        @keyframes orbit {
+            0% { transform: rotateZ(0deg) translateX(200px) rotateZ(0deg); }
+            100% { transform: rotateZ(360deg) translateX(200px) rotateZ(-360deg); }
+        }
+
+        .node:nth-child(1) { animation: orbit 20s linear infinite; }
+        .node:nth-child(2) { animation: orbit 22s linear infinite reverse; animation-delay: -5s; }
+        .node:nth-child(3) { animation: orbit 24s linear infinite; animation-delay: -10s; }
+        .node:nth-child(4) { animation: orbit 26s linear infinite reverse; animation-delay: -8s; }
+        .node:nth-child(5) { animation: orbit 25s linear infinite; animation-delay: -12s; }
+        .node:nth-child(6) { animation: orbit 23s linear infinite reverse; animation-delay: -3s; }
+
+        .node:hover {
+            z-index: 100;
+            transform: scale(1.3);
+        }
+
+        .mandala {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+        .mandala svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+            animation: rotate-mandala 30s linear infinite;
+        }
+
+        @keyframes rotate-mandala {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.4s ease;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-panel {
+            width: 90%;
+            max-width: 900px;
+            height: 80vh;
+            background: linear-gradient(135deg, rgba(50, 50, 60, 0.9), rgba(30, 30, 40, 0.95));
+            border: 1px solid rgba(255, 200, 200, 0.2);
+            overflow: hidden;
+            display: flex;
+            animation: panel-rise 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes panel-rise {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-sidebar {
+            width: 30%;
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-main {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(255, 200, 200, 0.5), transparent);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .modal-code {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 3px solid rgba(255, 200, 200, 0.5);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            line-height: 1.6;
+            color: #b4e7ff;
+            white-space: pre-wrap;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .modal-sidebar h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin: 2rem 0 1rem;
+            opacity: 0.7;
+        }
+
+        .modal-sidebar p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.8;
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-tag {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 200, 200, 0.1);
+            border: 1px solid rgba(255, 200, 200, 0.3);
+            font-size: 0.7rem;
+            margin: 0.3rem 0.3rem 0 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            animation: pulse-text 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 1024px) {
+            h1 { font-size: 2.5rem; }
+            .node { width: 100px; height: 100px; }
+            .modal-panel { flex-direction: column; }
+            .modal-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 2rem; }
+            h1 { font-size: 1.8rem; }
+            .exploration-space { padding: 2rem; }
+            .modal-panel { width: 95%; height: 90vh; }
+            .modal-main { padding: 2rem; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="content">
+        <header>
+            <h1>Velvet Python</h1>
+            <p class="subtitle">A Dimensional Approach to Code Understanding</p>
+        </header>
+
+        <div class="exploration-space">
+            <div class="mandala" id="mandala">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                    <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,200,200,0.2)" stroke-width="0.5"/>
+                    <circle cx="100" cy="100" r="50" fill="none" stroke="rgba(180,231,255,0.2)" stroke-width="0.5"/>
+                    <g id="petals">
+                        <path d="M 100 100 L 100 20" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 141.4 58.6" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 180 100" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 141.4 141.4" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 100 180" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 58.6 141.4" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 20 100" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                        <path d="M 100 100 L 58.6 58.6" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
+                    </g>
                 </svg>
-              </div>
-              <div class="note-lattice" id="note-lattice"></div>
-              <div class="orbit-core">
-                <span class="orbit-core-label">live atlas</span>
-              </div>
             </div>
-          </div>
-        </aside>
-      </header>
 
-      <main>
-        <section class="story-section" id="paths" data-reveal>
-          <div class="section-heading">
-            <p class="eyebrow">Learning paths</p>
-            <h2>Choose a route through the repository</h2>
-            <p>
-              Start where you have energy. Some routes are small and direct,
-              others move into systems, proof, or interactive experiments.
-            </p>
-          </div>
-          <div class="track-rail" id="track-rail"></div>
-        </section>
+            <div class="node-cluster" id="nodeCluster"></div>
 
-        <section class="story-section" id="signals" data-reveal>
-          <div class="section-heading">
-            <p class="eyebrow">Signal map</p>
-            <h2>See where the repository puts its weight</h2>
-            <p>
-              The cards below show the major learning clusters. Use them to move
-              the full catalog into focus, or to understand how the codebase is
-              divided between foundations, runnable workflows, tests, and core
-              modules.
-            </p>
-          </div>
-
-          <div class="signal-layout">
-            <div class="cluster-grid" id="cluster-grid"></div>
-
-            <aside class="signal-panel glass-panel">
-              <div class="panel-head">
-                <p class="eyebrow">From the code itself</p>
-                <h3>What this repository keeps visible</h3>
-              </div>
-              <div class="method-grid" id="method-grid"></div>
-              <div class="signal-notes" id="signal-notes"></div>
-            </aside>
-          </div>
-        </section>
-
-        <section class="story-section" id="orbit" data-reveal>
-          <div class="section-heading">
-            <p class="eyebrow">Featured files</p>
-            <h2>Open the modules that carry the most teaching surface</h2>
-            <p>
-              These are the files that shape the learning experience most
-              strongly: the ones that connect implementation, behavior, and
-              evidence.
-            </p>
-          </div>
-          <div class="orbit-strip" id="orbit-strip"></div>
-        </section>
-
-        <section class="story-section" id="catalog" data-reveal>
-          <div class="section-heading">
-            <p class="eyebrow">File atlas</p>
-            <h2>Browse every Python file</h2>
-            <p>
-              Search by idea, filter by cluster, sort by depth, then open any
-              file to see what it teaches and where it lives in the repository.
-            </p>
-          </div>
-
-          <div class="controls glass-panel">
-            <label class="search-shell" for="catalog-search">
-              <span>Search the atlas</span>
-              <input
-                id="catalog-search"
-                type="search"
-                placeholder="Try recursion, pipeline, audit, registry, simulation, environment..."
-              />
-            </label>
-
-            <div class="filter-bar" id="filter-bar"></div>
-
-            <div class="sort-row">
-              <label for="sort-select">Sort by</label>
-              <select id="sort-select">
-                <option value="depth">Depth</option>
-                <option value="name">Name</option>
-                <option value="category">Category</option>
-              </select>
-              <button class="icon-button" id="surprise-button" type="button">
-                Shift the view
-              </button>
-            </div>
-          </div>
-
-          <div class="catalog-meta" id="catalog-meta"></div>
-
-          <div class="catalog-shell">
-            <div class="catalog-grid" id="catalog-grid"></div>
-
-            <aside class="catalog-guide glass-panel">
-              <p class="eyebrow">Current view</p>
-              <h3 id="guide-title">Loading the catalog</h3>
-              <p class="guide-note" id="guide-note"></p>
-              <div class="tag-row" id="guide-tags"></div>
-              <div class="guide-list" id="guide-list"></div>
-            </aside>
-          </div>
-        </section>
-      </main>
-
-      <footer class="page-footer glass-panel" data-reveal>
-        <div class="footer-copy">
-          <p class="eyebrow">Generated from the repository</p>
-          <h2>This page stays tied to the code.</h2>
-          <p>
-            The catalog is rebuilt from the Python files in the repo, then
-            surfaced here as a way into the codebase. The visual layer is meant
-            to help the structure breathe, not replace the work itself.
-          </p>
+            <div class="scroll-indicator">EXPLORE • ROTATE • DISCOVER</div>
         </div>
-        <div class="footer-orbit" aria-hidden="true">
-          <div class="footer-ribbon footer-ribbon-a"></div>
-          <div class="footer-ribbon footer-ribbon-b"></div>
-          <div class="footer-ribbon footer-ribbon-c"></div>
-          <div class="footer-pulse footer-pulse-a"></div>
-          <div class="footer-pulse footer-pulse-b"></div>
-          <div class="footer-note-field" id="footer-note-field"></div>
-          <div class="footer-axis">
-            <span>learn</span>
-            <span>test</span>
-            <span>compare</span>
-            <span>rerun</span>
-          </div>
-        </div>
-        <div class="footer-meta">
-          <p id="generated-at"></p>
-          <p>Rebuild with <code>python scripts/build_pages_catalog.py</code></p>
-          <div class="footer-links">
-            <a class="mini-link" href="#top">Back to top</a>
-            <a class="mini-link" href="#catalog">Catalog</a>
-          </div>
-        </div>
-      </footer>
     </div>
 
-    <aside class="detail-drawer" id="detail-drawer" aria-hidden="true">
-      <div class="drawer-backdrop" id="drawer-backdrop"></div>
-      <div class="drawer-panel glass-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
-        <button class="drawer-close" id="drawer-close" type="button">Close</button>
-        <p class="eyebrow" id="drawer-category"></p>
-        <h2 id="drawer-title"></h2>
-        <p class="drawer-path" id="drawer-path"></p>
-        <p class="drawer-summary" id="drawer-summary"></p>
-        <div class="tag-row" id="drawer-tags"></div>
-        <div class="drawer-stat-grid" id="drawer-stats"></div>
-        <div class="drawer-copy">
-          <div>
-            <h3>Why this matters</h3>
-            <p id="drawer-why"></p>
-          </div>
-          <div>
-            <h3>How to enter it</h3>
-            <p id="drawer-learning"></p>
-          </div>
-          <div>
-            <h3>Best for</h3>
-            <p id="drawer-best-for"></p>
-          </div>
-          <div>
-            <h3>Visible anchors</h3>
-            <ul id="drawer-anchors"></ul>
-          </div>
+    <div class="modal" id="modal">
+        <div class="modal-panel">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-sidebar" id="modalSidebar"></div>
+            <div class="modal-main" id="modalMain"></div>
         </div>
-        <div class="drawer-actions">
-          <a class="action-button primary" id="drawer-link" href="#">Open on GitHub</a>
-        </div>
-      </div>
-    </aside>
+    </div>
 
-    <script type="module" src="./app.js"></script>
-  </body>
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawBackground(time) {
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(255, 200, 200, 0.05)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                for (let x = 0; x < canvas.width; x += 20) {
+                    const y = canvas.height / 2 + Math.sin((x + time * 0.5) / 100 + i) * 50;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            for (let i = 0; i < 20; i++) {
+                const x = (Math.sin(time * 0.0001 + i) * canvas.width) % canvas.width;
+                const y = (Math.cos(time * 0.00015 + i * 0.5) * canvas.height) % canvas.height;
+                ctx.fillRect(x, y, 2, 2);
+            }
+
+            animationId = requestAnimationFrame(() => drawBackground(time + 1));
+        }
+
+        drawBackground(0);
+
+        const files = [
+            {
+                name: 'ai.py',
+                type: 'Core Module',
+                category: 'Classification',
+                desc: 'Bayes, Rule, Cosine',
+                purpose: 'Three foundational classifiers exploring probability, logic, and similarity metrics.',
+                learnings: ['Classifier interfaces', 'Bayesian probability', 'Vector math', 'Trade-offs'],
+                usage: 'from src.ai import BayesClassifier',
+                example: 'classifier.train(texts, labels)\\npredictions = classifier.predict(new_texts)'
+            },
+            {
+                name: 'data_utils.py',
+                type: 'Core Module',
+                category: 'Data Engineering',
+                desc: 'Validation, Loading',
+                purpose: 'Deterministic data contracts. Every row validated before processing.',
+                learnings: ['Data validation', 'Integrity checking', 'Fast failure', 'Contracts'],
+                usage: 'from src.data_utils import load_dataset',
+                example: 'df = load_dataset(\"data/train.csv\")\\nvalidate_dataset(df)'
+            },
+            {
+                name: 'ml_pipeline.py',
+                type: 'Core Module',
+                category: 'Orchestration',
+                desc: 'Features, Models, Eval',
+                purpose: 'Complete ML workflow orchestration with reproducible metadata.',
+                learnings: ['Pipeline architecture', 'Feature engineering', 'Metadata tracking'],
+                usage: 'from src.ml_pipeline import run_classification_pipeline',
+                example: 'run = run_classification_pipeline(df, seed=42)'
+            },
+            {
+                name: 'run_experiments.py',
+                type: 'Script',
+                category: 'Automation',
+                desc: 'Model Sweeps, Outputs',
+                purpose: 'CLI automation for reproducible experiment runs at scale.',
+                learnings: ['CLI design', 'Experiment automation', 'Artifact management'],
+                usage: 'python scripts/run_experiments.py --epochs 10',
+                example: 'python scripts/run_experiments.py --models bayesian cosine'
+            },
+            {
+                name: 'dataset_audit.py',
+                type: 'Script',
+                category: 'Quality',
+                desc: 'Profiling, Detection',
+                purpose: 'Comprehensive dataset health analysis and anomaly detection.',
+                learnings: ['Data profiling', 'Quality signals', 'Issue detection'],
+                usage: 'python scripts/dataset_audit.py --source builtin',
+                example: 'python scripts/dataset_audit.py --write-json artifacts/audit.json'
+            },
+            {
+                name: 'tests/',
+                type: 'Test Suite',
+                category: 'Verification',
+                desc: 'Reproducibility, Edge Cases',
+                purpose: 'Comprehensive test suite ensuring robustness and reproducibility.',
+                learnings: ['Test design', 'Edge cases', 'Regression prevention'],
+                usage: 'pytest tests/ -v',
+                example: 'pytest tests/test_data_pipeline_utils.py'
+            }
+        ];
+
+        const cluster = document.getElementById('nodeCluster');
+        files.forEach((file) => {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.innerHTML = `
+                <div class="node-inner">
+                    <div class="node-front">
+                        <div class="node-label">${file.name}</div>
+                        <div class="node-info">${file.category}</div>
+                    </div>
+                    <div class="node-back">
+                        <div class="node-info">${file.type}</div>
+                        <div style="margin-top: 8px; font-size: 0.65rem; opacity: 0.7;">${file.desc}</div>
+                    </div>
+                </div>
+            `;
+            node.addEventListener('click', () => openModal(file));
+            cluster.appendChild(node);
+        });
+
+        function openModal(file) {
+            document.getElementById('modalSidebar').innerHTML = `
+                <h3>Type</h3>
+                <p>${file.type}</p>
+                <h3>Category</h3>
+                <p>${file.category}</p>
+                <h3>Key Learnings</h3>
+                <div>${file.learnings.map((item) => `<div class="modal-tag">${item}</div>`).join('')}</div>
+            `;
+
+            document.getElementById('modalMain').innerHTML = `
+                <h2 class="modal-title">${file.name}</h2>
+                <p style="font-size: 1rem; line-height: 1.8; margin-bottom: 2rem; opacity: 0.9;">${file.purpose}</p>
+
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2rem; margin-bottom: 1rem; opacity: 0.7;">Usage</h3>
+                <div class="modal-code">${file.usage}</div>
+
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2rem; margin-bottom: 1rem; opacity: 0.7;">Example</h3>
+                <div class="modal-code">${file.example}</div>
+            `;
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        document.getElementById('modal').addEventListener('click', (event) => {
+            if (event.target.id === 'modal') closeModal();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
 </html>
