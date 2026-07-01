@@ -102,8 +102,19 @@ class Level1_BasicConcepts:
         input("\nPress Enter to code a simple forward pass...")
         
         print("\n💻 CODE EXAMPLE:")
-        print("
-")
+        print(
+            """
+import numpy as np
+
+inputs = np.array([1.0, 0.5, -0.3])
+weights = np.array([0.2, -0.1, 0.4])
+bias = 0.1
+
+weighted_sum = np.dot(inputs, weights) + bias
+output = 1 / (1 + np.exp(-weighted_sum))
+print(f"Output: {output:.3f}")
+            """
+        )
         
         # Let them try it
         print("\n🎮 YOUR TURN!")
@@ -334,4 +345,84 @@ class Level4_SimpleBackprop:
         input("\nPress Enter to start coding...")
         
         print("\n💻 SINGLE NEURON CLASS:")
-        print("
+        print(
+            """
+class SingleNeuron:
+    def __init__(self, weight=0.2, bias=0.0, lr=0.1):
+        self.weight = weight
+        self.bias = bias
+        self.lr = lr
+
+    def sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
+"""
+        )
+
+        print("\n🔧 INTERACTIVE DERIVATION:")
+        print("We will compute one training step for y = 1 and x = 0.8.\n")
+
+        x = 0.8
+        y_true = 1.0
+
+        z = 0.2 * x + 0.0
+        a = 1 / (1 + np.exp(-z))
+        loss = (a - y_true) ** 2
+        print(f"Initial state -> w={self_weight:=0.2:.2f}, b={self_bias:=0.0:.2f}")
+        print(f"Forward: z = w*x + b = {z:.4f}")
+        print(f"Activation: a = sigmoid(z) = {a:.4f}")
+        print(f"Loss: (a - y)^2 = {loss:.6f}")
+
+        dL_da = 2 * (a - y_true)
+        da_dz = a * (1 - a)
+        dz_dw = x
+        dz_db = 1
+        dL_dw = dL_da * da_dz * dz_dw
+        dL_db = dL_da * da_dz * dz_db
+
+        print("\nChain rule:")
+        print(f"dL/da = 2(a-y) = {dL_da:.6f}")
+        print(f"da/dz = a(1-a) = {da_dz:.6f}")
+        print(f"dz/dw = x = {dz_dw:.3f}")
+        print(f"dz/db = 1")
+        print(f"dL/dw = {dL_dw:.6f}")
+        print(f"dL/db = {dL_db:.6f}")
+
+        lr = 0.1
+        w_new = 0.2 - lr * dL_dw
+        b_new = 0.0 - lr * dL_db
+        print("\nUpdate:")
+        print(f"w_new = w - lr*dL/dw = 0.2 - {lr}*{dL_dw:.6f} = {w_new:.6f}")
+        print(f"b_new = b - lr*dL/db = 0.0 - {lr}*{dL_db:.6f} = {b_new:.6f}")
+
+        print("\nWhy this matters:")
+        print("- If the model predicts too low, gradients push parameters up.")
+        print("- If prediction is too high, gradients push parameters down.")
+        print("- This is how networks learn from every data point.")
+
+        return {
+            "w_new": w_new,
+            "b_new": b_new,
+            "dL_dw": dL_dw,
+            "dL_db": dL_db,
+            "loss": loss,
+        }
+
+    def run_level_challenge(self):
+        """Mini challenge to reinforce the learning objective"""
+        print("\n🎯 LEVEL 4 CHALLENGE:")
+        print("Can you tell me what happens if prediction is exactly correct?")
+        print("- If a == y_true, dL/da is 0 and updates stop (local minimum).\n")
+        print("Try the next level to inspect multiple-layer backpropagation.")
+        return True
+
+
+def run_backprop_adventure():
+    """Run a lightweight smoke-test demo without interactive input."""
+    level = Level4_SimpleBackprop()
+    level.run_level_challenge()
+    return level.single_neuron_backprop()
+
+
+if __name__ == "__main__":
+    # Demonstrate level 4 without requiring the entire interactive walkthrough.
+    run_backprop_adventure()
