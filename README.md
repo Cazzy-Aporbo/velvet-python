@@ -11,6 +11,12 @@
 
 <p><strong>A calm Python laboratory for experiments, algorithms, evidence, and better engineering habits.</strong></p>
 
+<p>
+  <a href="https://cazzy-aporbo.github.io/velvet-python/"><strong>Open the interactive atlas</strong></a>
+  ·
+  <a href="https://github.com/Cazzy-Aporbo/velvet-python">Browse the repository</a>
+</p>
+
 </div>
 
 ## What velvet-python is
@@ -169,7 +175,7 @@ python CLI.py pipeline --epochs 2 --seed 44 --output artifacts
 
 The repository also includes a GitHub Pages surface in `docs/`.
 
-Planned Pages URL:
+GitHub Pages URL:
 
 - [cazzy-aporbo.github.io/velvet-python](https://cazzy-aporbo.github.io/velvet-python/)
 
@@ -179,7 +185,7 @@ Rebuild the catalog data with:
 make pages-catalog
 ```
 
-Once GitHub Pages is enabled for the `docs/` folder on `main`, the atlas becomes a visual catalog of the Python files, learning tracks, and deeper study paths across the repo.
+The atlas is the visual catalog for the repository: Python files, learning tracks, deeper study paths, and a more exploratory way into the codebase.
 
 ## What to look for in the outputs
 
