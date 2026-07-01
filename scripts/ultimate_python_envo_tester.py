@@ -5,11 +5,11 @@ Purpose: Install and verify functionality of advanced Python packages for portfo
 Includes tests for core, ML/AI, GPU, visualization, and distributed computing libraries.
 """
 
-import subprocess
-import sys
 import importlib
 import logging
 import platform
+import subprocess
+import sys
 import warnings
 
 # Logging setup
@@ -137,17 +137,17 @@ def create_requirements(packages):
 # Main installer and tester
 def main():
     print("\nStarting installation and testing of ultimate Python environment...\n")
-    
+
     for pkg in all_packages:
         install_package(pkg)
-    
+
     print("\nRunning tests...\n")
     test_numpy_pandas()
     test_torch_cuda()
     test_jax_cuda()
     test_visualization()
     test_distributed()
-    
+
     create_requirements(all_packages)
     print("\nAll done. Check ultimate_env_test_log.txt for details.")
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 My README Game Builder (Pastel + Animated)
@@ -20,11 +19,10 @@ What it does:
 - Output: README_generated.md (or a path you choose)
 """
 
-from urllib.parse import quote_plus
-from textwrap import dedent
 import os
 import sys
-
+from textwrap import dedent
+from urllib.parse import quote_plus
 
 PASTEL_PALETTES = {
     "lavender-pink-mint": ["FFE0F5", "E6E0FF", "D4FFE4", "FDE1C9", "E0FFFF", "FFF8FD"],

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 GlyphKraft a keyboard-native ASCII art studio + puzzle dojo.
   A curses terminal app where you draw with keys, sculpt symmetry, overlay ghost targets,
@@ -38,7 +37,13 @@ No external deps, just standard library (curses).
 """
 
 from __future__ import annotations
-import curses, time, math, random, os, sys, textwrap
+
+import curses
+import math
+import random
+import sys
+import textwrap
+import time
 from collections import deque, namedtuple
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -319,7 +324,7 @@ class App:
 
         # HUD
         hud1 = f"Mode:{self.mode:<9} Tool:{self.tool:<7} Glyph:'{self.brush_ch}'  Sym(V/H):{int(self.sym_v)}/{int(self.sym_h)}  Kaleido:{int(self.kaleido)}  Size:{self.cw}x{self.ch}"
-        hud2 = f"[Arrows/WASD move]  B/L/R/O/F/T tools  [ / ] glyph  ;/' gradient  G=mirror  K=kaleido  U/Y undo/redo  C clear  P save  I import  M mode  H help  Q quit"
+        hud2 = "[Arrows/WASD move]  B/L/R/O/F/T tools  [ / ] glyph  ;/' gradient  G=mirror  K=kaleido  U/Y undo/redo  C clear  P save  I import  M mode  H help  Q quit"
         self.stdscr.addstr(self.ch, 0, hud1[:self.w-1])
         self.stdscr.addstr(self.ch+1, 0, hud2[:self.w-1])
 
@@ -617,7 +622,7 @@ class App:
         try:
             path = self.prompt("Import .txt path: ")
             if not path: return
-            lines = open(path, "r", encoding="utf-8").read().splitlines()
+            lines = open(path, encoding="utf-8").read().splitlines()
             H = min(self.ch, len(lines))
             W = min(self.cw, max((len(ln) for ln in lines), default=0))
             self.canvas.frame()
@@ -671,6 +676,6 @@ def main(stdscr):
 if __name__ == "__main__":
     try:
         curses.wrapper(main)
-    except curses.error as e:
+    except curses.error:
         sys.stderr.write("This app needs a real terminal (curses). On Windows, install windows-curses.\n")
         raise

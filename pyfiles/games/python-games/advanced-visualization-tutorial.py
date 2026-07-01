@@ -17,19 +17,17 @@ pastel easter ombre color palette. This palette will create visual harmony
 throughout all our visualizations, using soft gradients inspired by spring.
 """
 
+import warnings
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib import animation, gridspec
-from matplotlib.patches import Circle, Rectangle, Wedge, Polygon, FancyBboxPatch
-from matplotlib.collections import PatchCollection
-import matplotlib.patches as mpatches
-from scipy import stats, signal, interpolate
+from matplotlib import gridspec
+from matplotlib.animation import FuncAnimation
+from matplotlib.patches import Circle, Polygon
+from scipy import stats
 from scipy.stats import gaussian_kde
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.animation import FuncAnimation, PillowWriter
-import warnings
+
 warnings.filterwarnings('ignore')
 
 # Define our signature Pastel Easter Ombre palette
@@ -49,6 +47,7 @@ PASTEL_EASTER = {
 # Create gradient colormap for continuous data
 pastel_colors = list(PASTEL_EASTER.values())
 from matplotlib.colors import LinearSegmentedColormap
+
 pastel_cmap = LinearSegmentedColormap.from_list('pastel_easter', pastel_colors)
 
 # Set global matplotlib parameters for consistent aesthetics
@@ -122,7 +121,7 @@ for i in range(len(x)-1):
     # Calculate color position in gradient (0 to 1)
     color_idx = i / len(x)
     color = pastel_cmap(color_idx)
-    
+
     # Create polygon for fill
     vertices = [(x[i], 0), (x[i], y[i]), (x[i+1], y[i+1]), (x[i+1], 0)]
     poly = Polygon(vertices, facecolor=color, alpha=0.3, edgecolor='none')
@@ -130,11 +129,12 @@ for i in range(len(x)-1):
 
 # Main line plot with smooth interpolation
 from scipy.interpolate import make_interp_spline
+
 x_smooth = np.linspace(x.min(), x.max(), 300)
 spl = make_interp_spline(x, y, k=3)
 y_smooth = spl(x_smooth)
 
-ax.plot(x_smooth, y_smooth, color=PASTEL_EASTER['periwinkle'], linewidth=3, 
+ax.plot(x_smooth, y_smooth, color=PASTEL_EASTER['periwinkle'], linewidth=3,
         label='Plant Growth', zorder=5)
 
 # Add confidence interval using rolling statistics
@@ -148,7 +148,7 @@ ax.fill_between(x, rolling_mean - 2*rolling_std, rolling_mean + 2*rolling_std,
 # Add trend line using polynomial fit
 z = np.polyfit(x, y, 2)
 p = np.poly1d(z)
-ax.plot(x, p(x), '--', color=PASTEL_EASTER['coral'], alpha=0.7, 
+ax.plot(x, p(x), '--', color=PASTEL_EASTER['coral'], alpha=0.7,
         linewidth=2, label='Growth Trend')
 
 # Intelligent annotations for key points
@@ -156,8 +156,8 @@ max_idx = np.argmax(y)
 min_idx = np.argmin(y)
 
 # Annotate maximum with custom arrow
-ax.annotate(f'Peak Growth\n{y[max_idx]:.1f} cm', 
-            xy=(x[max_idx], y[max_idx]), 
+ax.annotate(f'Peak Growth\n{y[max_idx]:.1f} cm',
+            xy=(x[max_idx], y[max_idx]),
             xytext=(x[max_idx]+10, y[max_idx]+5),
             bbox=dict(boxstyle='round,pad=0.5', fc=PASTEL_EASTER['mint'], alpha=0.7),
             arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.3',
@@ -168,14 +168,14 @@ for i in range(0, len(x), 15):
     if i > 0:
         growth_rate = (y[i] - y[i-15]) / 15
         color = PASTEL_EASTER['mint'] if growth_rate > 0 else PASTEL_EASTER['coral']
-        ax.text(x[i], y[i] + 2, f'{growth_rate:.2f} cm/day', 
+        ax.text(x[i], y[i] + 2, f'{growth_rate:.2f} cm/day',
                fontsize=8, color=color, alpha=0.8, ha='center',
                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.5))
 
 # Styling
 ax.set_xlabel('Days Since Spring Beginning', fontsize=12, color='#666', fontweight='medium')
 ax.set_ylabel('Cumulative Plant Growth (cm)', fontsize=12, color='#666', fontweight='medium')
-ax.set_title('Spring Garden Growth Analysis with Confidence Intervals\nA Study in Botanical Development', 
+ax.set_title('Spring Garden Growth Analysis with Confidence Intervals\nA Study in Botanical Development',
             fontsize=14, color='#444', fontweight='bold', pad=20)
 
 # Custom grid
@@ -189,7 +189,7 @@ legend.get_frame().set_alpha(0.9)
 
 # Set x-axis to show dates
 ax.set_xticks(range(0, len(garden_data), 10))
-ax.set_xticklabels([garden_data['date'].iloc[i].strftime('%b %d') 
+ax.set_xticklabels([garden_data['date'].iloc[i].strftime('%b %d')
                     for i in range(0, len(garden_data), 10)], rotation=45)
 
 plt.tight_layout()
@@ -226,32 +226,31 @@ colors = garden_data['rainfall'].values
 normalize = plt.Normalize(vmin=colors.min(), vmax=colors.max())
 
 # Main scatter with size variation
-scatter = ax_main.scatter(x_data, y_data, c=colors, cmap=pastel_cmap, 
+scatter = ax_main.scatter(x_data, y_data, c=colors, cmap=pastel_cmap,
                           s=100 + garden_data['visitors'].values,
-                          alpha=0.6, edgecolors=PASTEL_EASTER['periwinkle'], 
+                          alpha=0.6, edgecolors=PASTEL_EASTER['periwinkle'],
                           linewidth=1.5)
 
 # Add kernel density contours
 xy = np.vstack([x_data, y_data])
 kernel = gaussian_kde(xy)
-xi, yi = np.mgrid[x_data.min():x_data.max():100j, 
+xi, yi = np.mgrid[x_data.min():x_data.max():100j,
                   y_data.min():y_data.max():100j]
 zi = kernel(np.vstack([xi.flatten(), yi.flatten()])).reshape(xi.shape)
 
 # Plot contours
-contours = ax_main.contour(xi, yi, zi, levels=5, colors=PASTEL_EASTER['lavender'], 
+contours = ax_main.contour(xi, yi, zi, levels=5, colors=PASTEL_EASTER['lavender'],
                            alpha=0.4, linewidths=1.5)
-ax_main.clabel(contours, inline=True, fontsize=8, fmt='%.2f', 
+ax_main.clabel(contours, inline=True, fontsize=8, fmt='%.2f',
               colors=PASTEL_EASTER['periwinkle'])
 
 # Add regression with confidence band
 z = np.polyfit(x_data, y_data, 1)
 p = np.poly1d(z)
-ax_main.plot(x_data, p(x_data), color=PASTEL_EASTER['coral'], 
+ax_main.plot(x_data, p(x_data), color=PASTEL_EASTER['coral'],
             linewidth=2, linestyle='--', alpha=0.8, label=f'R² = {np.corrcoef(x_data, y_data)[0,1]**2:.3f}')
 
 # Calculate prediction intervals
-from scipy import stats
 predict_x = np.linspace(x_data.min(), x_data.max(), 100)
 predict_y = p(predict_x)
 se = np.sqrt(np.sum((y_data - p(x_data))**2) / (len(x_data) - 2))
@@ -259,17 +258,17 @@ ax_main.fill_between(predict_x, predict_y - 1.96*se, predict_y + 1.96*se,
                      alpha=0.2, color=PASTEL_EASTER['coral'])
 
 # Marginal distributions
-ax_top.hist(x_data, bins=20, color=PASTEL_EASTER['mint'], alpha=0.7, 
+ax_top.hist(x_data, bins=20, color=PASTEL_EASTER['mint'], alpha=0.7,
            edgecolor=PASTEL_EASTER['periwinkle'])
 ax_top.set_ylabel('Frequency', fontsize=9)
-ax_top.axvline(x_data.mean(), color=PASTEL_EASTER['coral'], 
+ax_top.axvline(x_data.mean(), color=PASTEL_EASTER['coral'],
               linestyle='--', linewidth=2, alpha=0.8)
 
-ax_right.hist(y_data, bins=20, orientation='horizontal', 
+ax_right.hist(y_data, bins=20, orientation='horizontal',
              color=PASTEL_EASTER['butter'], alpha=0.7,
              edgecolor=PASTEL_EASTER['periwinkle'])
 ax_right.set_xlabel('Frequency', fontsize=9)
-ax_right.axhline(y_data.mean(), color=PASTEL_EASTER['coral'], 
+ax_right.axhline(y_data.mean(), color=PASTEL_EASTER['coral'],
                 linestyle='--', linewidth=2, alpha=0.8)
 
 # Remove tick labels from marginal plots
@@ -286,7 +285,7 @@ cbar = plt.colorbar(scatter, ax=ax_main, pad=0.15, fraction=0.046)
 cbar.set_label('Rainfall (mm)', fontsize=10, color='#666')
 
 # Main title
-fig.suptitle('Multi-dimensional Scatter Analysis: Temperature, Happiness, and Rainfall\nWith Marginal Distributions and Density Estimation', 
+fig.suptitle('Multi-dimensional Scatter Analysis: Temperature, Happiness, and Rainfall\nWith Marginal Distributions and Density Estimation',
             fontsize=14, color='#444', fontweight='bold', y=0.98)
 
 plt.show()
@@ -324,30 +323,30 @@ metrics = ['plant_growth', 'visitors', 'happiness_score']
 colors = [PASTEL_EASTER['mint'], PASTEL_EASTER['sky'], PASTEL_EASTER['coral']]
 patterns = ['/', '\\', '|']
 
-for i, (metric, color, pattern) in enumerate(zip(metrics, colors, patterns)):
+for i, (metric, color, pattern) in enumerate(zip(metrics, colors, patterns, strict=False)):
     means = season_stats[metric]['mean'].values
     if metric == 'visitors':
         means = means / 10  # Scale for visibility
     elif metric == 'happiness_score':
         means = means * 5  # Scale for visibility
-    
+
     errors = season_stats[metric]['sem'].values
     if metric == 'visitors':
         errors = errors / 10
     elif metric == 'happiness_score':
         errors = errors * 5
-    
-    bars = ax1.bar(x_pos + i*width, means, width, 
+
+    bars = ax1.bar(x_pos + i*width, means, width,
                    color=color, alpha=0.7, edgecolor=PASTEL_EASTER['periwinkle'],
                    linewidth=1.5, label=metric.replace('_', ' ').title(),
                    hatch=pattern)
-    
+
     # Add error bars
     ax1.errorbar(x_pos + i*width, means, yerr=errors,
                 fmt='none', ecolor='#666', capsize=4, capthick=1.5, alpha=0.7)
-    
+
     # Add value labels on bars
-    for j, (bar, val, err) in enumerate(zip(bars, means, errors)):
+    for j, (bar, val, err) in enumerate(zip(bars, means, errors, strict=False)):
         height = bar.get_height()
         ax1.text(bar.get_x() + bar.get_width()/2., height + err + 1,
                 f'{val:.1f}', ha='center', va='bottom', fontsize=9,
@@ -364,7 +363,7 @@ def add_significance_bar(ax, x1, x2, y, p_value):
         sig = '*'
     else:
         sig = 'ns'
-    
+
     ax.plot([x1, x1, x2, x2], [y, y+1, y+1, y], 'k-', linewidth=1)
     ax.text((x1+x2)/2, y+1, sig, ha='center', va='bottom', fontsize=10)
 
@@ -374,7 +373,7 @@ add_significance_bar(ax1, x_pos[1], x_pos[2], 52, 0.045)
 
 ax1.set_xlabel('Season Progression', fontsize=12, color='#666', fontweight='medium')
 ax1.set_ylabel('Normalized Values', fontsize=12, color='#666', fontweight='medium')
-ax1.set_title('Seasonal Comparison with Statistical Significance\nGrouped Metrics Analysis', 
+ax1.set_title('Seasonal Comparison with Statistical Significance\nGrouped Metrics Analysis',
              fontsize=13, color='#444', fontweight='bold', pad=15)
 ax1.set_xticks(x_pos + width)
 ax1.set_xticklabels(seasons)
@@ -394,7 +393,7 @@ for container in ax2.containers:
 
 ax2.set_xlabel('Season', fontsize=12, color='#666', fontweight='medium')
 ax2.set_ylabel('Percentage (%)', fontsize=12, color='#666', fontweight='medium')
-ax2.set_title('Weather Distribution Across Seasons\nStacked Percentage Analysis', 
+ax2.set_title('Weather Distribution Across Seasons\nStacked Percentage Analysis',
              fontsize=13, color='#444', fontweight='bold', pad=15)
 ax2.set_xticklabels(ax2.get_xticklabels(), rotation=0)
 ax2.legend(title='Weather', loc='upper right', frameon=True, fancybox=True)
@@ -469,7 +468,7 @@ for i in np.linspace(0, 1, n_bins//2):
     colors_full.append(cmap_neg(i))
 for i in np.linspace(0, 1, n_bins//2):
     colors_full.append(cmap_pos(i))
-    
+
 diverging_cmap = LinearSegmentedColormap.from_list('diverging', colors_full)
 
 im = ax_heatmap.imshow(corr_matrix_clustered, cmap=diverging_cmap, aspect='auto',
@@ -479,10 +478,10 @@ im = ax_heatmap.imshow(corr_matrix_clustered, cmap=diverging_cmap, aspect='auto'
 for i in range(len(corr_matrix_clustered)):
     for j in range(len(corr_matrix_clustered)):
         value = corr_matrix_clustered.iloc[i, j]
-        
+
         # Color text based on background
         text_color = 'white' if abs(value) > 0.6 else '#666'
-        
+
         # Show different precision for different values
         if abs(value) < 0.01:
             text = '0'
@@ -490,11 +489,11 @@ for i in range(len(corr_matrix_clustered)):
             text = '1'
         else:
             text = f'{value:.2f}'
-        
+
         # Add significance stars
         if abs(value) > 0.8 and i != j:
             text += '*'
-        
+
         ax_heatmap.text(j, i, text, ha='center', va='center',
                        color=text_color, fontsize=9, fontweight='medium')
 
@@ -544,34 +543,34 @@ late_data = garden_data[garden_data['season'] == 'Late Spring']['happiness_score
 # Create custom split violin
 def plot_split_violin(ax, data1, data2, pos, color1, color2, label1, label2):
     """Create split violin plot showing two distributions"""
-    
+
     # Calculate KDE for both datasets
     kde1 = gaussian_kde(data1)
     kde2 = gaussian_kde(data2)
-    
+
     # Create y-axis range
     y_min = min(data1.min(), data2.min()) - 1
     y_max = max(data1.max(), data2.max()) + 1
     y_range = np.linspace(y_min, y_max, 100)
-    
+
     # Calculate densities
     density1 = kde1(y_range)
     density2 = kde2(y_range)
-    
+
     # Normalize densities
     density1 = density1 / density1.max() * 0.4
     density2 = density2 / density2.max() * 0.4
-    
+
     # Plot left half
-    ax.fill_betweenx(y_range, pos - density1, pos, 
+    ax.fill_betweenx(y_range, pos - density1, pos,
                      color=color1, alpha=0.7, label=label1)
     ax.plot(pos - density1, y_range, color=color1, linewidth=2, alpha=0.8)
-    
+
     # Plot right half
     ax.fill_betweenx(y_range, pos, pos + density2,
                      color=color2, alpha=0.7, label=label2)
     ax.plot(pos + density2, y_range, color=color2, linewidth=2, alpha=0.8)
-    
+
     # Add quartile lines
     for data, offset in [(data1, -0.05), (data2, 0.05)]:
         quartiles = np.percentile(data, [25, 50, 75])
@@ -587,28 +586,28 @@ positions = [1, 2, 3]
 colors1 = [PASTEL_EASTER['mint'], PASTEL_EASTER['sky'], PASTEL_EASTER['butter']]
 colors2 = [PASTEL_EASTER['coral'], PASTEL_EASTER['rose'], PASTEL_EASTER['peach']]
 
-for pos, weather, c1, c2 in zip(positions, weather_types, colors1, colors2):
-    early_weather = garden_data[(garden_data['season'] == 'Early Spring') & 
+for pos, weather, c1, c2 in zip(positions, weather_types, colors1, colors2, strict=False):
+    early_weather = garden_data[(garden_data['season'] == 'Early Spring') &
                                (garden_data['weather'] == weather)]['happiness_score'].values
-    late_weather = garden_data[(garden_data['season'] == 'Late Spring') & 
+    late_weather = garden_data[(garden_data['season'] == 'Late Spring') &
                               (garden_data['weather'] == weather)]['happiness_score'].values
-    
+
     if len(early_weather) > 0 and len(late_weather) > 0:
         plot_split_violin(ax1, early_weather, late_weather, pos, c1, c2,
                          'Early Spring', 'Late Spring')
-        
+
         # Add mean markers
-        ax1.scatter([pos - 0.1], [early_weather.mean()], color='#444', 
+        ax1.scatter([pos - 0.1], [early_weather.mean()], color='#444',
                    s=100, marker='D', alpha=0.8, zorder=10)
         ax1.scatter([pos + 0.1], [late_weather.mean()], color='#444',
                    s=100, marker='D', alpha=0.8, zorder=10)
 
 # Statistical annotations
-ax1.text(1, 10.5, f'p = 0.023*', ha='center', fontsize=9, 
+ax1.text(1, 10.5, 'p = 0.023*', ha='center', fontsize=9,
         bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
-ax1.text(2, 10.5, f'p = 0.156', ha='center', fontsize=9,
+ax1.text(2, 10.5, 'p = 0.156', ha='center', fontsize=9,
         bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
-ax1.text(3, 10.5, f'p = 0.008**', ha='center', fontsize=9,
+ax1.text(3, 10.5, 'p = 0.008**', ha='center', fontsize=9,
         bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
 
 ax1.set_xticks(positions)
@@ -621,7 +620,7 @@ ax1.legend(loc='lower right', frameon=True, fancybox=True)
 ax1.grid(axis='y', alpha=0.3, linestyle='--', color=PASTEL_EASTER['lavender'])
 
 # Right: Traditional violin with swarm overlay
-parts = ax2.violinplot([garden_data[garden_data['season'] == s]['happiness_score'].values 
+parts = ax2.violinplot([garden_data[garden_data['season'] == s]['happiness_score'].values
                         for s in seasons],
                        positions=range(len(seasons)),
                        widths=0.7, showmeans=True, showmedians=True, showextrema=True)
@@ -644,10 +643,10 @@ parts['cmins'].set_color('#666')
 # Add swarm plot overlay (simulated with scatter)
 for i, season in enumerate(seasons):
     season_data = garden_data[garden_data['season'] == season]['happiness_score'].values
-    
+
     # Add jitter for swarm effect
     x_jitter = np.random.normal(i, 0.04, size=len(season_data))
-    ax2.scatter(x_jitter, season_data, alpha=0.4, s=20, 
+    ax2.scatter(x_jitter, season_data, alpha=0.4, s=20,
                color=PASTEL_EASTER['periwinkle'], edgecolors='none')
 
 # Add sample size annotations
@@ -710,7 +709,7 @@ wedges_inner, texts_inner, autotexts_inner = ax1.pie(
 )
 
 # Add center circle for donut effect
-centre_circle = Circle((0, 0), 0.4, fc='white', linewidth=2, 
+centre_circle = Circle((0, 0), 0.4, fc='white', linewidth=2,
                        edgecolor=PASTEL_EASTER['periwinkle'])
 ax1.add_artist(centre_circle)
 
@@ -734,7 +733,7 @@ ax1.set_title('Nested Donut Chart: Season and Weather Distribution\nHierarchical
 
 # Right: Exploded pie with custom annotations
 # Calculate visitor distribution by happiness categories
-happiness_bins = pd.cut(garden_data['happiness_score'], 
+happiness_bins = pd.cut(garden_data['happiness_score'],
                         bins=[0, 5, 7, 10],
                         labels=['Low (1-5)', 'Medium (5-7)', 'High (7-10)'])
 happiness_dist = happiness_bins.value_counts()
@@ -751,18 +750,18 @@ wedges, texts, autotexts = ax2.pie(
 )
 
 # Custom label arrows
-for i, (wedge, text) in enumerate(zip(wedges, texts)):
+for i, (wedge, text) in enumerate(zip(wedges, texts, strict=False)):
     ang = (wedge.theta2 - wedge.theta1) / 2 + wedge.theta1
     y = np.sin(np.deg2rad(ang))
     x = np.cos(np.deg2rad(ang))
-    
+
     # Position text further out
     horizontalalignment = {-1: "right", 1: "left"}[int(np.sign(x))]
     text.set_position((1.3*x, 1.3*y))
     text.set_horizontalalignment(horizontalalignment)
     text.set_fontweight('bold')
     text.set_fontsize(11)
-    
+
     # Add connecting line
     ax2.annotate('', xy=(x, y), xytext=(1.2*x, 1.2*y),
                 arrowprops=dict(arrowstyle='-', color='#666', lw=1))
@@ -868,7 +867,7 @@ scatter = ax2.scatter(garden_data['temperature'], garden_data['rainfall'],
 Z_max_idx = np.unravel_index(np.nanargmax(Z), Z.shape)
 optimal_temp = X[Z_max_idx]
 optimal_rain = Y[Z_max_idx]
-ax2.plot(optimal_temp, optimal_rain, 'r*', markersize=20, 
+ax2.plot(optimal_temp, optimal_rain, 'r*', markersize=20,
         markeredgecolor='white', markeredgewidth=2,
         label=f'Optimal Point\n({optimal_temp:.1f}°C, {optimal_rain:.1f}mm)')
 
@@ -900,8 +899,6 @@ how multiple variables evolve over time, with trailing effects and dynamic
 annotations. The pastel colors create smooth transitions.
 """
 
-from matplotlib.animation import FuncAnimation
-from IPython.display import HTML
 
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10), facecolor='#FAFAFA')
 
@@ -935,49 +932,49 @@ ax2.grid(True, alpha=0.3, linestyle='--', color=PASTEL_EASTER['lavender'])
 # Animation function
 trail_length = 20
 point_text = ax1.text(0.02, 0.95, '', transform=ax1.transAxes,
-                      bbox=dict(boxstyle='round,pad=0.5', 
+                      bbox=dict(boxstyle='round,pad=0.5',
                                facecolor=PASTEL_EASTER['lavender'], alpha=0.5))
 
 def animate(frame):
     """Update function for animation"""
-    
+
     # Update line plots
     x = np.arange(frame)
     y1 = garden_data['temperature'].iloc[:frame].values
     y2 = garden_data['rainfall'].iloc[:frame].values
-    
+
     line1.set_data(x, y1)
     line2.set_data(x, y2)
-    
+
     # Update trails
     trail_start = max(0, frame - trail_length)
     trail_x = np.arange(trail_start, frame)
     trail_y1 = garden_data['temperature'].iloc[trail_start:frame].values
     trail_y2 = garden_data['rainfall'].iloc[trail_start:frame].values
-    
+
     trail1.set_data(trail_x, trail_y1)
     trail2.set_data(trail_x, trail_y2)
-    
+
     # Update scatter
     scatter_x = garden_data['temperature'].iloc[:frame].values
     scatter_y = garden_data['happiness_score'].iloc[:frame].values
     scatter_c = np.arange(frame)
-    
+
     if frame > 0:
         scatter.set_offsets(np.c_[scatter_x, scatter_y])
         scatter.set_array(scatter_c)
-    
+
     # Update text annotation
     if frame > 0:
         current_date = garden_data['date'].iloc[frame-1].strftime('%B %d')
         current_temp = garden_data['temperature'].iloc[frame-1]
         current_rain = garden_data['rainfall'].iloc[frame-1]
         point_text.set_text(f'Date: {current_date}\nTemp: {current_temp:.1f}°C\nRain: {current_rain:.1f}mm')
-    
+
     return line1, line2, trail1, trail2, scatter, point_text
 
 # Create animation
-anim = FuncAnimation(fig, animate, frames=len(garden_data), 
+anim = FuncAnimation(fig, animate, frames=len(garden_data),
                     interval=50, blit=True, repeat=True)
 
 # Save as gif (requires pillow)
@@ -1003,7 +1000,7 @@ overlay for enhanced distribution visualization.
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8), facecolor='#FAFAFA')
 
 # Prepare data by categories
-season_data = [garden_data[garden_data['season'] == s]['plant_growth'].values 
+season_data = [garden_data[garden_data['season'] == s]['plant_growth'].values
                for s in seasons]
 
 # Left: Notched box plot with custom styling
@@ -1013,19 +1010,19 @@ bp1 = ax1.boxplot(season_data, notch=True, patch_artist=True,
                   medianprops=dict(color=PASTEL_EASTER['coral'], linewidth=2),
                   whiskerprops=dict(color=PASTEL_EASTER['periwinkle'], linewidth=1.5),
                   capprops=dict(color=PASTEL_EASTER['periwinkle'], linewidth=1.5),
-                  flierprops=dict(markerfacecolor=PASTEL_EASTER['coral'], 
+                  flierprops=dict(markerfacecolor=PASTEL_EASTER['coral'],
                                 marker='D', markersize=6, alpha=0.6))
 
 # Color each box differently
 colors = [PASTEL_EASTER['mint'], PASTEL_EASTER['sky'], PASTEL_EASTER['butter']]
-for patch, color in zip(bp1['boxes'], colors):
+for patch, color in zip(bp1['boxes'], colors, strict=False):
     patch.set_facecolor(color)
     patch.set_alpha(0.7)
 
 # Add mean markers
 for i, data in enumerate(season_data, 1):
     mean = np.mean(data)
-    ax1.plot(i, mean, 'r^', markersize=10, markeredgecolor='white', 
+    ax1.plot(i, mean, 'r^', markersize=10, markeredgecolor='white',
             markeredgewidth=1.5, label='Mean' if i == 1 else '')
 
 # Add sample size and statistical info
@@ -1033,7 +1030,7 @@ for i, data in enumerate(season_data, 1):
     n = len(data)
     q1, med, q3 = np.percentile(data, [25, 50, 75])
     iqr = q3 - q1
-    
+
     stats_text = f'n={n}\nIQR={iqr:.1f}'
     ax1.text(i, ax1.get_ylim()[0] + 2, stats_text, ha='center',
             fontsize=9, color='#666')
@@ -1046,7 +1043,7 @@ ax1.legend(loc='upper left', frameon=True, fancybox=True)
 ax1.grid(axis='y', alpha=0.3, linestyle='--', color=PASTEL_EASTER['lavender'])
 
 # Right: Box plot with violin overlay
-weather_data = [garden_data[garden_data['weather'] == w]['happiness_score'].values 
+weather_data = [garden_data[garden_data['weather'] == w]['happiness_score'].values
                 for w in weather_types]
 
 # Create violin plot first
@@ -1071,11 +1068,11 @@ for i, data in enumerate(weather_data, 1):
     q1, q3 = np.percentile(data, [25, 75])
     iqr = q3 - q1
     outliers = data[(data < q1 - 1.5*iqr) | (data > q3 + 1.5*iqr)]
-    
+
     if len(outliers) > 0:
         ax2.scatter([i]*len(outliers), outliers, color=PASTEL_EASTER['coral'],
                    s=50, alpha=0.6, marker='*', edgecolors='#666', linewidth=1)
-        
+
         # Annotate outlier count
         ax2.text(i, ax2.get_ylim()[1] - 0.5, f'{len(outliers)} outliers',
                 ha='center', fontsize=9, color=PASTEL_EASTER['coral'],
@@ -1144,7 +1141,7 @@ for peak_hour, peak_name in [(morning_peak, 'Morning\nPeak'), (evening_peak, 'Ev
     ax1.annotate(peak_name, xy=(peak_theta, peak_value + 20),
                 xytext=(peak_theta, peak_value + 30),
                 ha='center', fontsize=10, color='#444', fontweight='bold',
-                bbox=dict(boxstyle='round,pad=0.3', 
+                bbox=dict(boxstyle='round,pad=0.3',
                          facecolor=PASTEL_EASTER['butter'], alpha=0.7),
                 arrowprops=dict(arrowstyle='->', color='#666', lw=1))
 
@@ -1156,7 +1153,7 @@ ax1.grid(True, alpha=0.3, color=PASTEL_EASTER['lavender'])
 ax2 = fig.add_subplot(122, projection='polar')
 
 # Categories for radar chart
-categories = ['Temperature\nAdaptability', 'Rainfall\nTolerance', 'Growth\nRate', 
+categories = ['Temperature\nAdaptability', 'Rainfall\nTolerance', 'Growth\nRate',
              'Visitor\nAttraction', 'Happiness\nIndex', 'Maintenance\nNeed']
 n_cats = len(categories)
 
@@ -1176,13 +1173,13 @@ angles += angles[:1]  # Complete the circle
 colors_radar = [PASTEL_EASTER['mint'], PASTEL_EASTER['coral'], PASTEL_EASTER['sky']]
 for i, (plant, values) in enumerate(plant_data.items()):
     values += values[:1]  # Complete the circle
-    
+
     # Plot area
     ax2.plot(angles, values, 'o-', linewidth=2, color=colors_radar[i], label=plant)
     ax2.fill(angles, values, alpha=0.3, color=colors_radar[i])
-    
+
     # Add value labels
-    for angle, value in zip(angles[:-1], values[:-1]):
+    for angle, value in zip(angles[:-1], values[:-1], strict=False):
         ax2.text(angle, value + 0.5, str(value), ha='center', va='center',
                 fontsize=9, color=colors_radar[i], fontweight='bold')
 
@@ -1263,7 +1260,7 @@ ax1.legend(loc='upper right', frameon=True, fancybox=True)
 ax1.grid(axis='y', alpha=0.3, linestyle='--', color=PASTEL_EASTER['lavender'])
 
 # Top Right: Stacked histogram for categories
-weather_happy = {weather: garden_data[garden_data['weather'] == weather]['happiness_score'].values 
+weather_happy = {weather: garden_data[garden_data['weather'] == weather]['happiness_score'].values
                 for weather in weather_types}
 
 ax2.hist([weather_happy[w] for w in weather_types], bins=15, stacked=True,
@@ -1415,7 +1412,7 @@ components = {
 # Create stacked area
 ax2.stackplot(dates, components.values(),
              labels=components.keys(),
-             colors=[PASTEL_EASTER['mint'], PASTEL_EASTER['sky'], 
+             colors=[PASTEL_EASTER['mint'], PASTEL_EASTER['sky'],
                     PASTEL_EASTER['butter'], PASTEL_EASTER['coral']],
              alpha=0.8)
 
@@ -1428,15 +1425,15 @@ ax2.plot(dates, total, color=PASTEL_EASTER['periwinkle'], linewidth=2.5,
 change_points = [20, 45, 70]
 for idx in change_points:
     ax2.axvline(dates.iloc[idx], color='#666', linestyle='--', alpha=0.5)
-    
+
     # Calculate composition at this point
     composition = {k: v[idx] for k, v in components.items()}
     dominant = max(composition, key=composition.get)
-    
+
     ax2.annotate(f'Dominant:\n{dominant}', xy=(dates.iloc[idx], total[idx]),
                 xytext=(dates.iloc[idx] + pd.Timedelta(days=3), total[idx] + 5),
                 fontsize=9, color='#444',
-                bbox=dict(boxstyle='round,pad=0.3', 
+                bbox=dict(boxstyle='round,pad=0.3',
                          facecolor=PASTEL_EASTER['lavender'], alpha=0.5),
                 arrowprops=dict(arrowstyle='->', color='#666', lw=1))
 
@@ -1484,7 +1481,7 @@ for v in values[1:-1]:
 cumulative.append(values[-1])
 
 # Create bars
-for i, (cat, val, cum) in enumerate(zip(categories, values, cumulative)):
+for i, (cat, val, cum) in enumerate(zip(categories, values, cumulative, strict=False)):
     if i == 0:  # Starting value
         color = PASTEL_EASTER['periwinkle']
         bottom = 0
@@ -1502,16 +1499,16 @@ for i, (cat, val, cum) in enumerate(zip(categories, values, cumulative)):
             color = PASTEL_EASTER['coral']
             bottom = cumulative[i]
             height = abs(val)
-    
+
     bar = ax.bar(i, height, bottom=bottom, color=color, alpha=0.8,
                 edgecolor=PASTEL_EASTER['periwinkle'], linewidth=1.5)
-    
+
     # Add value labels
     label_y = bottom + height/2 if height > 0 else bottom - abs(height)/2
     ax.text(i, label_y, f'{val:+.0f}' if i != 0 and i != len(categories)-1 else f'{cum:.0f}',
            ha='center', va='center', fontsize=11, color='white' if abs(height) > 10 else '#444',
            fontweight='bold')
-    
+
     # Add percentage change
     if i > 0 and i < len(categories) - 1:
         pct_change = (val / cumulative[i-1]) * 100
@@ -1542,6 +1539,7 @@ ax.set_title('Waterfall Chart: Sequential Growth Factor Analysis\nCumulative Imp
 
 # Add legend for colors
 from matplotlib.patches import Patch
+
 legend_elements = [
     Patch(facecolor=PASTEL_EASTER['mint'], alpha=0.8, label='Positive Impact'),
     Patch(facecolor=PASTEL_EASTER['coral'], alpha=0.8, label='Negative Impact'),
@@ -1578,7 +1576,7 @@ fig.suptitle('Spring Garden Analytics Dashboard: Complete Visualization Suite\nB
 
 # 1. Time series mini plot
 ax1 = fig.add_subplot(gs[0, :2])
-ax1.plot(garden_data['date'], garden_data['plant_growth'], 
+ax1.plot(garden_data['date'], garden_data['plant_growth'],
         color=PASTEL_EASTER['periwinkle'], linewidth=2)
 ax1.fill_between(garden_data['date'], 0, garden_data['plant_growth'],
                  alpha=0.3, color=PASTEL_EASTER['mint'])
@@ -1625,7 +1623,7 @@ season_happiness = [garden_data[garden_data['season'] == s]['happiness_score'].v
                    for s in seasons]
 bp = ax5.boxplot(season_happiness, labels=seasons, patch_artist=True,
                 notch=True, widths=0.6)
-for patch, color in zip(bp['boxes'], [PASTEL_EASTER['mint'], PASTEL_EASTER['sky'], PASTEL_EASTER['coral']]):
+for patch, color in zip(bp['boxes'], [PASTEL_EASTER['mint'], PASTEL_EASTER['sky'], PASTEL_EASTER['coral']], strict=False):
     patch.set_facecolor(color)
     patch.set_alpha(0.7)
 ax5.set_title('Seasonal Happiness Comparison', fontsize=11, color='#444', fontweight='bold')

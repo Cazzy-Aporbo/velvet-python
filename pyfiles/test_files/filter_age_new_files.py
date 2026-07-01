@@ -1,7 +1,7 @@
 # Script to filter NEW CSV data for age 16+
-import pandas as pd
 import os
-import glob
+
+import pandas as pd
 
 input_dir = "/home/ubuntu/upload"
 output_dir = "/home/ubuntu/new_files_filtered"
@@ -93,7 +93,7 @@ for filename in new_files:
         df_filtered.to_csv(output_path, index=False)
     else:
         # If no age column found, assume all data is relevant (or filter later if needed)
-        summary_lines.append(f"  No recognized age column found. Copying all rows.")
+        summary_lines.append("  No recognized age column found. Copying all rows.")
         df.to_csv(output_path, index=False)
         filtered_rows = original_rows
 

@@ -1,6 +1,7 @@
 import random
 from time import time
 
+
 # Define the sorting functions
 def mergeSort(L):
     if len(L) < 2:

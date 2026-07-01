@@ -1,24 +1,25 @@
 # multiple_regression_commentary.py  # file name that states purpose clearly
-# Title: Multiple Regression — A Fully Commented, From-First-Principles Demonstration 
-# Author: Cazandra Aporbo  
-# Completed: August 2025  
-# Promise: Every single line is commented: what the line does, why I'm doing it,    
-#          and alternative choices you could make in real projects. No emojis.      
-# Design Goals:                                                                       
-#   • Show multiple regression with several *variable* types: numeric, indicators,    
-#     nonlinear transforms, and an interaction.                                       
-#   • Teach both the *math* (normal equations) and the *practice* (cross‑validation,  
-#     model comparison by AIC/BIC, and a ridge variant for stability).                
-#   • Depend only on NumPy; fall back to a tiny pure‑Python linear algebra path if   
-#     NumPy is unavailable (small sizes only).                                        
-#   • Zero file I/O and no user input; the script is fully reproducible.              
+# Title: Multiple Regression — A Fully Commented, From-First-Principles Demonstration
+# Author: Cazandra Aporbo
+# Completed: August 2025
+# Promise: Every single line is commented: what the line does, why I'm doing it,
+#          and alternative choices you could make in real projects. No emojis.
+# Design Goals:
+#   • Show multiple regression with several *variable* types: numeric, indicators,
+#     nonlinear transforms, and an interaction.
+#   • Teach both the *math* (normal equations) and the *practice* (cross‑validation,
+#     model comparison by AIC/BIC, and a ridge variant for stability).
+#   • Depend only on NumPy; fall back to a tiny pure‑Python linear algebra path if
+#     NumPy is unavailable (small sizes only).
+#   • Zero file I/O and no user input; the script is fully reproducible.
 
-from __future__ import annotations  # allows forward references in type hints for older Python
+from __future__ import (
+    annotations,  # allows forward references in type hints for older Python
+)
 
 import math  # for log, pi in likelihood calculations
 import random  # for deterministic dataset generation with seeds
 from dataclasses import dataclass  # to keep return values structured and named
-from typing import List, Tuple, Dict, Optional  # type hints for clarity
 
 # Try importing NumPy for robust linear algebra; if not present, keep going.      # optional dependency
 try:  # begin try block for optional import
@@ -28,13 +29,13 @@ except Exception:  # if NumPy is not available or import fails
     HAS_NUMPY = False  # set flag so we can use the pure‑Python path
 
 # Pure‑Python linear algebra (tiny, educational — used only if NumPy missing)
-# Notes: This is not optimized. It is here to make the demo runnable anywhere.    
+# Notes: This is not optimized. It is here to make the demo runnable anywhere.
 
-Matrix = List[List[float]]  # alias for readability in pure‑Python code
-Vector = List[float]  # alias for 1‑D arrays when NumPy is absent
+Matrix = list[list[float]]  # alias for readability in pure‑Python code
+Vector = list[float]  # alias for 1‑D arrays when NumPy is absent
 
 def _pp_transpose(A: Matrix) -> Matrix:  # small helper: matrix transpose
-    return [list(row) for row in zip(*A)]  # zip star trick transposes rows↔columns
+    return [list(row) for row in zip(*A, strict=False)]  # zip star trick transposes rows↔columns
 
 def _pp_matmul(A: Matrix, B: Matrix) -> Matrix:  # naive O(n^3) matrix product
     ra, ca = len(A), len(A[0])  # rows and cols of A for dimension checks
@@ -50,7 +51,7 @@ def _pp_matmul(A: Matrix, B: Matrix) -> Matrix:  # naive O(n^3) matrix product
 
 def _pp_matvec(A: Matrix, x: Vector) -> Vector:  # matrix–vector product
     assert len(A[0]) == len(x), "dimension mismatch in _pp_matvec"  # shape check
-    return [sum(aij * xj for aij, xj in zip(row, x)) for row in A]  # list comp
+    return [sum(aij * xj for aij, xj in zip(row, x, strict=False)) for row in A]  # list comp
 
 def _pp_identity(n: int) -> Matrix:  # identity matrix constructor
     I = [[0.0 for _ in range(n)] for _ in range(n)]  # start with zeros
@@ -77,8 +78,8 @@ def _pp_invert(A: Matrix) -> Matrix:  # Gauss–Jordan inverse (educational)
                 continue  # continue to next row
             factor = M[r][col]  # multiplier to eliminate
             if factor != 0.0:  # skip unnecessary work
-                M[r] = [rv - factor * cv for rv, cv in zip(M[r], M[col])]  # row op
-                Inv[r] = [rv - factor * cv for rv, cv in zip(Inv[r], Inv[col])]  # row op
+                M[r] = [rv - factor * cv for rv, cv in zip(M[r], M[col], strict=False)]  # row op
+                Inv[r] = [rv - factor * cv for rv, cv in zip(Inv[r], Inv[col], strict=False)]  # row op
     return Inv  # finished inverse
 
 # Data generation — small synthetic dataset with: numeric, indicator, nonlinear
@@ -87,15 +88,15 @@ def _pp_invert(A: Matrix) -> Matrix:  # Gauss–Jordan inverse (educational)
 
 @dataclass  # container to return both arrays and human‑readable names
 class ToyData:  # minimal structured dataset
-    X: List[List[float]]  # design matrix (with intercept added later)
-    y: List[float]  # outcome vector
-    names: List[str]  # feature names matching the columns of X (post‑build)
+    X: list[list[float]]  # design matrix (with intercept added later)
+    y: list[float]  # outcome vector
+    names: list[str]  # feature names matching the columns of X (post‑build)
 
 
 def make_toy_data(n: int = 120, seed: int = 7) -> ToyData:  # reproducible generator
     random.seed(seed)  # deterministic RNG for consistent results in examples
-    y: List[float] = []  # allocate outcome list
-    rows: List[List[float]] = []  # allocate raw feature storage (no intercept yet)
+    y: list[float] = []  # allocate outcome list
+    rows: list[list[float]] = []  # allocate raw feature storage (no intercept yet)
     names = [  # feature labels in order for interpretability
         "sqft",  # numeric predictor 1
         "beds",  # numeric predictor 2 (treated as numeric for demo)
@@ -105,7 +106,7 @@ def make_toy_data(n: int = 120, seed: int = 7) -> ToyData:  # reproducible gener
         "days_sq",  # nonlinear transform: days^2
         "sqft_by_beds",  # interaction between sqft and beds
     ]  # end list of names
-    # True coefficients used to synthesize y (include an intercept β0).        
+    # True coefficients used to synthesize y (include an intercept β0).
     beta_true = [150.0,  0.35, 12.0, 25.0, -0.8, -0.02, 0.001, 0.05]  # β0..β7
     # Iterate n samples and generate features + outcome with noise.             # loop for observations
     for _ in range(n):  # sample loop
@@ -137,18 +138,18 @@ def make_toy_data(n: int = 120, seed: int = 7) -> ToyData:  # reproducible gener
 
 @dataclass  # return type for design matrix with metadata
 class Design:  # container for X matrix, y vector, and column names
-    X: List[List[float]]  # final design matrix (with intercept if requested)
-    y: List[float]  # outcome (unchanged from ToyData)
-    cols: List[str]  # column names matching X
+    X: list[list[float]]  # final design matrix (with intercept if requested)
+    y: list[float]  # outcome (unchanged from ToyData)
+    cols: list[str]  # column names matching X
 
 
-def build_design(data: ToyData, use_cols: Optional[List[str]] = None, add_intercept: bool = True, standardize: bool = False) -> Design:  # builder function
+def build_design(data: ToyData, use_cols: list[str] | None = None, add_intercept: bool = True, standardize: bool = False) -> Design:  # builder function
     cols = data.names[:] if use_cols is None else use_cols[:]  # choose feature set
     X = [[row[data.names.index(c)] for c in cols] for row in data.X]  # subset columns
     if standardize:  # feature scaling branch
-        means = [sum(col) / len(col) for col in zip(*X)]  # compute column means
-        stds = [max(1e-12, (sum((v - m) ** 2 for v in col) / len(col)) ** 0.5) for col, m in zip(zip(*X), means)]  # column stds
-        X = [[(v - m) / s for v, m, s in zip(row, means, stds)] for row in X]  # scale each value
+        means = [sum(col) / len(col) for col in zip(*X, strict=False)]  # compute column means
+        stds = [max(1e-12, (sum((v - m) ** 2 for v in col) / len(col)) ** 0.5) for col, m in zip(zip(*X, strict=False), means, strict=False)]  # column stds
+        X = [[(v - m) / s for v, m, s in zip(row, means, stds, strict=False)] for row in X]  # scale each value
         cols = [f"z_{c}" for c in cols]  # rename to indicate z‑scored features
     if add_intercept:  # intercept option
         X = [[1.0] + row for row in X]  # prepend ones column
@@ -159,9 +160,9 @@ def build_design(data: ToyData, use_cols: Optional[List[str]] = None, add_interc
 
 @dataclass  # structure to hold fitted model results
 class OLSResult:  # results object for clarity
-    beta: List[float]  # estimated coefficients (aligned with columns)
-    fitted: List[float]  # predicted y values Xβ
-    residuals: List[float]  # y − fitted
+    beta: list[float]  # estimated coefficients (aligned with columns)
+    fitted: list[float]  # predicted y values Xβ
+    residuals: list[float]  # y − fitted
     sigma2: float  # MLE of error variance (σ²)
     r2: float  # coefficient of determination
     aic: float  # Akaike information criterion
@@ -201,7 +202,7 @@ def ols_fit(design: Design) -> OLSResult:  # core OLS routine
         XTy = [sum(col[i] * y[i] for i in range(n)) for col in XT]  # Xᵀy
         beta = _pp_matvec(Inv, XTy)  # β̂
         fitted = _pp_matvec(X, beta)  # predictions
-        resid = [yi - fi for yi, fi in zip(y, fitted)]  # residuals
+        resid = [yi - fi for yi, fi in zip(y, fitted, strict=False)]  # residuals
         rss = sum(r * r for r in resid)  # RSS
         sigma2 = rss / n  # MLE σ²
         ybar = sum(y) / n  # mean
@@ -218,7 +219,7 @@ def ols_fit(design: Design) -> OLSResult:  # core OLS routine
 @dataclass  # structure to hold ridge results with λ value
 class RidgeResult:  # container with diagnostics similar to OLSResult
     lam: float  # regularization strength λ
-    beta: List[float]  # coefficients
+    beta: list[float]  # coefficients
     r2: float  # R² on training data (for comparability)
 
 
@@ -250,7 +251,7 @@ def ridge_fit(design: Design, lam: float) -> RidgeResult:  # ridge core
         XTy = [sum(col[i] * y[i] for i in range(n)) for col in XT]  # Xᵀy
         beta = _pp_matvec(Inv, XTy)  # coefficients
         fitted = _pp_matvec(X, beta)  # predictions
-        rss = sum((yi - fi) ** 2 for yi, fi in zip(y, fitted))  # RSS
+        rss = sum((yi - fi) ** 2 for yi, fi in zip(y, fitted, strict=False))  # RSS
         ybar = sum(y) / n  # mean
         tss = sum((yi - ybar) ** 2 for yi in y)  # TSS
         r2 = 1.0 - (rss / tss if tss > 0 else 0.0)  # R²
@@ -263,7 +264,7 @@ def kfold_mse(design: Design, k: int = 5, seed: int = 19) -> float:  # CV wrappe
     idx = list(range(n))  # index list
     random.Random(seed).shuffle(idx)  # fixed shuffle for reproducibility
     folds = [idx[i::k] for i in range(k)]  # round‑robin split into k folds
-    mses: List[float] = []  # store fold errors
+    mses: list[float] = []  # store fold errors
     for i in range(k):  # iterate held‑out folds
         test_idx = set(folds[i])  # current test set indices as a set
         train_rows = [design.X[j] for j in idx if j not in test_idx]  # X_train
@@ -277,17 +278,17 @@ def kfold_mse(design: Design, k: int = 5, seed: int = 19) -> float:  # CV wrappe
             yhat = (np.array(test_rows) @ np.array(fit.beta)).tolist()  # predictions
         else:  # pure‑Python path
             yhat = _pp_matvec(test_rows, fit.beta)  # predictions
-        mse = sum((a - b) ** 2 for a, b in zip(test_y, yhat)) / len(test_y)  # fold MSE
+        mse = sum((a - b) ** 2 for a, b in zip(test_y, yhat, strict=False)) / len(test_y)  # fold MSE
         mses.append(mse)  # accumulate
     return sum(mses) / len(mses)  # return average MSE across folds
 
 # Pretty printing helpers — readable, aligned output for coefficients and models
 
-def print_model_summary(title: str, cols: List[str], beta: List[float], r2: float, aic: float, bic: float) -> None:  # summary printer
+def print_model_summary(title: str, cols: list[str], beta: list[float], r2: float, aic: float, bic: float) -> None:  # summary printer
     print()  # section divider
     print(title)  # model title
     print()  # underline
-    for name, b in zip(cols, beta):  # iterate coefficients with names
+    for name, b in zip(cols, beta, strict=False):  # iterate coefficients with names
         print(f"{name:<18} : {b:>12.6f}")  # aligned name/value
     print(f"R^2   : {r2:.4f}")  # R‑squared display
     print(f"AIC   : {aic:.3f}")  # AIC display
@@ -326,7 +327,7 @@ def main() -> int:  # program entry point
     # Ridge variant: stabilize Model C coefficients with a small λ.               # regularization
     ridge = ridge_fit(C, lam=1e-2)  # ridge fit
     print("\nRidge (λ=1e-2) — R^2:", round(ridge.r2, 4))  # quick metric
-    for name, b in zip(C.cols, ridge.beta):  # print coefficients
+    for name, b in zip(C.cols, ridge.beta, strict=False):  # print coefficients
         print(f"ridged {name:<14} : {b:>12.6f}")  # aligned
 
     # Closing notes (printed) — connect back to the study guide in the prompt.   # pedagogy

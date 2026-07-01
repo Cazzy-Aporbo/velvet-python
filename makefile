@@ -3,7 +3,7 @@ SRC_DIR := src
 TEST_DIR := tests
 
 .DEFAULT_GOAL := help
-.PHONY: help install dev lint test test-fast clean check
+.PHONY: help install dev lint test test-fast pipeline check dataset-audit sweep all-runs clean
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -26,7 +26,18 @@ test: ## Run tests
 test-fast: ## Run tests (no output)
 	@pytest $(TEST_DIR) -q
 
+pipeline: ## Run reproducible classification pipelines
+	@$(PYTHON) scripts/run_experiments.py --epochs 3 --seed 42 --test-ratio 0.30
+
+dataset-audit: ## Audit the built-in dataset and write profile JSON
+	@$(PYTHON) scripts/dataset_audit.py --source builtin --batch-size 4 --write-json artifacts/dataset-audit.json
+
+sweep: ## Run full sweep with summary CSV export
+	@$(PYTHON) scripts/run_experiments.py --epochs 3 --seed 42 --summary-csv
+
 check: lint test ## Lint + test
+
+all-runs: dataset-audit pipeline ## Audit dataset then run baseline pipeline
 
 clean: ## Remove caches and build artifacts
 	@find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true

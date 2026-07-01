@@ -1,6 +1,6 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import matplotlib.pyplot as plt
 
 # Read the characters data file
 chars = pd.read_csv('https://nces.ed.gov/ipeds/datacenter/data/HD2021.zip', compression='zip', encoding="ISO-8859-1")

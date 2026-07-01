@@ -4,16 +4,22 @@ Lead Data Scientist Appliance Repair Portfolio Project
 - Demonstrates professional-level data science skills
 """
 
-import pandas as pd
-import numpy as np
 import random
+from datetime import datetime, timedelta
+
 import faker
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report
-from datetime import datetime, timedelta
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    mean_squared_error,
+    r2_score,
+)
+from sklearn.model_selection import train_test_split
 
 # 1. Generate Synthetic Appliance Repair Data
 fake = faker.Faker()
@@ -33,9 +39,9 @@ for _ in range(num_customers):
     email = fake.email()
     phone = fake.phone_number()
     address = fake.address().replace("\n", ", ")
-    
+
     num_services = random.randint(3, records_per_customer)
-    
+
     for _ in range(num_services):
         appliance = random.choice(appliance_types)
         issue = random.choice(issues)
@@ -44,7 +50,7 @@ for _ in range(num_customers):
         cost = round(random.uniform(50, 1000), 2)
         parts_replaced = random.choice([0,1,2,3])
         duration_hours = round(random.uniform(0.5, 5.0),1)
-        
+
         records.append({
             "first_name": first_name,
             "last_name": last_name,

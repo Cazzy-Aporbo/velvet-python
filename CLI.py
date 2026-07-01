@@ -7,6 +7,7 @@ Commands:
     velvet lint       Run ruff on src/ and tests/
     velvet classify   Interactive text classification demo
     velvet tree       Display project as a Rich tree
+    velvet recommend  Recommend model families from dataset shape
     velvet clean      Remove __pycache__, .pytest_cache, etc.
     velvet version    Print version and Python info
 """
@@ -14,30 +15,194 @@ Commands:
 from __future__ import annotations
 
 import shutil
+from argparse import ArgumentParser
 import subprocess
 import sys
 from pathlib import Path
-from typing import Optional
 
-import typer
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-from rich.text import Text
-from rich.tree import Tree
+try:
+    import typer
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.text import Text
+    from rich.tree import Tree
+except ModuleNotFoundError:
+    from typing import Any
 
-from src import __version__, __author__
+    class _FallbackExit(SystemExit):
+        """Replacement for `typer.Exit` when Typer is unavailable."""
+
+    class _FallbackText(str):
+        def append(self, _text: str, *_args: Any, **_kwargs: Any) -> None:
+            return None
+
+        @classmethod
+        def assemble(cls, *items: object) -> str:
+            return "".join(str(item) for item in items)
+
+    class _FallbackConsole:
+        def print(self, *items: object, **_kwargs: object) -> None:
+            print(*items)
+
+    class _FallbackPanel:
+        def __init__(self, content: object, **_kwargs: object):
+            self.content = content
+
+        @classmethod
+        def fit(cls, content: object, **_kwargs: object) -> "_FallbackPanel":
+            return cls(content, **_kwargs)
+
+        def __str__(self) -> str:
+            return str(self.content)
+
+    class _FallbackTable:
+        def __init__(self, *_, **__):
+            self.rows: list[list[object]] = []
+
+        def add_column(self, *_args: object, **_kwargs: object) -> None:
+            return None
+
+        def add_row(self, *values: object) -> None:
+            self.rows.append(list(values))
+
+        def __str__(self) -> str:
+            if not self.rows:
+                return ""
+            return "\n".join(", ".join(str(value) for value in row) for row in self.rows)
+
+    class _FallbackTree:
+        def __init__(self, label: str, **_kwargs: object):
+            self.label = label
+            self.children: list[object] = []
+
+        def add(self, text: str) -> "_FallbackTree":
+            child = _FallbackTree(text)
+            self.children.append(child)
+            return child
+
+        def _render(self, level: int = 0) -> str:
+            lines = ["  " * level + str(self.label)]
+            for child in self.children:
+                if isinstance(child, _FallbackTree):
+                    lines.append(child._render(level + 1))
+                else:
+                    lines.append("  " * (level + 1) + str(child))
+            return "\n".join(lines)
+
+        def __str__(self) -> str:
+            return self._render()
+
+    def _to_int_positive(value: str) -> int:
+        parsed = int(value)
+        if parsed < 1:
+            raise ValueError("value must be positive")
+        return parsed
+
+    def _build_fallback_app() -> Any:
+        class _FallbackTyper:
+            def __init__(self) -> None:
+                self.commands: dict[str, object] = {}
+
+            def command(self):
+                def decorate(fn: object) -> object:
+                    self.commands[fn.__name__] = fn
+                    return fn
+
+                return decorate
+
+            def __call__(self) -> None:
+                parser = ArgumentParser(prog="velvet")
+                subs = parser.add_subparsers(dest="command", required=True)
+
+                sub_info = subs.add_parser("info")
+                sub_info.set_defaults(_target=info)
+
+                sub_test = subs.add_parser("test")
+                sub_test.add_argument("--verbose", "-v", action="store_true")
+                sub_test.add_argument("--cov", "-c", action="store_true")
+                sub_test.set_defaults(_target=test)
+
+                sub_lint = subs.add_parser("lint")
+                sub_lint.set_defaults(_target=lint)
+
+                sub_classify = subs.add_parser("classify")
+                sub_classify.add_argument("text")
+                sub_classify.add_argument("--strategy", "-s", default="all")
+                sub_classify.set_defaults(_target=classify)
+
+                sub_tree = subs.add_parser("tree")
+                sub_tree.add_argument("--depth", "-d", type=int, default=3)
+                sub_tree.set_defaults(_target=tree)
+
+                sub_clean = subs.add_parser("clean")
+                sub_clean.add_argument("--all", "-a", action="store_true", dest="all_")
+                sub_clean.set_defaults(_target=clean)
+
+                sub_pipeline = subs.add_parser("pipeline")
+                sub_pipeline.add_argument("--epochs", "-e", type=_to_int_positive, default=3)
+                sub_pipeline.add_argument("--output", "-o", default="artifacts")
+                sub_pipeline.add_argument("--seed", "-s", type=int, default=42)
+                sub_pipeline.add_argument("--ledger", default="")
+                sub_pipeline.set_defaults(_target=pipeline)
+
+                sub_recommend = subs.add_parser("recommend")
+                sub_recommend.add_argument("--rows", "-n", type=_to_int_positive, default=200, dest="row_count")
+                sub_recommend.add_argument("--classes", "-c", type=int, default=3)
+                sub_recommend.add_argument("--probabilities", action="store_true", dest="need_probabilities")
+                sub_recommend.add_argument("--no-explainability", action="store_false", dest="prioritize_explainability", default=True)
+                sub_recommend.add_argument("--p95-latency-ms", type=int, default=None)
+                sub_recommend.set_defaults(_target=recommend)
+
+                sub_version = subs.add_parser("version")
+                sub_version.set_defaults(_target=version)
+
+                parsed = parser.parse_args()
+                target = parsed._target
+                kwargs = vars(parsed)
+                kwargs.pop("command")
+                kwargs.pop("_target")
+                target(**kwargs)
+
+        return _FallbackTyper()
+
+    typer = None
+    Exit = _FallbackExit
+    Option = lambda *args, **kwargs: kwargs.get("default", None)
+    Argument = lambda *args, **kwargs: kwargs.get("default", None)
+    Console = _FallbackConsole
+    Panel = _FallbackPanel
+    Table = _FallbackTable
+    Text = _FallbackText
+    Tree = _FallbackTree
+    app = _build_fallback_app()
+
+else:
+    Option = typer.Option
+    Argument = typer.Argument
+    Exit = typer.Exit
+    Console = Console
+    Panel = Panel
+    Table = Table
+    Text = Text
+    Tree = Tree
+    app = typer.Typer(
+        name="velvet",
+        help="Velvet Python CLI",
+        add_completion=False,
+        rich_markup_mode="rich",
+        pretty_exceptions_show_locals=False,
+    )
+
+from src import __author__, __version__
+from src.ai import CosineSimilarityClassifier, NaiveBayesClassifier
+from src.algorithm_guide import recommend_text_algorithms
+from src.evidence_ledger import build_evidence_ledger, write_evidence_ledger
+from src.model_registry import model_builders
+from src.pipeline import dump_run_manifests, run_epochs, summarize_runs
 
 PROJECT_ROOT = Path(__file__).parent
 console = Console()
-
-app = typer.Typer(
-    name="velvet",
-    help="Velvet Python CLI",
-    add_completion=False,
-    rich_markup_mode="rich",
-    pretty_exceptions_show_locals=False,
-)
 
 
 def _gradient(text: str) -> Text:
@@ -122,13 +287,13 @@ def classify(
     strategy: str = typer.Option("all", "--strategy", "-s", help="rule | bayes | cosine | all"),
 ) -> None:
     """Classify text using strategies from src/ai.py."""
-    from src.ai import classify_text, NaiveBayesClassifier, CosineSimilarityClassifier
+    from src.ai import classify_text
     from src.data_utils import load_dataset
 
     _header()
     data = load_dataset()
-    texts = [t for t, _ in data]
-    labels = [l for _, l in data]
+    texts = [text for text, _ in data]
+    labels = [label for _, label in data]
 
     tbl = Table(title=f"[#8B7D8B]Classifying:[/#8B7D8B] {text}", border_style="#DDA0DD")
     tbl.add_column("Strategy", style="#FFE4E1")
@@ -211,6 +376,137 @@ def clean(
             removed += 1
 
     console.print(f"[green]Cleaned {removed} items.[/green]")
+
+
+@app.command()
+def pipeline(
+    epochs: int = typer.Option(3, "--epochs", "-e", min=1),
+    output: str = typer.Option("artifacts", "--output", "-o", help="Directory for run manifests"),
+    seed: int = typer.Option(42, "--seed", "-s", help="Base seed for deterministic splits"),
+    ledger: str = typer.Option("", "--ledger", help="Optional path for evidence ledger output"),
+) -> None:
+    """Run reproducible baseline pipelines and save JSON manifests."""
+    _header()
+
+    from src.data_utils import load_dataset
+
+    dataset = load_dataset()
+    builders = model_builders()
+
+    runs = []
+    for name, builder in builders.items():
+        runs.extend(
+            run_epochs(
+                model_name=name,
+                model_builder=builder,
+                data=dataset,
+                epochs=epochs,
+                seed=seed,
+            ),
+        )
+
+    paths = dump_run_manifests(runs, PROJECT_ROOT / output)
+    summary = summarize_runs(runs)
+
+    ledger_payload = None
+    ledger_path = None
+    if ledger:
+        ledger_payload = build_evidence_ledger(runs, accuracy_spread_threshold=0.05)
+        ledger_path = write_evidence_ledger(ledger_payload, PROJECT_ROOT / ledger)
+
+    console.print(Panel.fit("Pipeline run complete", border_style="#DDA0DD"))
+    table = Table(title="Summary", border_style="#DDA0DD")
+    table.add_column("Model")
+    table.add_column("Seed")
+    table.add_column("Accuracy")
+    table.add_column("Train")
+    table.add_column("Test")
+
+    for row in summary:
+        table.add_row(row["model_name"], str(row["seed"]), f"{row['accuracy']:.4f}",
+                      str(row["train_size"]), str(row["test_size"]))
+
+    console.print(table)
+    console.print("[#8B7D8B]Manifests:[/#8B7D8B]")
+    for path in paths:
+        console.print(f" - {path}")
+    if ledger_path is not None and ledger_payload is not None:
+        console.print(f"[#8B7D8B]Ledger:[/#8B7D8B] {ledger_path}")
+        console.print(
+            "[#6f6680]Drift alerts:[/#6f6680] "
+            f"{len(ledger_payload['drift_alerts'])} "
+            f"(models: {ledger_payload['model_count']})"
+        )
+
+
+@app.command()
+def recommend(
+    row_count: int = typer.Option(
+        200,
+        "--rows",
+        "-n",
+        min=1,
+        help="Estimated labeled row count in your first dataset",
+    ),
+    class_count: int = typer.Option(
+        3,
+        "--classes",
+        "-c",
+        min=2,
+        help="Estimated number of classes you need to predict",
+    ),
+    need_probabilities: bool = typer.Option(
+        False,
+        "--probabilities",
+        help="Prefer models that expose probability outputs",
+    ),
+    prioritize_explainability: bool = typer.Option(
+        True,
+        "--explainability/--no-explainability",
+        help="Trade some complexity for interpretability",
+    ),
+    p95_latency_ms: int | None = typer.Option(
+        None,
+        "--p95-latency-ms",
+        min=1,
+        help="Target p95 latency budget in milliseconds",
+    ),
+) -> None:
+    """Recommend model families based on constraints."""
+    _header()
+
+    recommendations = recommend_text_algorithms(
+        row_count=row_count,
+        class_count=class_count,
+        needs_probabilities=need_probabilities,
+        needs_explainability=prioritize_explainability,
+        p95_latency_ms=p95_latency_ms,
+    )
+
+    table = Table(
+        title=f"[#8B7D8B]Recommendations for {row_count} rows x {class_count} classes[/#8B7D8B]",
+        border_style="#DDA0DD",
+    )
+    table.add_column("Rank", justify="right", style="#FFE4E1")
+    table.add_column("Model", style="#EDE5FF")
+    table.add_column("Best for", style="#F0E6FF")
+    table.add_column("Tradeoffs", style="#E6D9F0")
+
+    for idx, profile in enumerate(recommendations, start=1):
+        table.add_row(
+            str(idx),
+            profile.name.replace("_", " ").title(),
+            ", ".join(profile.best_for),
+            "; ".join(profile.avoid_if),
+        )
+
+    console.print(Panel.fit(
+        "This is an engineering starting point, not a final architecture choice. "
+        "Start with recommendation #1, run one manifest sweep, then decide what "
+        "to add after the observed drift.",
+        border_style="#EED8FA",
+    ))
+    console.print(table)
 
 
 @app.command()

@@ -8,11 +8,11 @@ interactive 3D plotting, Sankey flows, and creative data translation. The Titani
 is used to illustrate these techniques, but the code is generalizable to other datasets.
 """
 
-import pandas as pd
 import numpy as np
-import seaborn as sns
-import plotly.graph_objects as go
+import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
+import seaborn as sns
 
 # Load Titanic dataset
 titanic = sns.load_dataset("titanic")
@@ -51,23 +51,23 @@ def sankey_demo(df):
     for col in ['class','sex','survived']:
         labels.extend(df[col].unique().tolist())
     labels = list(dict.fromkeys(labels))
-    
+
     def get_index(val):
         return labels.index(val)
-    
+
     sources = []
     targets = []
     values = []
-    
+
     for col_from, col_to in [('class','sex'),('sex','survived')]:
         grouped = df.groupby([col_from,col_to]).size().reset_index(name='count')
         for _, row in grouped.iterrows():
             sources.append(get_index(row[col_from]))
             targets.append(get_index(row[col_to]))
             values.append(row['count'])
-    
+
     colors = [pastel_colors[i % len(pastel_colors)] for i in range(len(labels))]
-    
+
     fig = go.Figure(data=[go.Sankey(
         node=dict(
             pad=15,
@@ -83,7 +83,7 @@ def sankey_demo(df):
             color='lightgray'
         )
     )])
-    
+
     fig.update_layout(title_text='Titanic Passenger Flow: Class to Gender to Survived', font_size=12)
     fig.show()
 
@@ -124,26 +124,26 @@ def flow_demo(df):
 def main():
     print('Running backprop-style transformation...')
     df_transformed = backprop_style_transformation(titanic)
-    
+
     print('Running functional group summary...')
     summary = functional_group_summary(df_transformed)
     print(summary)
-    
+
     print('Running Sankey demo...')
     sankey_demo(df_transformed)
-    
+
     print('Running Sunburst demo...')
     sunburst_demo(df_transformed)
-    
+
     print('Running Treemap demo...')
     treemap_demo(df_transformed)
-    
+
     print('Running 3D scatter demo...')
     scatter3d_demo(df_transformed)
-    
+
     print('Running Flow demo...')
     flow_demo(df_transformed)
-    
+
     print('All visualizations and transformations executed successfully.')
 
 if __name__ == '__main__':

@@ -19,11 +19,10 @@ Usage:
 If no files specified, checks all Python files in the project.
 """
 
-import sys
 import re
-from pathlib import Path
-from typing import List, Tuple, Optional
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -70,13 +69,13 @@ class FileCheckResult:
     has_docstring: bool
     has_author: bool
     has_date: bool
-    issues: List[str]
-    
+    issues: list[str]
+
     @property
     def is_valid(self) -> bool:
         """Check if file passes all requirements"""
         return self.has_docstring and self.has_author
-    
+
     def __str__(self) -> str:
         """String representation of result"""
         status = "✓" if self.is_valid else "✗"
@@ -92,7 +91,7 @@ class HeaderChecker:
     
     Author: Cazzy Aporbo, MS
     """
-    
+
     def __init__(self, verbose: bool = False):
         """
         Initialize the header checker.
@@ -102,7 +101,7 @@ class HeaderChecker:
         """
         self.verbose = verbose
         self.project_root = Path(__file__).parent.parent
-        
+
     def should_check_file(self, file_path: Path) -> bool:
         """
         Determine if a file should be checked.
@@ -117,17 +116,17 @@ class HeaderChecker:
         for pattern in EXCLUDE_PATTERNS:
             if file_path.match(pattern):
                 return False
-        
+
         # Only check .py files
         if file_path.suffix != '.py':
             return False
-        
+
         # Skip test files (they have different requirements)
         if 'test_' in file_path.name or file_path.name.endswith('_test.py'):
             return False
-        
+
         return True
-    
+
     def check_file(self, file_path: Path) -> FileCheckResult:
         """
         Check a single Python file for proper headers.
@@ -139,7 +138,7 @@ class HeaderChecker:
             FileCheckResult with validation details
         """
         issues = []
-        
+
         try:
             content = file_path.read_text(encoding='utf-8')
         except Exception as e:
@@ -151,15 +150,15 @@ class HeaderChecker:
                 has_date=False,
                 issues=issues
             )
-        
+
         # For minimal header files, only check for author
         is_minimal = file_path.name in MINIMAL_HEADER_FILES
-        
+
         # Check for module docstring (first thing in file)
         has_docstring = bool(re.match(r'^\s*"""', content))
         if not has_docstring and not is_minimal:
             issues.append("Missing module docstring")
-        
+
         # Check for author attribution
         has_author = bool(re.search(REQUIRED_ELEMENTS['author'], content, re.IGNORECASE))
         if not has_author:
@@ -169,12 +168,12 @@ class HeaderChecker:
                     issues.append(f"Missing author attribution: {AUTHOR}")
             else:
                 issues.append(f"Missing author attribution: {AUTHOR}")
-        
+
         # Check for date (Created/Updated)
         has_date = bool(re.search(REQUIRED_ELEMENTS['created_or_updated'], content))
         if not has_date and not is_minimal and len(content.strip()) > 50:
             issues.append("Missing creation/update date")
-        
+
         # Additional checks for main module files
         if str(file_path).startswith(str(self.project_root / 'velvet_python')):
             if not is_minimal:
@@ -184,11 +183,11 @@ class HeaderChecker:
                     docstring = docstring_match.group(1)
                     if len(docstring.strip()) < 20:
                         issues.append("Docstring too short (add meaningful description)")
-                    
+
                     # Should explain what the module does
                     if not any(word in docstring.lower() for word in ['this', 'module', 'class', 'function']):
                         issues.append("Docstring should explain what this module does")
-        
+
         return FileCheckResult(
             path=file_path,
             has_docstring=has_docstring or is_minimal,
@@ -196,8 +195,8 @@ class HeaderChecker:
             has_date=has_date or is_minimal,
             issues=issues
         )
-    
-    def check_files(self, file_paths: Optional[List[Path]] = None) -> List[FileCheckResult]:
+
+    def check_files(self, file_paths: list[Path] | None = None) -> list[FileCheckResult]:
         """
         Check multiple files for proper headers.
         
@@ -212,18 +211,18 @@ class HeaderChecker:
             file_paths = []
             for pattern in ['**/*.py']:
                 file_paths.extend(self.project_root.glob(pattern))
-        
+
         results = []
         for file_path in file_paths:
             if self.should_check_file(file_path):
                 result = self.check_file(file_path)
                 results.append(result)
-                
+
                 if self.verbose:
                     print(f"Checking {file_path}... {'✓' if result.is_valid else '✗'}")
-        
+
         return results
-    
+
     def generate_header_template(self, file_path: Path) -> str:
         """
         Generate a proper header template for a file.
@@ -236,14 +235,14 @@ class HeaderChecker:
         """
         file_name = file_path.stem
         module_type = "Module"
-        
+
         if "test_" in file_name:
             module_type = "Tests"
         elif file_name == "cli":
             module_type = "CLI"
         elif file_name == "__init__":
             return f'"""\n{file_path.parent.name.title()} Package\n\nAuthor: {AUTHOR}\n"""\n'
-        
+
         template = f'''"""
 {file_name.replace('_', ' ').title()} - Brief description here
 
@@ -256,7 +255,7 @@ Add any important notes about usage or implementation.
 
 '''
         return template
-    
+
     def fix_file(self, file_path: Path, result: FileCheckResult) -> bool:
         """
         Attempt to fix header issues in a file.
@@ -270,15 +269,15 @@ Add any important notes about usage or implementation.
         """
         if result.is_valid:
             return True
-        
+
         try:
             content = file_path.read_text(encoding='utf-8')
-            
+
             # If missing docstring entirely, add one
             if not result.has_docstring and file_path.name not in MINIMAL_HEADER_FILES:
                 header = self.generate_header_template(file_path)
                 content = header + content
-            
+
             # If missing author, try to add it to existing docstring
             elif not result.has_author:
                 # Find the docstring
@@ -292,20 +291,20 @@ Add any important notes about usage or implementation.
                     # Add minimal docstring for special files
                     header = self.generate_header_template(file_path)
                     content = header + content
-            
+
             # Write back
             file_path.write_text(content, encoding='utf-8')
-            
+
             if self.verbose:
                 print(f"Fixed: {file_path}")
-            
+
             return True
-            
+
         except Exception as e:
             print(f"Error fixing {file_path}: {e}")
             return False
-    
-    def print_report(self, results: List[FileCheckResult]) -> None:
+
+    def print_report(self, results: list[FileCheckResult]) -> None:
         """
         Print a summary report of check results.
         
@@ -315,24 +314,24 @@ Add any important notes about usage or implementation.
         total = len(results)
         valid = sum(1 for r in results if r.is_valid)
         invalid = total - valid
-        
+
         print("\n" + "="*60)
-        print(f"Python File Header Check Report")
+        print("Python File Header Check Report")
         print(f"Author: {AUTHOR}")
         print("="*60)
-        
+
         if invalid > 0:
             print(f"\n❌ Found {invalid} file(s) with issues:\n")
-            
+
             for result in results:
                 if not result.is_valid:
                     relative_path = result.path.relative_to(self.project_root)
                     print(f"  ✗ {relative_path}")
                     for issue in result.issues:
                         print(f"    - {issue}")
-        
+
         print(f"\n📊 Summary: {valid}/{total} files have proper headers")
-        
+
         if invalid == 0:
             print("✅ All files have proper headers! Great job!")
         else:
@@ -348,7 +347,7 @@ def main():
     Author: Cazzy Aporbo, MS
     """
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description=f"Check Python file headers - by {AUTHOR}"
     )
@@ -367,21 +366,21 @@ def main():
         action='store_true',
         help='Show detailed output'
     )
-    
+
     args = parser.parse_args()
-    
+
     # Initialize checker
     checker = HeaderChecker(verbose=args.verbose)
-    
+
     # Get files to check
     if args.files:
         file_paths = [Path(f) for f in args.files]
     else:
         file_paths = None
-    
+
     # Run checks
     results = checker.check_files(file_paths)
-    
+
     # Fix if requested
     if args.fix:
         print("Attempting to fix header issues...")
@@ -390,20 +389,20 @@ def main():
             if not result.is_valid:
                 if checker.fix_file(result.path, result):
                     fixed += 1
-        
+
         if fixed > 0:
             print(f"✅ Fixed {fixed} file(s)")
             # Re-check to verify
             results = checker.check_files(file_paths)
-    
+
     # Print report
     checker.print_report(results)
-    
+
     # Exit with error if any files are invalid
     invalid_count = sum(1 for r in results if not r.is_valid)
     if invalid_count > 0:
         sys.exit(1)
-    
+
     sys.exit(0)
 
 

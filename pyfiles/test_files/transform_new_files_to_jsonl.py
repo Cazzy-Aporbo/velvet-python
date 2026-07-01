@@ -1,8 +1,8 @@
 # Script to transform NEW consolidated CSV data to JSON Lines format
-import pandas as pd
 import json
 import os
-import numpy as np
+
+import pandas as pd
 
 input_file = "/home/ubuntu/new_files_categorized/all_new_categorized_data_with_ethnicity_Apr30_2025.csv"
 output_file = "/home/ubuntu/new_files_jsonl/new_files_data_Apr30_2025.jsonl"

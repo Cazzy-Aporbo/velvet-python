@@ -6,10 +6,10 @@ data science, AI, visualization, geospatial, ML, NLP, finance, system utilities,
 Designed for maximum breadth and portfolio impact.
 """
 
-import subprocess
-import sys
 import importlib
 import logging
+import subprocess
+import sys
 
 # Setup logging
 logging.basicConfig(
@@ -23,39 +23,39 @@ all_packages = [
     # Basic utilities
     "numpy", "pandas", "dask", "vaex", "modin", "polars", "pyarrow", "tables", "h5py",
     "sqlite3", "sqlalchemy", "dataset", "tinydb", "redis", "pymongo",
-    
+
     # ML and AI
     "scikit-learn", "torch", "torchvision", "tensorflow", "keras", "pytorch-lightning",
     "fastai", "nltk", "spacy", "gensim", "transformers",
-    
+
     # Visualization
     "matplotlib", "seaborn", "plotly", "bokeh", "altair", "geopandas", "folium", "cartopy",
     "networkx",
-    
+
     # Geospatial
     "shapely", "fiona", "rasterio", "pyproj", "geopy", "osmnx", "contextily",
-    
+
     # Web & networking
     "requests", "urllib3", "aiohttp", "selenium", "beautifulsoup4", "scrapy", "websockets",
-    
+
     # Time series & finance
     "statsmodels", "arch", "yfinance", "quandl", "prophet",
-    
+
     # Image, audio, video
     "opencv-python", "pillow", "imageio", "scikit-image", "librosa", "soundfile", "moviepy",
-    
+
     # Scientific computing
     "scipy", "sympy", "numba", "cupy", "pynvml",
-    
+
     # Parallel & distributed
     "ray", "joblib",
-    
+
     # Database & big data
     "pymysql", "psycopg2-binary", "pyodbc", "cassandra-driver", "influxdb", "happybase",
-    
+
     # File formats
     "openpyxl", "xlrd", "xlwt", "netCDF4", "pdfplumber", "PyPDF2", "python-docx", "odfpy",
-    
+
     # Other advanced tools
     "regex", "fuzzywuzzy", "rapidfuzz", "multipledispatch", "click", "typer", "rich"
 ]

@@ -1,9 +1,8 @@
+from datetime import datetime
+
+import matplotlib.pyplot as plt
 import pandas as pd
 import requests
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime
 
 fake = None  # not needed here but kept if extended
 

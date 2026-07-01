@@ -20,12 +20,12 @@ It combines all sources into a single comprehensive CSV file for analysis,
 ensuring consistent data structure and proper handling of different formats.
 """
 
-import os
 import glob
-import pandas as pd
-import numpy as np
-from datetime import datetime
+import os
 import re
+from datetime import datetime
+
+import pandas as pd
 
 # Create directories for data storage
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,16 +71,16 @@ def load_processed_data(source_name):
     """
     file_pattern = os.path.join(PROCESSED_DATA_DIR, f"{source_name.lower().replace(' ', '_')}_processed.csv")
     files = glob.glob(file_pattern)
-    
+
     if not files:
         # Try alternative pattern
         file_pattern = os.path.join(PROCESSED_DATA_DIR, f"{source_name.lower().replace(' ', '_')}*.csv")
         files = glob.glob(file_pattern)
-    
+
     if not files:
         log_message(f"No processed data found for {source_name}")
         return pd.DataFrame()
-    
+
     # If multiple files, load and concatenate them
     dfs = []
     for file in files:
@@ -89,15 +89,15 @@ def load_processed_data(source_name):
             df = pd.read_csv(file, encoding='utf-8')
             dfs.append(df)
         except Exception as e:
-            log_message(f"Error loading {file}: {str(e)}")
-    
+            log_message(f"Error loading {file}: {e!s}")
+
     if not dfs:
         return pd.DataFrame()
-    
+
     # Concatenate all dataframes
     combined_df = pd.concat(dfs, ignore_index=True)
     log_message(f"Loaded {len(combined_df)} records from {source_name}")
-    
+
     return combined_df
 
 def standardize_dataframe(df, source_name):  # sourcery skip: low-code-quality
@@ -153,7 +153,7 @@ def standardize_dataframe(df, source_name):  # sourcery skip: low-code-quality
     # Copy data with column mapping
     for std_col in STANDARD_COLUMNS:
         # Find matching columns in the source DataFrame
-        matching_cols = [col for col, mapped_col in column_mapping.items() 
+        matching_cols = [col for col, mapped_col in column_mapping.items()
                         if mapped_col == std_col and col in df.columns]
 
         standardized_df[std_col] = df[matching_cols[0]] if matching_cols else ""
@@ -165,7 +165,7 @@ def standardize_dataframe(df, source_name):  # sourcery skip: low-code-quality
         # Combine location and statistics
         if "location" in df.columns and "statistics" in df.columns:
             standardized_df["statistics"] = df.apply(
-                lambda row: f"Location: {row.get('location', '')}, Value: {row.get('statistics', '')}", 
+                lambda row: f"Location: {row.get('location', '')}, Value: {row.get('statistics', '')}",
                 axis=1
             )
 
@@ -180,7 +180,7 @@ def standardize_dataframe(df, source_name):  # sourcery skip: low-code-quality
         # Combine symptoms and treatment
         if "symptoms" in df.columns and "treatment" in df.columns:
             standardized_df["content"] = df.apply(
-                lambda row: f"Symptoms: {row.get('symptoms', '')}\n\nTreatment: {row.get('treatment', '')}", 
+                lambda row: f"Symptoms: {row.get('symptoms', '')}\n\nTreatment: {row.get('treatment', '')}",
                 axis=1
             )
 
@@ -195,7 +195,7 @@ def standardize_dataframe(df, source_name):  # sourcery skip: low-code-quality
         # Combine author and journal information
         if "authors" in df.columns and "journal" in df.columns:
             standardized_df["references"] = df.apply(
-                lambda row: f"Authors: {row.get('authors', '')}, Journal: {row.get('journal', '')}, URL: {row.get('references', '')}", 
+                lambda row: f"Authors: {row.get('authors', '')}, Journal: {row.get('journal', '')}, URL: {row.get('references', '')}",
                 axis=1
             )
 
@@ -203,7 +203,7 @@ def standardize_dataframe(df, source_name):  # sourcery skip: low-code-quality
         # Add author to references
         if "author" in df.columns:
             standardized_df["references"] = df.apply(
-                lambda row: f"Author: {row.get('author', '')}, URL: {row.get('references', '')}", 
+                lambda row: f"Author: {row.get('author', '')}, URL: {row.get('references', '')}",
                 axis=1
             )
 
@@ -230,31 +230,31 @@ def clean_text_fields(df):
     """
     if df.empty:
         return df
-    
+
     # Make a copy to avoid modifying the original
     cleaned_df = df.copy()
-    
+
     # Define text columns to clean
-    text_columns = ["topic", "description", "content", "symptoms", "treatment", 
+    text_columns = ["topic", "description", "content", "symptoms", "treatment",
                    "recommendations", "statistics", "references"]
-    
+
     for col in text_columns:
         if col in cleaned_df.columns:
             # Replace newlines with spaces
             cleaned_df[col] = cleaned_df[col].apply(
                 lambda x: re.sub(r'\s+', ' ', str(x)) if isinstance(x, str) else x
             )
-            
+
             # Remove any control characters
             cleaned_df[col] = cleaned_df[col].apply(
                 lambda x: re.sub(r'[\x00-\x1F\x7F]', '', str(x)) if isinstance(x, str) else x
             )
-            
+
             # Strip whitespace
             cleaned_df[col] = cleaned_df[col].apply(
                 lambda x: x.strip() if isinstance(x, str) else x
             )
-    
+
     return cleaned_df
 
 def categorize_women_health_topics(df):
@@ -269,63 +269,63 @@ def categorize_women_health_topics(df):
     """
     if df.empty:
         return df
-    
+
     # Make a copy to avoid modifying the original
     categorized_df = df.copy()
-    
+
     # Define category keywords
     category_keywords = {
-        "Reproductive Health": ["pregnancy", "birth", "fertility", "contraception", 
-                               "menstruation", "period", "menstrual", "ovulation", 
+        "Reproductive Health": ["pregnancy", "birth", "fertility", "contraception",
+                               "menstruation", "period", "menstrual", "ovulation",
                                "conception", "ivf", "reproductive"],
-        
-        "Gynecological Conditions": ["endometriosis", "pcos", "fibroids", "ovarian", 
-                                    "cervical", "uterine", "vaginal", "vulvar", 
+
+        "Gynecological Conditions": ["endometriosis", "pcos", "fibroids", "ovarian",
+                                    "cervical", "uterine", "vaginal", "vulvar",
                                     "gynecological", "pelvic"],
-        
+
         "Breast Health": ["breast", "mammogram", "mastectomy", "lumpectomy"],
-        
-        "Menopause": ["menopause", "perimenopause", "postmenopause", "hot flash", 
+
+        "Menopause": ["menopause", "perimenopause", "postmenopause", "hot flash",
                      "hot flush", "night sweat", "hormone replacement", "hrt"],
-        
-        "Sexual Health": ["sexual", "libido", "std", "sti", "hpv", "herpes", 
+
+        "Sexual Health": ["sexual", "libido", "std", "sti", "hpv", "herpes",
                          "contraceptive", "birth control"],
-        
-        "Mental Health": ["depression", "anxiety", "stress", "postpartum depression", 
+
+        "Mental Health": ["depression", "anxiety", "stress", "postpartum depression",
                          "mental health", "emotional health", "mood"],
-        
-        "Preventive Care": ["screening", "prevention", "vaccine", "pap smear", 
+
+        "Preventive Care": ["screening", "prevention", "vaccine", "pap smear",
                            "mammogram", "bone density", "preventive"],
-        
-        "Chronic Conditions": ["autoimmune", "thyroid", "osteoporosis", "heart disease", 
+
+        "Chronic Conditions": ["autoimmune", "thyroid", "osteoporosis", "heart disease",
                               "diabetes", "chronic fatigue", "fibromyalgia", "lupus"],
-        
-        "Healthcare Access": ["access", "insurance", "cost", "barrier", "disparity", 
+
+        "Healthcare Access": ["access", "insurance", "cost", "barrier", "disparity",
                              "inequality", "discrimination", "bias"]
     }
-    
+
     # Function to determine category based on text
     def determine_category(row):
         # If already has a specific category, keep it
         if row["category"] and row["category"] != "Health Articles" and row["category"] != "General":
             return row["category"]
-        
+
         # Check topic and content for keywords
         text_to_check = f"{row['topic']} {row['description']} {row['content']}".lower()
-        
+
         for category, keywords in category_keywords.items():
             if any(keyword in text_to_check for keyword in keywords):
                 return category
-        
+
         # If demographics is Women but no specific category found
         if row["demographics"] == "Women":
             return "Women's General Health"
-        
+
         return row["category"]
-    
+
     # Apply categorization
     categorized_df["category"] = categorized_df.apply(determine_category, axis=1)
-    
+
     return categorized_df
 
 def integrate_data():

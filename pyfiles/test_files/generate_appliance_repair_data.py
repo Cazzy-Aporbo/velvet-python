@@ -1,8 +1,9 @@
-import pandas as pd
-import numpy as np
 import random
-import faker
 from datetime import datetime, timedelta
+
+import faker
+import numpy as np
+import pandas as pd
 
 fake = faker.Faker()
 num_customers = 200
@@ -21,9 +22,9 @@ for _ in range(num_customers):
     email = fake.email()
     phone = fake.phone_number()
     address = fake.address().replace("\n", ", ")
-    
+
     num_services = random.randint(3, records_per_customer)
-    
+
     for _ in range(num_services):
         appliance = random.choice(appliance_types)
         issue = random.choice(issues)
@@ -33,7 +34,7 @@ for _ in range(num_customers):
         cost = round(random.uniform(50, 1000), 2)
         parts_replaced = random.choice([0,1,2,3])
         duration_hours = round(random.uniform(0.5, 5.0),1)
-        
+
         records.append({
             "first_name": first_name,
             "last_name": last_name,

@@ -33,21 +33,19 @@ Updated: August 13, 2025
 # ──────────────────────────────────────────────────────────────────────────────
 from __future__ import annotations
 
-import os
-import sys
 import math
-import time
 import random
+import sys
+import time
+from collections import defaultdict, deque
 from dataclasses import dataclass
-from collections import deque, defaultdict
-from functools import lru_cache
-from typing import List, Tuple, Dict, Optional
+from functools import cache
 
 # Optional: pretty tables if rich is present; else, fall back to prints.
 try:
+    from rich import box
     from rich.console import Console
     from rich.table import Table
-    from rich import box
     RICH = True
     console = Console()
 except Exception:
@@ -58,7 +56,7 @@ except Exception:
 # ──────────────────────────────────────────────────────────────────────────────
 # Built-in “dataset” of coin systems (deliberately mixed)
 # ──────────────────────────────────────────────────────────────────────────────
-COIN_SYSTEMS: Dict[str, List[int]] = {
+COIN_SYSTEMS: dict[str, list[int]] = {
     # Canonical: Greedy == Optimal for all targets (with 1 present)
     "USD_Classic":      [1, 5, 10, 25, 50],
     "EU_Cents":         [1, 2, 5, 10, 20, 50],
@@ -81,10 +79,10 @@ DEFAULT_TARGETS = [29, 63, 99, 117, 188]
 @dataclass
 class ChangeResult:
     method: str
-    coinset: List[int]
+    coinset: list[int]
     target: int
     count: int
-    combo: List[int]           # multiset of coins used (values, not counts)
+    combo: list[int]           # multiset of coins used (values, not counts)
     elapsed_ms: float
     note: str = ""             # optional: warnings, optimality notes, etc.
 
@@ -92,7 +90,7 @@ class ChangeResult:
 # ──────────────────────────────────────────────────────────────────────────────
 # Guardrails & helpers
 # ──────────────────────────────────────────────────────────────────────────────
-def validate_coinset(coins: List[int]) -> None:
+def validate_coinset(coins: list[int]) -> None:
     if not coins or any(c <= 0 for c in coins):
         raise ValueError("Coins must be a non-empty list of positive integers (cents).")
     if len(set(coins)) != len(coins):
@@ -101,10 +99,10 @@ def validate_coinset(coins: List[int]) -> None:
         # Without gcd=1, some amounts are unreachable; I warn but allow.
         print("⚠️  gcd(coins) > 1; some targets may be unreachable.", file=sys.stderr)
 
-def normalize_combo(combo: List[int]) -> List[int]:
+def normalize_combo(combo: list[int]) -> list[int]:
     return sorted(combo, reverse=True)
 
-def pretty_combo(combo: List[int]) -> str:
+def pretty_combo(combo: list[int]) -> str:
     if not combo:
         return "∅"
     # collapse runs (e.g., 25×2 + 10×1 + 1×4)
@@ -118,14 +116,14 @@ def pretty_combo(combo: List[int]) -> str:
 # ──────────────────────────────────────────────────────────────────────────────
 # 1) Greedy baseline (descending coin choice)
 # ──────────────────────────────────────────────────────────────────────────────
-def change_greedy(coins: List[int], target: int) -> Optional[List[int]]:
+def change_greedy(coins: list[int], target: int) -> list[int] | None:
     """
     Descending coin pick. Great intuition, wrong in general.
     Returns a combo or None if unreachable.
     """
     coins = sorted(coins, reverse=True)
     remaining = target
-    out: List[int] = []
+    out: list[int] = []
     for c in coins:
         k, remaining = divmod(remaining, c)
         out.extend([c] * k)
@@ -137,7 +135,7 @@ def change_greedy(coins: List[int], target: int) -> Optional[List[int]]:
 # ──────────────────────────────────────────────────────────────────────────────
 # 2) Divide & Conquer (plain recursion): exponential, pedagogical
 # ──────────────────────────────────────────────────────────────────────────────
-def change_recursion(coins: List[int], target: int) -> Optional[List[int]]:
+def change_recursion(coins: list[int], target: int) -> list[int] | None:
     """
     Try all first moves (subtract a coin) and recurse; pick minimal length.
     Exponential without memoization; perfect for illustrating repeated work.
@@ -147,7 +145,7 @@ def change_recursion(coins: List[int], target: int) -> Optional[List[int]]:
     if target < 0:
         return None
 
-    best: Optional[List[int]] = None
+    best: list[int] | None = None
     for c in coins:
         sub = change_recursion(coins, target - c)
         if sub is not None:
@@ -160,13 +158,13 @@ def change_recursion(coins: List[int], target: int) -> Optional[List[int]]:
 # ──────────────────────────────────────────────────────────────────────────────
 # 3) Top-down DP (memoization): same recurrence, no repeats
 # ──────────────────────────────────────────────────────────────────────────────
-@lru_cache(maxsize=None)
-def _memo_inner(target: int, coin_tuple: Tuple[int, ...]) -> Optional[Tuple[int, ...]]:
+@cache
+def _memo_inner(target: int, coin_tuple: tuple[int, ...]) -> tuple[int, ...] | None:
     if target == 0:
         return tuple()
     if target < 0:
         return None
-    best: Optional[Tuple[int, ...]] = None
+    best: tuple[int, ...] | None = None
     for c in coin_tuple:
         sub = _memo_inner(target - c, coin_tuple)
         if sub is not None:
@@ -175,7 +173,7 @@ def _memo_inner(target: int, coin_tuple: Tuple[int, ...]) -> Optional[Tuple[int,
                 best = cand
     return best
 
-def change_memo(coins: List[int], target: int) -> Optional[List[int]]:
+def change_memo(coins: list[int], target: int) -> list[int] | None:
     _memo_inner.cache_clear()
     tup = tuple(sorted(coins))
     res = _memo_inner(target, tup)
@@ -185,7 +183,7 @@ def change_memo(coins: List[int], target: int) -> Optional[List[int]]:
 # ──────────────────────────────────────────────────────────────────────────────
 # 4) Bottom-up DP (tabulation + traceback)
 # ──────────────────────────────────────────────────────────────────────────────
-def change_bottomup(coins: List[int], target: int) -> Optional[List[int]]:
+def change_bottomup(coins: list[int], target: int) -> list[int] | None:
     """
     dp[v] = min #coins to reach value v; parent[v] = coin used last.
     """
@@ -201,7 +199,7 @@ def change_bottomup(coins: List[int], target: int) -> Optional[List[int]]:
     if math.isinf(dp[target]):
         return None
     # reconstruct
-    out: List[int] = []
+    out: list[int] = []
     v = target
     while v > 0:
         c = parent[v]
@@ -213,7 +211,7 @@ def change_bottomup(coins: List[int], target: int) -> Optional[List[int]]:
 # ──────────────────────────────────────────────────────────────────────────────
 # 5) BFS on the state graph (0 → target), each edge adds a coin (unit cost)
 # ──────────────────────────────────────────────────────────────────────────────
-def change_bfs(coins: List[int], target: int) -> Optional[List[int]]:
+def change_bfs(coins: list[int], target: int) -> list[int] | None:
     """
     Each node is a value (sum); start at 0; edges: +c for c in coins (if <= target).
     Uniform costs → BFS finds min edges = min #coins.
@@ -221,7 +219,7 @@ def change_bfs(coins: List[int], target: int) -> Optional[List[int]]:
     if target == 0:
         return []
     q = deque([0])
-    parent: Dict[int, Tuple[int, int]] = {0: (-1, -1)}  # value -> (prev, coin)
+    parent: dict[int, tuple[int, int]] = {0: (-1, -1)}  # value -> (prev, coin)
     while q:
         v = q.popleft()
         for c in coins:
@@ -231,7 +229,7 @@ def change_bfs(coins: List[int], target: int) -> Optional[List[int]]:
             parent[u] = (v, c)
             if u == target:
                 # reconstruct
-                out: List[int] = []
+                out: list[int] = []
                 cur = u
                 while cur != 0:
                     prev, coin = parent[cur]
@@ -245,7 +243,7 @@ def change_bfs(coins: List[int], target: int) -> Optional[List[int]]:
 # ──────────────────────────────────────────────────────────────────────────────
 # 6) Bitset layer-BFS: grow reachability by #coins using integer bit ops
 # ──────────────────────────────────────────────────────────────────────────────
-def change_bitset(coins: List[int], target: int, max_layers: Optional[int] = None) -> Optional[List[int]]:
+def change_bitset(coins: list[int], target: int, max_layers: int | None = None) -> list[int] | None:
     """
     Idea: Let R_k be a bitset where bit v is 1 if value v is reachable using ≤ k coins.
     Then R_{k+1} = OR over c in coins of (R_k << c). Find the smallest k with bit[target]=1.
@@ -260,7 +258,7 @@ def change_bitset(coins: List[int], target: int, max_layers: Optional[int] = Non
         max_layers = target
 
     # Reachability layers
-    layers: List[int] = []  # store bitsets for reconstruction
+    layers: list[int] = []  # store bitsets for reconstruction
     R = 1  # bit 0 set
     mask = (1 << (target + 1)) - 1  # keep within [0..target]
     goal_layer = -1
@@ -279,7 +277,7 @@ def change_bitset(coins: List[int], target: int, max_layers: Optional[int] = Non
         return None
 
     # Reconstruct by going backwards: at layer k, check which coin c yields membership in layer k-1
-    combo: List[int] = []
+    combo: list[int] = []
     v = target
     prev_R = 1  # R_0
     for k in range(goal_layer, 0, -1):
@@ -323,7 +321,7 @@ def change_bitset(coins: List[int], target: int, max_layers: Optional[int] = Non
 # ──────────────────────────────────────────────────────────────────────────────
 # Minimal counterexample finder: where Greedy != Optimal
 # ──────────────────────────────────────────────────────────────────────────────
-def first_greedy_failure(coins: List[int], limit: int = 500) -> Optional[Tuple[int, List[int], List[int]]]:
+def first_greedy_failure(coins: list[int], limit: int = 500) -> tuple[int, list[int], list[int]] | None:
     """
     Return the smallest amount ≤ limit where greedy differs from bottom-up optimal.
     """
@@ -340,7 +338,7 @@ def first_greedy_failure(coins: List[int], limit: int = 500) -> Optional[Tuple[i
 # ──────────────────────────────────────────────────────────────────────────────
 # Uniform runner + timing
 # ──────────────────────────────────────────────────────────────────────────────
-def run_method(label: str, fn, coins: List[int], target: int) -> ChangeResult:
+def run_method(label: str, fn, coins: list[int], target: int) -> ChangeResult:
     t0 = time.perf_counter()
     combo = fn(coins, target)
     dt = (time.perf_counter() - t0) * 1e3
@@ -348,7 +346,7 @@ def run_method(label: str, fn, coins: List[int], target: int) -> ChangeResult:
         return ChangeResult(label, coins, target, math.inf, [], dt, note="unreachable")
     return ChangeResult(label, coins, target, len(combo), normalize_combo(combo), dt)
 
-def print_table(rows: List[ChangeResult]) -> None:
+def print_table(rows: list[ChangeResult]) -> None:
     if RICH:
         table = Table(title="NCoins — Methods Comparison", box=box.SIMPLE_HEAVY)
         table.add_column("Method", style="bold")
@@ -371,7 +369,7 @@ def print_table(rows: List[ChangeResult]) -> None:
 # ──────────────────────────────────────────────────────────────────────────────
 # Game: Predict greedy correctness, guess minimal coin count
 # ──────────────────────────────────────────────────────────────────────────────
-def game(coins: List[int]) -> None:
+def game(coins: list[int]) -> None:
     """
     Short console game:
       • I draw a random target.
@@ -411,7 +409,7 @@ def game(coins: List[int]) -> None:
 # ──────────────────────────────────────────────────────────────────────────────
 # Main CLI
 # ──────────────────────────────────────────────────────────────────────────────
-def choose_coin_system() -> Tuple[str, List[int]]:
+def choose_coin_system() -> tuple[str, list[int]]:
     print("\nAvailable coin systems (cents):")
     keys = list(COIN_SYSTEMS.keys())
     for i, k in enumerate(keys, 1):
@@ -453,7 +451,7 @@ def main() -> int:
         ("Bitset layer-BFS", change_bitset),
     ]
 
-    rows: List[ChangeResult] = []
+    rows: list[ChangeResult] = []
     for label, fn in methods:
         try:
             rows.append(run_method(label, fn, coins, target))

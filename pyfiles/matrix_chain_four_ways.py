@@ -36,27 +36,27 @@ bottom–up utilities, and guardrails for real-world usage.
 
 from __future__ import annotations
 
+import functools
+import math
 import os
 import time
-import math
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
-def _hex_to_rgb(h: str) -> Tuple[int, int, int]:
+def _hex_to_rgb(h: str) -> tuple[int, int, int]:
     h = h.strip().lstrip("#")
     return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
 
-def _rgb_to_hex(rgb: Tuple[int, int, int]) -> str:
+def _rgb_to_hex(rgb: tuple[int, int, int]) -> str:
     return "#{:02X}{:02X}{:02X}".format(*rgb)
 
 def _lerp(a: int, b: int, t: float) -> int:
     return int(round(a + (b - a) * t))
 
-def make_ombre(start_hex: str, end_hex: str, n: int) -> List[str]:
+def make_ombre(start_hex: str, end_hex: str, n: int) -> list[str]:
     r1, g1, b1 = _hex_to_rgb(start_hex)
     r2, g2, b2 = _hex_to_rgb(end_hex)
     steps = []
@@ -65,7 +65,7 @@ def make_ombre(start_hex: str, end_hex: str, n: int) -> List[str]:
         steps.append(_rgb_to_hex((_lerp(r1, r2, t), _lerp(g1, g2, t), _lerp(b1, b2, t))))
     return steps
 
-def choose_palette() -> Dict[str, List[str]]:
+def choose_palette() -> dict[str, list[str]]:
     """
     Ask the user for a theme. Return ombré lists we’ll reuse consistently.
     """
@@ -92,7 +92,7 @@ def choose_palette() -> Dict[str, List[str]]:
     return {"scatter": scatter, "line": line, "heat": heat}
 
 
-def ensure_output_dir(path: Optional[str] = None) -> str:
+def ensure_output_dir(path: str | None = None) -> str:
     """
     Default: <Desktop>/MatrixChain_Outputs (cross-platform, OneDrive aware).
     """
@@ -111,7 +111,7 @@ def ensure_output_dir(path: Optional[str] = None) -> str:
     return str(out)
 
 
-def validate_dims(dims: List[int]) -> None:
+def validate_dims(dims: list[int]) -> None:
     """
     dims must be length n+1 and all positive. For A1..An, A_i has shape (dims[i], dims[i+1]).
     """
@@ -121,7 +121,7 @@ def validate_dims(dims: List[int]) -> None:
         raise ValueError("All dimensions must be positive integers")
     # Nothing else to enforce; chain validity is encoded by shared dims.
 
-def split_cost(dims: List[int], i: int, k: int, j: int) -> int:
+def split_cost(dims: list[int], i: int, k: int, j: int) -> int:
     """
     Cost of multiplying (Ai..Ak) by (A{k+1}..Aj) after the subproblems are solved:
     p_i * p_{k+1} * p_{j+1}
@@ -130,7 +130,7 @@ def split_cost(dims: List[int], i: int, k: int, j: int) -> int:
 
 
 # A) Brute force (enumerate all parenthesizations) — educational; n should be small.
-def brute_force_min_cost(dims: List[int]) -> Tuple[int, str, int]:
+def brute_force_min_cost(dims: list[int]) -> tuple[int, str, int]:
     """
     Return (min_cost, parenthesization_string, call_count).
     Exponential; safe for n <= ~10 (Catalan growth). We enforce a small guard.
@@ -140,13 +140,12 @@ def brute_force_min_cost(dims: List[int]) -> Tuple[int, str, int]:
         raise ValueError("Brute force is restricted to n<=10 for pedagogy. Use DP for larger n.")
 
     call_counter = 0
-    from functools import lru_cache
 
     def name(i: int) -> str:
         return f"A{i+1}"
 
-    @lru_cache(maxsize=None)
-    def best(i: int, j: int) -> Tuple[int, str]:
+    @functools.cache
+    def best(i: int, j: int) -> tuple[int, str]:
         nonlocal call_counter
         call_counter += 1
 
@@ -169,7 +168,7 @@ def brute_force_min_cost(dims: List[int]) -> Tuple[int, str, int]:
     return int(min_cost), expr, call_counter
 
 # B) Divide & Conquer with memoization (explicit cache + reconstruction)
-def topdown_memo(dims: List[int]) -> Tuple[int, List[List[int]]]:
+def topdown_memo(dims: list[int]) -> tuple[int, list[list[int]]]:
     """
     Return (min_cost, split_table).
     split_table[i][j] stores the argmin k that achieves dp[i][j].
@@ -207,7 +206,7 @@ def topdown_memo(dims: List[int]) -> Tuple[int, List[List[int]]]:
     return int(total), split  # dp table not returned to keep API compact
 
 # C) Bottom–up Dynamic Programming (tabulation) + reconstruction
-def bottomup_dp(dims: List[int]) -> Tuple[List[List[int]], List[List[int]]]:
+def bottomup_dp(dims: list[int]) -> tuple[list[list[int]], list[list[int]]]:
     """
     Build dp (min scalar multiplies) and split (argmin k) tables.
     dp[i][i] = 0; dp[i][j] = min_k dp[i][k] + dp[k+1][j] + p_i*p_{k+1}*p_{j+1}
@@ -228,7 +227,7 @@ def bottomup_dp(dims: List[int]) -> Tuple[List[List[int]], List[List[int]]]:
             split[i][j] = best_k
     return dp, split
 
-def reconstruct(split: List[List[int]], i: int, j: int) -> str:
+def reconstruct(split: list[list[int]], i: int, j: int) -> str:
     """Return parenthesization string using the split table."""
     if i == j:
         return f"A{i+1}"
@@ -236,7 +235,7 @@ def reconstruct(split: List[List[int]], i: int, j: int) -> str:
     return f"({reconstruct(split, i, k)} × {reconstruct(split, k + 1, j)})"
 
 # D) A simple greedy pitfall: always split where the immediate multiplication p_i * p_{k+1} * p_{j+1} is smallest
-def greedy_bad(dims: List[int]) -> Tuple[int, str]:
+def greedy_bad(dims: list[int]) -> tuple[int, str]:
     """
     Not optimal in general. Demonstrates why "local best" can be globally bad.
     """
@@ -268,8 +267,8 @@ def greedy_bad(dims: List[int]) -> Tuple[int, str]:
     return int(total_cost), exprs[0]
 
 
-def save_bar_all_parenthesizations(labels: List[str], costs: List[int], best_idx: int,
-                                   palette: Dict[str, List[str]], outdir: str, tag: str) -> None:
+def save_bar_all_parenthesizations(labels: list[str], costs: list[int], best_idx: int,
+                                   palette: dict[str, list[str]], outdir: str, tag: str) -> None:
     plt.figure(figsize=(10, 5.2))
     xs = np.arange(len(labels))
     # color bars with ombré
@@ -288,8 +287,8 @@ def save_bar_all_parenthesizations(labels: List[str], costs: List[int], best_idx
     plt.savefig(path, dpi=180); plt.close()
     print(f"Saved {path} — (learn: grouping changes cost dramatically)")
 
-def save_heatmap_dp(dp: List[List[int]], split: List[List[int]],
-                    palette: Dict[str, List[str]], outdir: str, tag: str) -> None:
+def save_heatmap_dp(dp: list[list[int]], split: list[list[int]],
+                    palette: dict[str, list[str]], outdir: str, tag: str) -> None:
     arr = np.array(dp, dtype=float)
     n = arr.shape[0]
     # log-scale to make contrast visible if values vary widely
@@ -321,7 +320,7 @@ def save_heatmap_dp(dp: List[List[int]], split: List[List[int]],
     print(f"Saved {path} — (learn: how DP fills and where each split occurs)")
 
 def save_callcount_plot(naive_calls: int, memo_calls: int,
-                        palette: Dict[str, List[str]], outdir: str, tag: str) -> None:
+                        palette: dict[str, list[str]], outdir: str, tag: str) -> None:
     plt.figure(figsize=(6, 4.2))
     cats = ["Naive recursion", "Memoized (top–down)"]
     vals = [naive_calls, memo_calls]
@@ -336,7 +335,7 @@ def save_callcount_plot(naive_calls: int, memo_calls: int,
     plt.savefig(path, dpi=180); plt.close()
     print(f"Saved {path} — (learn: DP collapses repeated work)")
 
-def time_actual_multiply(dims: List[int], expr: str, trials: int = 3) -> float:
+def time_actual_multiply(dims: list[int], expr: str, trials: int = 3) -> float:
     """
     Build random matrices matching dims and multiply according to the parenthesization string.
     This is for sanity (cost ↔ runtime). For clarity we parse the expression recursively.
@@ -376,8 +375,8 @@ def time_actual_multiply(dims: List[int], expr: str, trials: int = 3) -> float:
         best = min(best, dt)
     return best
 
-def save_timing_compare(dims: List[int], best_expr: str, greedy_expr: str,
-                        palette: Dict[str, List[str]], outdir: str, tag: str) -> None:
+def save_timing_compare(dims: list[int], best_expr: str, greedy_expr: str,
+                        palette: dict[str, list[str]], outdir: str, tag: str) -> None:
     t_best = time_actual_multiply(dims, best_expr)
     t_greedy = time_actual_multiply(dims, greedy_expr)
     plt.figure(figsize=(6.2, 4.2))
@@ -401,7 +400,7 @@ def main() -> int:
     outdir = ensure_output_dir()
 
     # Example chains to mirror your outline (you can edit or extend):
-    examples: Dict[str, List[int]] = {
+    examples: dict[str, list[int]] = {
         # A(20×2), B(2×30), C(30×12), D(12×8)
         "ABCD_prompt": [20, 2, 30, 12, 8],
         # A1(10×4), A2(4×5), A3(5×20), A4(20×2)
@@ -426,7 +425,7 @@ def main() -> int:
     # Build labels & costs for figure (only when n is small enough to enumerate)
     labels, costs = [], []
     # Re-enumerate to collect all options for plotting
-    def enumerate_all(i: int, j: int) -> List[Tuple[str, int]]:
+    def enumerate_all(i: int, j: int) -> list[tuple[str, int]]:
         if i == j:
             return [(f"A{i+1}", 0)]
         res = []
@@ -480,7 +479,7 @@ def main() -> int:
     return 0
 
 
-def count_calls_naive(dims: List[int]) -> int:
+def count_calls_naive(dims: list[int]) -> int:
     n = len(dims) - 1
     calls = 0
     def solve(i: int, j: int) -> int:
@@ -495,11 +494,10 @@ def count_calls_naive(dims: List[int]) -> int:
     _ = solve(0, n - 1)
     return calls
 
-def count_calls_memoized(dims: List[int]) -> int:
+def count_calls_memoized(dims: list[int]) -> int:
     n = len(dims) - 1
     calls = 0
-    from functools import lru_cache
-    @lru_cache(maxsize=None)
+    @functools.cache
     def solve(i: int, j: int) -> int:
         nonlocal calls
         calls += 1

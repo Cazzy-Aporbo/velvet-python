@@ -19,17 +19,16 @@ from __future__ import annotations
 
 import argparse
 import csv
-import io
 import json
 import os
 import random
 import sys
 import textwrap
 import time
-from typing import Dict, Iterable, List, Sequence, Tuple
+from collections.abc import Sequence
 
 # Q&A Bank - Data Science and Machine Learning Questions
-QA_BANK: List[Tuple[str, str]] = [
+QA_BANK: list[tuple[str, str]] = [
     ("1) How can you build a simple logistic regression model in Python?",
      "Use sklearn.linear_model.LogisticRegression: instantiate and fit on features/labels."),
     ("2) How can you train and interpret a linear regression model in SciKit learn?",
@@ -211,12 +210,12 @@ def safe_write_text(path: str, content: str) -> bool:
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
         return True
-    except (OSError, IOError):
+    except OSError:
         return False
 
 
 # Game mechanics
-def _choice_options(correct_ans: str, all_answers: Sequence[str], k: int = 4) -> List[str]:
+def _choice_options(correct_ans: str, all_answers: Sequence[str], k: int = 4) -> list[str]:
     """Generate multiple choice options including the correct answer"""
     pool = [x for x in all_answers if normalize(x) != normalize(correct_ans)]
     if len(pool) >= k - 1:
@@ -228,7 +227,7 @@ def _choice_options(correct_ans: str, all_answers: Sequence[str], k: int = 4) ->
     return opts
 
 
-def _parse_range(rng: str | None) -> Tuple[int | None, int | None]:
+def _parse_range(rng: str | None) -> tuple[int | None, int | None]:
     """Parse a range string like '1-30' into tuple (1, 30)"""
     if not rng:
         return None, None
@@ -239,12 +238,12 @@ def _parse_range(rng: str | None) -> Tuple[int | None, int | None]:
         return None, None
 
 
-def _subset_by_range(full: List[Tuple[str, str]], rng: str | None) -> List[Tuple[str, str]]:
+def _subset_by_range(full: list[tuple[str, str]], rng: str | None) -> list[tuple[str, str]]:
     """Filter questions by numeric range"""
     lo, hi = _parse_range(rng)
     if lo is None or hi is None:
         return full.copy()
-    subset: List[Tuple[str, str]] = []
+    subset: list[tuple[str, str]] = []
     for q, a in full:
         # Extract leading number like "12) ..."
         prefix = q.split(")", 1)[0].strip()
@@ -255,7 +254,7 @@ def _subset_by_range(full: List[Tuple[str, str]], rng: str | None) -> List[Tuple
 
 
 # Game Modes
-def mode_review(pool: List[Tuple[str, str]], limit: int | None = None, delay: float = 0.0) -> Tuple[int, int]:
+def mode_review(pool: list[tuple[str, str]], limit: int | None = None, delay: float = 0.0) -> tuple[int, int]:
     """Non-interactive review mode: show Q then A"""
     total = 0
     for i, (q, a) in enumerate(pool, 1):
@@ -271,7 +270,7 @@ def mode_review(pool: List[Tuple[str, str]], limit: int | None = None, delay: fl
     return total, total
 
 
-def mode_flashcards(pool: List[Tuple[str, str]], limit: int | None = None) -> Tuple[int, int]:
+def mode_flashcards(pool: list[tuple[str, str]], limit: int | None = None) -> tuple[int, int]:
     """Interactive flashcard mode with self-marking"""
     random.shuffle(pool)
     correct = 0
@@ -291,7 +290,7 @@ def mode_flashcards(pool: List[Tuple[str, str]], limit: int | None = None) -> Tu
     return correct, total
 
 
-def mode_multiple_choice(pool: List[Tuple[str, str]], limit: int | None = None) -> Tuple[int, int]:
+def mode_multiple_choice(pool: list[tuple[str, str]], limit: int | None = None) -> tuple[int, int]:
     """Multiple choice quiz mode"""
     all_answers = [a for _, a in pool]
     random.shuffle(pool)
@@ -321,15 +320,15 @@ def mode_multiple_choice(pool: List[Tuple[str, str]], limit: int | None = None) 
     return correct, total
 
 
-def mode_typing(pool: List[Tuple[str, str]], limit: int | None = None, 
-                export_misses: str | None = None, save: bool = True) -> Tuple[int, int]:
+def mode_typing(pool: list[tuple[str, str]], limit: int | None = None,
+                export_misses: str | None = None, save: bool = True) -> tuple[int, int]:
     """Type-the-answer mode with miss tracking"""
     random.shuffle(pool)
     correct = 0
     total = 0
-    misses: List[Dict[str, str]] = []
+    misses: list[dict[str, str]] = []
     start = time.time()
-    
+
     for i, (q, a) in enumerate(pool, 1):
         if limit and i > limit:
             break
@@ -337,7 +336,7 @@ def mode_typing(pool: List[Tuple[str, str]], limit: int | None = None,
         print(f"[{i}] TYPE THE ANSWER")
         print("Q:", wrap(q))
         guess = safe_input("A: ", default=None)
-        
+
         if guess is None:
             # Non-interactive: reveal answer
             print("Answer:", wrap(a))
@@ -351,35 +350,35 @@ def mode_typing(pool: List[Tuple[str, str]], limit: int | None = None,
                 print("Answer:", wrap(a))
                 misses.append({"question": q, "your_answer": guess, "answer": a})
         total += 1
-    
+
     dur = time.time() - start
     print(f"\nCompleted {total} questions in {dur:.1f}s. Correct: {correct}")
-    
+
     if misses and save:
         _save_session({"mode": "typing", "score": correct, "total": total, "misses": misses})
         if export_misses:
             _export_misses_csv(misses, export_misses)
-    
+
     return correct, total
 
 
 # Persistence
-def _save_session(payload: Dict[str, object]) -> None:
+def _save_session(payload: dict[str, object]) -> None:
     """Save session results to JSON"""
     try:
-        hist: List[Dict[str, object]] = []
+        hist: list[dict[str, object]] = []
         if os.path.exists(RESULTS_FILE):
-            with open(RESULTS_FILE, "r", encoding="utf-8") as f:
+            with open(RESULTS_FILE, encoding="utf-8") as f:
                 hist = json.load(f)
         hist.append(payload)
         with open(RESULTS_FILE, "w", encoding="utf-8") as f:
             json.dump(hist, f, indent=2)
-    except (OSError, IOError):
+    except OSError:
         # Filesystem may be read-only; skip silently
         pass
 
 
-def _export_misses_csv(misses: List[Dict[str, str]], path: str) -> None:
+def _export_misses_csv(misses: list[dict[str, str]], path: str) -> None:
     """Export missed questions to CSV"""
     try:
         with open(path, "w", newline="", encoding="utf-8") as f:
@@ -388,7 +387,7 @@ def _export_misses_csv(misses: List[Dict[str, str]], path: str) -> None:
             for row in misses:
                 w.writerow(row)
         print(f"Misses exported to {path}")
-    except (OSError, IOError):
+    except OSError:
         print("Could not write misses CSV (environment blocked)")
 
 
@@ -399,8 +398,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="DS/ML Flashcards + Quiz - interactive and sandbox-safe"
     )
     p.add_argument(
-        "--mode", 
-        choices=["auto", "review", "flashcards", "mc", "typing"], 
+        "--mode",
+        choices=["auto", "review", "flashcards", "mc", "typing"],
         default="auto",
         help="auto picks 'review' if stdin not TTY; otherwise interactive menu"
     )
@@ -414,7 +413,7 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
-def run_menu(selected_pool: List[Tuple[str, str]]) -> None:
+def run_menu(selected_pool: list[tuple[str, str]]) -> None:
     """Interactive menu for mode selection"""
     while True:
         print("\nChoose a mode:")
@@ -423,12 +422,12 @@ def run_menu(selected_pool: List[Tuple[str, str]]) -> None:
         print("  3) Type the Answer")
         print("  4) Quit")
         choice = safe_input("> ", default=None)
-        
+
         if choice is None:
             print("No interactive input available. Switching to REVIEW mode.")
             mode_review(selected_pool)
             return
-        
+
         choice = choice.strip()
         if choice == "4":
             print("Good luck with your studies!")
@@ -446,23 +445,23 @@ def run_menu(selected_pool: List[Tuple[str, str]]) -> None:
 def main(argv: Sequence[str] | None = None) -> int:
     """Main entry point"""
     args = build_parser().parse_args(argv)
-    
+
     if args.selftest:
         return _run_tests()
-    
+
     if args.seed is not None:
         random.seed(args.seed)
-    
+
     pool = _subset_by_range(QA_BANK, args.qrange)
     if args.limit is not None and args.limit > 0:
         pool = pool[:args.limit]
-    
+
     # Determine operating mode
     stdin_tty = bool(sys.stdin and sys.stdin.isatty())
     mode = args.mode
     if mode == "auto":
         mode = "menu" if stdin_tty else "review"
-    
+
     if mode == "menu":
         run_menu(pool)
         return 0
@@ -487,21 +486,21 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _run_tests() -> int:
     """Run built-in test suite"""
     failures = 0
-    
+
     # Test normalize
     a = normalize("  Hello\nWorld  ")
     b = normalize("hello world")
     if a != b:
         print("TEST normalize FAILED")
         failures += 1
-    
+
     # Test choice options
     correct = "Answer X"
     options = _choice_options(correct, ["A", "B", correct, "D"], k=4)
     if correct not in options or len(options) != 4:
         print("TEST choice options FAILED")
         failures += 1
-    
+
     # Test parse range
     if _parse_range("5-10") != (5, 10):
         print("TEST parse range FAILED")
@@ -509,7 +508,7 @@ def _run_tests() -> int:
     if _parse_range("invalid") != (None, None):
         print("TEST parse range invalid FAILED")
         failures += 1
-    
+
     # Test subset by range
     sample = [("X) no number", "a"), ("2) two", "b"), ("9) nine", "c")]
     sub = _subset_by_range(sample, "3-9")
@@ -517,19 +516,19 @@ def _run_tests() -> int:
     if "X) no number" not in labels or "2) two" in labels or "9) nine" not in labels:
         print("TEST subset by range FAILED")
         failures += 1
-    
+
     # Test review mode
     total = 3
     t1, t2 = mode_review([("q1", "a1"), ("q2", "a2"), ("q3", "a3")], limit=total)
     if (t1, t2) != (total, total):
         print("TEST review mode FAILED")
         failures += 1
-    
+
     if failures == 0:
         print("All tests passed successfully!")
     else:
         print(f"{failures} test(s) failed.")
-    
+
     return failures
 
 

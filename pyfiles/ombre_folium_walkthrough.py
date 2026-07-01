@@ -34,23 +34,29 @@ CITATIONS (documentation):
 Author: Cazzy Aporbo
 """
 
-import json
 import csv
-import os
+import json
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Any
 
 import folium
-from folium import Map, Marker, Circle, GeoJson, Choropleth
-from folium.features import DivIcon
-from folium.plugins import MarkerCluster, MiniMap, Fullscreen, MeasureControl, Draw, FloatImage, MousePosition
 from branca.colormap import LinearColormap
+from folium import Choropleth, Circle, GeoJson, Map, Marker
+from folium.features import DivIcon
+from folium.plugins import (
+    Draw,
+    Fullscreen,
+    MarkerCluster,
+    MeasureControl,
+    MiniMap,
+    MousePosition,
+)
 
 
-# 
+#
 # 0) Shared pastel ombré palette + small helpers
-# 
-def ombre_pastel_palette_cazzy() -> Dict[str, str]:
+#
+def ombre_pastel_palette_cazzy() -> dict[str, str]:
     """
     My project palette (soft pastels). I keep hexes human-readable and on-brand.
     """
@@ -74,7 +80,7 @@ def ombre_linear_colormap_cazzy() -> LinearColormap:
     """
     A left-to-right ombré for scalar data (pastel sweep). I set a caption later.
     """
-    shades: List[str] = ["#FFD6E8", "#E6CCFF", "#C6FFF7", "#A6D8FF"]
+    shades: list[str] = ["#FFD6E8", "#E6CCFF", "#C6FFF7", "#A6D8FF"]
     cmap = LinearColormap(colors=shades, vmin=0.0, vmax=1.0)
     return cmap
 
@@ -87,9 +93,9 @@ def write_html_and_print_path_cazzy(the_map: folium.Map, filename: str) -> None:
     print(f"[saved] {filename}")
 
 
-# 
+#
 # 1) Beginner: a first, friendly map (center, zoom, tiles, labels)
-# 
+#
 def build_simple_intro_map_cazzy() -> None:
     """
     I start with the simplest mental model: a map is a canvas.
@@ -133,9 +139,9 @@ def build_simple_intro_map_cazzy() -> None:
     write_html_and_print_path_cazzy(map_canvas_intro_cazzy, "01_basics_pastel_map.html")
 
 
-# 
+#
 # 2) Beginner → Intermediate: markers, tooltips, popups, circles
-# 
+#
 def build_markers_and_popups_map_cazzy() -> None:
     """
     Now I layer points, tooltips, and popups. I also use Circle for numeric radius.
@@ -151,7 +157,7 @@ def build_markers_and_popups_map_cazzy() -> None:
 
     # A small set of interesting points with varying styles.
     # I keep names unique and transparent.
-    points_of_interest_cazzy: List[Tuple[str, float, float]] = [
+    points_of_interest_cazzy: list[tuple[str, float, float]] = [
         ("City Hall", 37.7793, -122.4193),
         ("Golden Gate Park", 37.7694, -122.4862),
         ("Ferry Building", 37.7955, -122.3937),
@@ -189,9 +195,9 @@ def build_markers_and_popups_map_cazzy() -> None:
     write_html_and_print_path_cazzy(map_canvas_markers_cazzy, "02_markers_popups_pastel_map.html")
 
 
-# 
+#
 # 3) Intermediate: choropleth with built-in Folium.Choropleth
-# 
+#
 def build_builtin_choropleth_map_cazzy(
     optional_geojson_path_cazzy: str = "",
     optional_csv_path_cazzy: str = ""
@@ -211,12 +217,12 @@ def build_builtin_choropleth_map_cazzy(
     )
 
     # Option A: real files if provided
-    geojson_data_to_use_cazzy: Dict[str, Any]
+    geojson_data_to_use_cazzy: dict[str, Any]
     key_name_field_cazzy: str = "name"
-    data_rows_for_choro_cazzy: List[Tuple[str, float]] = []
+    data_rows_for_choro_cazzy: list[tuple[str, float]] = []
 
     if optional_geojson_path_cazzy and Path(optional_geojson_path_cazzy).exists():
-        with open(optional_geojson_path_cazzy, "r", encoding="utf-8") as f_in:
+        with open(optional_geojson_path_cazzy, encoding="utf-8") as f_in:
             geojson_data_to_use_cazzy = json.load(f_in)
         # If CSV provided, read it (State, Value)
         if optional_csv_path_cazzy and Path(optional_csv_path_cazzy).exists():
@@ -302,9 +308,9 @@ def build_builtin_choropleth_map_cazzy(
     write_html_and_print_path_cazzy(base_map_choro_cazzy, "03_choropleth_builtin_pastel_map.html")
 
 
-# 
+#
 # 4) Intermediate → Advanced: a custom choropleth with GeoJson + style_function
-# 
+#
 def build_custom_choropleth_map_cazzy() -> None:
     """
     Here I avoid pandas entirely and style polygons myself with a function.
@@ -345,13 +351,13 @@ def build_custom_choropleth_map_cazzy() -> None:
     }
 
     # Here are the scalar values I'll visualize.
-    toy_scalar_values_cazzy: Dict[str, float] = {"Alpha": 0.25, "Beta": 0.55, "Gamma": 0.9}
+    toy_scalar_values_cazzy: dict[str, float] = {"Alpha": 0.25, "Beta": 0.55, "Gamma": 0.9}
 
     # Build a pastel colormap and define how to style each polygon.
     pastel_scale_cazzy = ombre_linear_colormap_cazzy()
     pastel_scale_cazzy.caption = "Custom Pastel Ombré (0 → 1)"
 
-    def style_function_cazzy(feature: Dict[str, Any]) -> Dict[str, Any]:
+    def style_function_cazzy(feature: dict[str, Any]) -> dict[str, Any]:
         region_name = feature.get("properties", {}).get("name", "")
         val = toy_scalar_values_cazzy.get(region_name, 0.0)
         color_fill = pastel_scale_cazzy(val)
@@ -362,7 +368,7 @@ def build_custom_choropleth_map_cazzy() -> None:
             "fillOpacity": 0.75
         }
 
-    def highlight_function_cazzy(feature: Dict[str, Any]) -> Dict[str, Any]:
+    def highlight_function_cazzy(feature: dict[str, Any]) -> dict[str, Any]:
         return {"weight": 3, "color": palette["ombre_purple_text"]}
 
     # Docs: https://python-visualization.github.io/folium/latest/user_guide/vector_layers/geojson.html
@@ -384,9 +390,9 @@ def build_custom_choropleth_map_cazzy() -> None:
     write_html_and_print_path_cazzy(map_canvas_custom_cazzy, "04_choropleth_custom_pastel_map.html")
 
 
-# 
+#
 # 5) Advanced → Expert: layered controls, drawing tools, measurement, clustering
-# 
+#
 def build_advanced_controls_map_cazzy() -> None:
     """
     At this level I combine multiple interaction patterns:
@@ -402,7 +408,7 @@ def build_advanced_controls_map_cazzy() -> None:
     complex_map_cazzy: Map = Map(location=[39.5, -98.35], zoom_start=4, tiles="CartoDB positron")
 
     # A grid of synthetic points to make clustering obvious
-    synthetic_points_cazzy: List[Tuple[float, float, str]] = []
+    synthetic_points_cazzy: list[tuple[float, float, str]] = []
     for lat_seed in [36.5, 37.0, 37.5, 38.0, 38.5]:
         for lon_seed in [-123.0, -122.5, -122.0, -121.5, -121.0]:
             synthetic_points_cazzy.append((lat_seed, lon_seed, f"Point {lat_seed:.1f},{lon_seed:.1f}"))
@@ -449,7 +455,7 @@ def build_advanced_controls_map_cazzy() -> None:
 
 
 # Main: I run each stage so you can open and compare the HTML outputs.
-# 
+#
 def main_cazzy():
     build_simple_intro_map_cazzy()
     build_markers_and_popups_map_cazzy()

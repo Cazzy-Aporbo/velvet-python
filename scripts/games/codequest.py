@@ -1,9 +1,9 @@
-import random
+import hashlib
 import json
 import os
-import time
-from datetime import datetime, timedelta
-import hashlib
+import random
+from datetime import datetime
+
 
 class Player:
     def __init__(self, name):
@@ -18,12 +18,12 @@ class Player:
         self.last_played = None
         self.inventory = {"hints": 3, "skip_tokens": 1}
         self.stats = {"problems_solved": 0, "bugs_fixed": 0, "speed_records": 0}
-        
+
     def gain_xp(self, amount):
         self.xp += amount
         if self.xp >= self.xp_to_next_level:
             self.level_up()
-    
+
     def level_up(self):
         self.level += 1
         self.xp -= self.xp_to_next_level
@@ -31,7 +31,7 @@ class Player:
         self.inventory["hints"] += 1
         print(f"\n*** LEVEL UP! You are now level {self.level}! ***")
         print(f"You gained an extra hint! Total hints: {self.inventory['hints']}")
-        
+
     def get_title(self):
         if self.level <= 10:
             return "Novice Coder"
@@ -76,7 +76,7 @@ class CodeQuest:
             "Framework Fortress": {"unlocked": False, "level_req": 70}
         }
         self.quests = self.initialize_quests()
-        
+
     def initialize_quests(self):
         return {
             "Variable Valley": [
@@ -225,14 +225,14 @@ class CodeQuest:
                 )
             ]
         }
-    
+
     def start_game(self):
         print()
         print("    WELCOME TO CODEQUEST: THE PYTHON ODYSSEY")
         print()
         print("\nEmbark on an epic journey to master Python programming!")
         print("Battle code challenges, level up your skills, and become a Python Archmage!")
-        
+
         if os.path.exists(self.save_file):
             choice = input("\nFound existing save file. Load game? (y/n): ").lower()
             if choice == 'y':
@@ -241,10 +241,10 @@ class CodeQuest:
                 self.create_new_player()
         else:
             self.create_new_player()
-        
+
         self.check_daily_streak()
         self.main_menu()
-    
+
     def create_new_player(self):
         name = input("\nEnter your wizard name: ").strip()
         if not name:
@@ -252,7 +252,7 @@ class CodeQuest:
         self.player = Player(name)
         print(f"\nWelcome, {name}! Your journey begins in the Variable Valley...")
         self.save_game()
-    
+
     def main_menu(self):
         while True:
             self.update_kingdom_access()
@@ -262,7 +262,7 @@ class CodeQuest:
             print(f"  Current Kingdom: {self.player.current_kingdom}")
             print(f"  Streak: {self.player.streak_days} days")
             print(f"{'='*50}")
-            
+
             print("\n1. Start Quest")
             print("2. Travel to Kingdom")
             print("3. View Stats")
@@ -270,9 +270,9 @@ class CodeQuest:
             print("5. Daily Challenge")
             print("6. Inventory")
             print("7. Save & Quit")
-            
+
             choice = input("\nChoose your action: ").strip()
-            
+
             if choice == '1':
                 self.start_quest()
             elif choice == '2':
@@ -291,36 +291,36 @@ class CodeQuest:
                 break
             else:
                 print("Invalid choice! Try again.")
-    
+
     def start_quest(self):
         available_quests = self.get_available_quests()
         if not available_quests:
             print(f"\nNo more quests available in {self.player.current_kingdom}!")
             print("Try traveling to a new kingdom or complete more challenges.")
             return
-        
+
         quest = random.choice(available_quests)
         self.current_quest = quest
-        
+
         print(f"\n{'='*50}")
         print(f"  QUEST: {quest.title}")
         print(f"{'='*50}")
         print(f"\n{quest.description}")
-        print(f"\nCHALLENGE:")
+        print("\nCHALLENGE:")
         print(f"{quest.challenge}")
         print(f"\nReward: {quest.xp_reward} XP")
         print(f"Attempts remaining: {quest.max_attempts - quest.attempts}")
-        
+
         self.code_challenge()
-    
+
     def code_challenge(self):
         quest = self.current_quest
-        
+
         while quest.attempts < quest.max_attempts:
             print(f"\n{'-'*30}")
             print("Write your Python code (type 'hint' for help, 'skip' to skip):")
             print("Press Enter twice when finished.")
-            
+
             code_lines = []
             while True:
                 line = input(">>> " if not code_lines else "... ")
@@ -338,9 +338,9 @@ class CodeQuest:
                     continue
                 else:
                     code_lines.append(line)
-            
+
             user_code = '\n'.join(code_lines)
-            
+
             if self.evaluate_code(user_code, quest):
                 self.quest_success()
                 return
@@ -355,63 +355,63 @@ class CodeQuest:
                     print("You still gain some experience for trying!")
                     self.player.gain_xp(quest.xp_reward // 4)
                     return
-    
+
     def evaluate_code(self, user_code, quest):
         # Simple evaluation - check if solution keywords are present
         user_code_lower = user_code.lower()
         required_keywords = quest.solution
-        
+
         # Count how many required elements are present
         matches = 0
         for keyword in required_keywords:
             if keyword.lower() in user_code_lower:
                 matches += 1
-        
+
         # Need at least 70% of keywords to pass
         success_rate = matches / len(required_keywords)
-        
+
         # Try to execute the code safely (basic check)
         try:
             # Create a safe execution environment
             safe_globals = {
                 '__builtins__': {
-                    'print': print, 'len': len, 'range': range, 
+                    'print': print, 'len': len, 'range': range,
                     'str': str, 'int': int, 'float': float,
                     'list': list, 'dict': dict, 'set': set,
                     'True': True, 'False': False
                 }
             }
-            
+
             # Execute in safe environment
             exec(user_code, safe_globals)
             syntax_valid = True
         except:
             syntax_valid = False
             print("Code has syntax errors or uses restricted functions!")
-        
+
         return success_rate >= 0.7 and syntax_valid
-    
+
     def quest_success(self):
         quest = self.current_quest
-        print(f"\n*** QUEST COMPLETED! ***")
+        print("\n*** QUEST COMPLETED! ***")
         print(f"Excellent work! You've mastered: {quest.title}")
-        
+
         # Calculate bonus XP for fewer attempts
         bonus_xp = (quest.max_attempts - quest.attempts) * 25
         total_xp = quest.xp_reward + bonus_xp
-        
+
         self.player.gain_xp(total_xp)
         self.player.completed_quests.append(f"{quest.kingdom}:{quest.title}")
         self.player.stats["problems_solved"] += 1
-        
+
         if bonus_xp > 0:
             print(f"Bonus XP for efficiency: +{bonus_xp}")
         print(f"Total XP gained: {total_xp}")
-        
+
         # Check for achievements
         self.check_achievements()
         self.save_game()
-    
+
     def use_hint(self):
         if self.player.inventory["hints"] > 0:
             self.player.inventory["hints"] -= 1
@@ -419,7 +419,7 @@ class CodeQuest:
             print(f"Hints remaining: {self.player.inventory['hints']}")
         else:
             print("\nNo hints available! Gain more by leveling up.")
-    
+
     def use_skip(self):
         if self.player.inventory["skip_tokens"] > 0:
             choice = input("Use skip token? This will complete the quest but give reduced XP (y/n): ")
@@ -432,35 +432,35 @@ class CodeQuest:
         else:
             print("No skip tokens available!")
         return False
-    
+
     def get_available_quests(self):
         kingdom_quests = self.quests.get(self.player.current_kingdom, [])
-        completed_quest_names = [q.split(':')[1] for q in self.player.completed_quests 
+        completed_quest_names = [q.split(':')[1] for q in self.player.completed_quests
                                if q.startswith(self.player.current_kingdom)]
-        
+
         available = [q for q in kingdom_quests if q.title not in completed_quest_names]
         return available
-    
+
     def travel_menu(self):
         print(f"\n{'='*40}")
         print("    KINGDOM TRAVEL")
         print(f"{'='*40}")
-        
+
         for i, (kingdom, info) in enumerate(self.kingdoms.items(), 1):
             status = "UNLOCKED" if info["unlocked"] else f"LOCKED (Level {info['level_req']} required)"
             current = " <- CURRENT" if kingdom == self.player.current_kingdom else ""
             print(f"{i}. {kingdom} - {status}{current}")
-        
+
         print(f"{len(self.kingdoms) + 1}. Back to Main Menu")
-        
+
         try:
             choice = int(input("\nChoose kingdom: "))
             if choice == len(self.kingdoms) + 1:
                 return
-            
+
             kingdom_name = list(self.kingdoms.keys())[choice - 1]
             kingdom_info = self.kingdoms[kingdom_name]
-            
+
             if kingdom_info["unlocked"]:
                 self.player.current_kingdom = kingdom_name
                 print(f"\nTraveling to {kingdom_name}...")
@@ -470,14 +470,14 @@ class CodeQuest:
                 print(f"\nKingdom locked! Reach level {kingdom_info['level_req']} to unlock.")
         except (ValueError, IndexError):
             print("Invalid choice!")
-    
+
     def update_kingdom_access(self):
         for kingdom, info in self.kingdoms.items():
             if self.player.level >= info["level_req"]:
                 if not info["unlocked"]:
                     info["unlocked"] = True
                     print(f"\n*** NEW KINGDOM UNLOCKED: {kingdom}! ***")
-    
+
     def show_stats(self):
         print(f"\n{'='*40}")
         print(f"    {self.player.name}'s STATISTICS")
@@ -490,41 +490,41 @@ class CodeQuest:
         print(f"Bugs Fixed: {self.player.stats['bugs_fixed']}")
         print(f"Daily Streak: {self.player.streak_days} days")
         print(f"Achievements: {len(self.player.achievements)}")
-        
+
         input("\nPress Enter to continue...")
-    
+
     def show_achievements(self):
         print(f"\n{'='*40}")
         print("    ACHIEVEMENTS")
         print(f"{'='*40}")
-        
+
         if not self.player.achievements:
             print("No achievements yet! Complete quests to earn them.")
         else:
             for achievement in self.player.achievements:
                 print(f"* {achievement}")
-        
+
         input("\nPress Enter to continue...")
-    
+
     def show_inventory(self):
         print(f"\n{'='*40}")
         print("    INVENTORY")
         print(f"{'='*40}")
         print(f"Hints: {self.player.inventory['hints']}")
         print(f"Skip Tokens: {self.player.inventory['skip_tokens']}")
-        
+
         input("\nPress Enter to continue...")
-    
+
     def daily_challenge(self):
         print(f"\n{'='*40}")
         print("    DAILY CHALLENGE")
         print(f"{'='*40}")
-        
+
         # Simple daily challenge - changes based on date
         today = datetime.now().strftime("%Y-%m-%d")
         challenge_seed = int(hashlib.md5(today.encode()).hexdigest()[:8], 16)
         random.seed(challenge_seed)
-        
+
         challenges = [
             "Write a function that returns the sum of all even numbers from 1 to 20",
             "Create a list comprehension that squares all odd numbers from 1 to 10",
@@ -532,12 +532,12 @@ class CodeQuest:
             "Create a function that checks if a number is prime",
             "Write code that reverses a string without using built-in reverse functions"
         ]
-        
+
         daily_quest = random.choice(challenges)
         print(f"Today's Challenge: {daily_quest}")
-        print(f"Reward: 200 XP + Streak Bonus")
+        print("Reward: 200 XP + Streak Bonus")
         print(f"Current Streak: {self.player.streak_days} days")
-        
+
         if f"daily_{today}" in self.player.completed_quests:
             print("\nYou've already completed today's challenge!")
             print("Come back tomorrow for a new challenge!")
@@ -546,7 +546,7 @@ class CodeQuest:
             if choice.lower() == 'y':
                 print("\nWrite your solution:")
                 code = input(">>> ")
-                
+
                 # Simple validation - just check if they wrote something substantial
                 if len(code.strip()) > 20:
                     streak_bonus = self.player.streak_days * 10
@@ -558,56 +558,56 @@ class CodeQuest:
                         print(f"Streak bonus: +{streak_bonus} XP")
                 else:
                     print("\nTry putting more effort into your solution!")
-    
+
     def check_daily_streak(self):
         today = datetime.now().date()
-        
+
         if self.player.last_played:
             last_played = datetime.strptime(self.player.last_played, "%Y-%m-%d").date()
             days_diff = (today - last_played).days
-            
+
             if days_diff == 1:
                 self.player.streak_days += 1
                 print(f"\nDaily streak continued! {self.player.streak_days} days")
             elif days_diff > 1:
                 self.player.streak_days = 1
-                print(f"\nStreak reset. Starting fresh at day 1!")
+                print("\nStreak reset. Starting fresh at day 1!")
         else:
             self.player.streak_days = 1
-        
+
         self.player.last_played = today.strftime("%Y-%m-%d")
-    
+
     def check_achievements(self):
         new_achievements = []
-        
+
         # First Quest achievement
         if len(self.player.completed_quests) == 1 and "First Steps" not in self.player.achievements:
             new_achievements.append("First Steps - Complete your first quest!")
-        
+
         # Problem Solver achievements
         problems_solved = self.player.stats["problems_solved"]
         if problems_solved >= 10 and "Problem Solver" not in self.player.achievements:
             new_achievements.append("Problem Solver - Solve 10 coding challenges!")
-        
+
         if problems_solved >= 50 and "Code Warrior" not in self.player.achievements:
             new_achievements.append("Code Warrior - Solve 50 coding challenges!")
-        
+
         # Level achievements
         if self.player.level >= 10 and "Rising Star" not in self.player.achievements:
             new_achievements.append("Rising Star - Reach level 10!")
-        
+
         if self.player.level >= 25 and "Python Adept" not in self.player.achievements:
             new_achievements.append("Python Adept - Reach level 25!")
-        
+
         # Streak achievements
         if self.player.streak_days >= 7 and "Dedicated Learner" not in self.player.achievements:
             new_achievements.append("Dedicated Learner - Maintain a 7-day streak!")
-        
+
         # Add new achievements
         for achievement in new_achievements:
             self.player.achievements.append(achievement)
             print(f"\n*** ACHIEVEMENT UNLOCKED: {achievement} ***")
-    
+
     def save_game(self):
         save_data = {
             "name": self.player.name,
@@ -623,18 +623,18 @@ class CodeQuest:
             "stats": self.player.stats,
             "kingdoms": self.kingdoms
         }
-        
+
         try:
             with open(self.save_file, 'w') as f:
                 json.dump(save_data, f, indent=2)
         except Exception as e:
             print(f"Error saving game: {e}")
-    
+
     def load_game(self):
         try:
-            with open(self.save_file, 'r') as f:
+            with open(self.save_file) as f:
                 save_data = json.load(f)
-            
+
             self.player = Player(save_data["name"])
             self.player.level = save_data["level"]
             self.player.xp = save_data["xp"]
@@ -647,9 +647,9 @@ class CodeQuest:
             self.player.inventory = save_data["inventory"]
             self.player.stats = save_data["stats"]
             self.kingdoms = save_data["kingdoms"]
-            
+
             print(f"\nWelcome back, {self.player.name}!")
-            
+
         except Exception as e:
             print(f"Error loading game: {e}")
             print("Starting new game...")

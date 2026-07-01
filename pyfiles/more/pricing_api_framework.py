@@ -10,12 +10,13 @@ Dynamic pricing optimization
 Revenue forecasting
 """
 
+import logging
+
 import numpy as np
 import pandas as pd
 import requests
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-import logging
 
 # Logging Setup
 logging.basicConfig(level=logging.INFO,

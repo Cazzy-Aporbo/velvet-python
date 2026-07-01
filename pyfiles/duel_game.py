@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Duel of Sages — a two-player Python terminal duel.
 
@@ -21,13 +20,12 @@ from __future__ import annotations
 import math
 import random
 import re
-import sys
 import time
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from functools import lru_cache, wraps
-from typing import Any, Callable, Iterable, Optional, Tuple
-
+from typing import Any
 
 C = dict(
     reset="\033[0m",
@@ -82,24 +80,24 @@ class Challenge:
     expected: Any                      # ground truth; may be int|str|bool
     explain: str                       # one-liner explanation/hint
     topic: Topic
-    validator: Callable[[str, Any], Tuple[bool, str]]  # (answer_str, expected)-> (ok,msg)
+    validator: Callable[[str, Any], tuple[bool, str]]  # (answer_str, expected)-> (ok,msg)
 
 @dataclass
 class Obstacle:
     name: str
     describe: str
-    wrap: Callable[[Callable[[str, Any], Tuple[bool,str]]], Callable[[str, Any], Tuple[bool,str]]]
+    wrap: Callable[[Callable[[str, Any], tuple[bool,str]]], Callable[[str, Any], tuple[bool,str]]]
 
 @dataclass
 class Game:
     p1: Player
     p2: Player
-    target: Optional[int] = None
+    target: int | None = None
     rng: random.Random = field(default_factory=random.Random)
     steal_enabled: bool = True
 
     @property
-    def players(self) -> Tuple[Player, Player]: return (self.p1, self.p2)
+    def players(self) -> tuple[Player, Player]: return (self.p1, self.p2)
 
 
 @lru_cache(maxsize=10_000)
@@ -111,7 +109,7 @@ def is_prime(n: int) -> bool:
         if n % k == 0: return False
     return True
 
-def typed_equal(ans_str: str, expected: Any) -> Tuple[bool, str]:
+def typed_equal(ans_str: str, expected: Any) -> tuple[bool, str]:
     """
     Lenient compare: numeric strings vs numbers, casefolded strings, booleans.
     Returns (ok, normalized_display_message).
@@ -126,7 +124,7 @@ def typed_equal(ans_str: str, expected: Any) -> Tuple[bool, str]:
         return (ans_str.strip().casefold() == expected.strip().casefold(), "string compare")
     return (ans_str == str(expected), "stringified compare")
 
-def base_validator(ans: str, expected: Any) -> Tuple[bool, str]:
+def base_validator(ans: str, expected: Any) -> tuple[bool, str]:
     ok, mode = typed_equal(ans, expected)
     return (ok, f"via {mode}")
 
@@ -262,7 +260,7 @@ def ch_mixed(rng: random.Random) -> Challenge:
         validator=base_validator,
     )
 
-FACTORIES: Tuple[Callable[[random.Random], Challenge], ...] = (
+FACTORIES: tuple[Callable[[random.Random], Challenge], ...] = (
     ch_arith, ch_words, ch_seq, ch_logic, ch_mixed
 )
 
@@ -290,7 +288,7 @@ def maybe_end(g: Game) -> bool:
 def apply_obstacle(validate: Callable, obstacle: Obstacle) -> Callable:
     return obstacle.wrap(validate)
 
-def parse_command(s: str) -> Tuple[str, Optional[str]]:
+def parse_command(s: str) -> tuple[str, str | None]:
     s = s.strip()
     if not s.startswith("/"): return ("", None)
     parts = s.split(maxsplit=1)

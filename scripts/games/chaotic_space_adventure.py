@@ -19,10 +19,10 @@ Commands: help, status, scan, jump, travel, land, explore, use <item>,
           inventory, trade, talk, attack, dock, warp, quit
 """
 
-import random
 import math
-import time
+import random
 import sys
+import time
 
 # Seed randomness for variety
 random.seed()
@@ -51,7 +51,7 @@ def is_prime_verbose(n):
     if n < 2:
         steps.append(f"{n} less than 2 not prime")
         return False, steps
-    r = int(math.isqrt(n))
+    r = math.isqrt(n)
     steps.append(f"Check divisors up to √{n} = {r}")
     for i in range(2, r+1):
         if n % i == 0:

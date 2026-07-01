@@ -1,19 +1,21 @@
 from collections import deque
+
 import pandas as pd
+
 
 def loadGraph(edgeFilename): # required function
     # Read file
     edges = pd.read_csv(edgeFilename, sep=' ', header=None)
-    
+
     # empty dictionary
     adjacent_list = {}
-    
+
     # Iterate over each row in the dataframe
     for index, row in edges.iterrows():
         # Add the edge to the adjacency list
         adjacent_list.setdefault(row[0], []).append(row[1])
         adjacent_list.setdefault(row[1], []).append(row[0])
-    
+
     return adjacent_list
 
 # Test
@@ -77,13 +79,13 @@ def distanceDistribution(G):
                 total_distances += 1  # Increment total number of distances
 
     # Convert counts to percentages
-    for key in distance_distribution.keys():
+    for key in distance_distribution:
         distance_distribution[key] = (distance_distribution[key] / total_distances) * 100
 
     return distance_distribution  # Return the distance distribution dictionary
 
 # Open data file and read edges
-with open('edgesshort_2_2_2.txt', 'r') as file:
+with open('edgesshort_2_2_2.txt') as file:
     edges = file.readlines()
 
 # Convert edges to list of pairs

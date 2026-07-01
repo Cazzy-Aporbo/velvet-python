@@ -1,24 +1,26 @@
+import json
 import os
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font, Alignment
-from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
-import json
+from openpyxl.utils.dataframe import dataframe_to_rows
+
 
 class HealthcareQuestionsExporter:
     """
     A class to export healthcare questions data to various formats
     with advanced formatting and visualization options.
     """
-    
+
     def __init__(self, data_dir="healthcare_data/data"):
         """Initialize the exporter with data directory"""
         self.data_dir = data_dir
         os.makedirs(self.data_dir, exist_ok=True)
-    
+
     def load_csv(self, csv_path):
         """Load data from a CSV file"""
         try:
@@ -28,69 +30,69 @@ class HealthcareQuestionsExporter:
         except Exception as e:
             print(f"Error loading CSV file: {e}")
             return None
-    
+
     def export_to_excel(self, df, output_filename="healthcare_questions.xlsx"):
         """
         Export data to Excel with color coding and formatting
         """
         output_path = os.path.join(self.data_dir, output_filename)
-        
+
         # Create a workbook and select the active worksheet
         wb = Workbook()
         ws = wb.active
         ws.title = "Healthcare Questions"
-        
+
         # Add data to worksheet
         for r_idx, row in enumerate(dataframe_to_rows(df, index=False, header=True), 1):
             for c_idx, value in enumerate(row, 1):
                 cell = ws.cell(row=r_idx, column=c_idx, value=value)
-                
+
                 # Format header row
                 if r_idx == 1:
                     cell.font = Font(bold=True, color="FFFFFF")
                     cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
                     cell.alignment = Alignment(horizontal="center", vertical="center")
-                
+
                 # Apply color coding to rows based on healthcare professional type
                 elif c_idx == df.columns.get_loc("Color") + 1 and r_idx > 1:
                     color_code = value.lstrip('#')
-                    
+
                     # Apply the color to the entire row
                     for col in range(1, len(row) + 1):
                         if col != c_idx:  # Skip coloring the color code cell itself
                             ws.cell(row=r_idx, column=col).fill = PatternFill(
-                                start_color=color_code, 
-                                end_color=color_code, 
+                                start_color=color_code,
+                                end_color=color_code,
                                 fill_type="solid"
                             )
-                            
+
                             # Make text white if background is dark
                             if self._is_dark_color(color_code):
                                 ws.cell(row=r_idx, column=col).font = Font(color="FFFFFF")
-        
+
         # Auto-adjust column widths
         for column in ws.columns:
             max_length = 0
             column_letter = get_column_letter(column[0].column)
-            
+
             for cell in column:
                 try:
                     if len(str(cell.value)) > max_length:
                         max_length = len(str(cell.value))
                 except:
                     pass
-            
+
             adjusted_width = (max_length + 2) if max_length < 50 else 50
             ws.column_dimensions[column_letter].width = adjusted_width
-        
+
         # Freeze the header row
         ws.freeze_panes = "A2"
-        
+
         # Save the workbook
         wb.save(output_path)
         print(f"Excel file created at {output_path}")
         return output_path
-    
+
     def _is_dark_color(self, hex_color):
         """
         Determine if a color is dark (to decide text color)
@@ -99,25 +101,25 @@ class HealthcareQuestionsExporter:
         r = int(hex_color[0:2], 16)
         g = int(hex_color[2:4], 16)
         b = int(hex_color[4:6], 16)
-        
+
         # Calculate luminance
         luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-        
+
         # Return True if color is dark
         return luminance < 0.5
-    
+
     def create_visualizations(self, df, output_dir=None):
         """
         Create visualizations of the healthcare questions data
         """
         if output_dir is None:
             output_dir = self.data_dir
-        
+
         os.makedirs(output_dir, exist_ok=True)
-        
+
         # Set the style
         sns.set(style="whitegrid")
-        
+
         # 1. Healthcare Professional Type Distribution
         plt.figure(figsize=(12, 8))
         type_counts = df['Healthcare Professional Type'].value_counts()
@@ -127,14 +129,14 @@ class HealthcareQuestionsExporter:
         plt.ylabel('Number of Questions', fontsize=12)
         plt.xticks(rotation=45, ha='right')
         plt.tight_layout()
-        
+
         # Add count labels on top of bars
         for i, count in enumerate(type_counts.values):
             ax.text(i, count + 0.5, str(count), ha='center', fontsize=10)
-        
+
         plt.savefig(os.path.join(output_dir, 'healthcare_type_distribution.png'), dpi=300)
         plt.close()
-        
+
         # 2. Visit Type Distribution (top 10)
         plt.figure(figsize=(12, 8))
         visit_counts = df['Visit Type'].value_counts().head(10)
@@ -144,14 +146,14 @@ class HealthcareQuestionsExporter:
         plt.ylabel('Number of Questions', fontsize=12)
         plt.xticks(rotation=45, ha='right')
         plt.tight_layout()
-        
+
         # Add count labels on top of bars
         for i, count in enumerate(visit_counts.values):
             ax.text(i, count + 0.5, str(count), ha='center', fontsize=10)
-        
+
         plt.savefig(os.path.join(output_dir, 'visit_type_distribution.png'), dpi=300)
         plt.close()
-        
+
         # 3. Target Audience Distribution
         plt.figure(figsize=(10, 6))
         audience_counts = df['Target Audience'].value_counts()
@@ -161,14 +163,14 @@ class HealthcareQuestionsExporter:
         plt.ylabel('Number of Questions', fontsize=12)
         plt.xticks(rotation=45, ha='right')
         plt.tight_layout()
-        
+
         # Add count labels on top of bars
         for i, count in enumerate(audience_counts.values):
             ax.text(i, count + 0.5, str(count), ha='center', fontsize=10)
-        
+
         plt.savefig(os.path.join(output_dir, 'audience_distribution.png'), dpi=300)
         plt.close()
-        
+
         # 4. Category Distribution (if available)
         if 'Category' in df.columns:
             plt.figure(figsize=(10, 6))
@@ -179,28 +181,28 @@ class HealthcareQuestionsExporter:
             plt.ylabel('Number of Questions', fontsize=12)
             plt.xticks(rotation=45, ha='right')
             plt.tight_layout()
-            
+
             # Add count labels on top of bars
             for i, count in enumerate(category_counts.values):
                 ax.text(i, count + 0.5, str(count), ha='center', fontsize=10)
-            
+
             plt.savefig(os.path.join(output_dir, 'category_distribution.png'), dpi=300)
             plt.close()
-        
+
         # 5. Heatmap of Healthcare Type vs Visit Type (top combinations)
         plt.figure(figsize=(14, 10))
         heatmap_data = pd.crosstab(df['Healthcare Professional Type'], df['Visit Type'])
-        
+
         # Select top 10 healthcare types and visit types by frequency
         top_healthcare_types = df['Healthcare Professional Type'].value_counts().head(10).index
         top_visit_types = df['Visit Type'].value_counts().head(10).index
-        
+
         # Filter heatmap data
         heatmap_filtered = heatmap_data.loc[
             heatmap_data.index.isin(top_healthcare_types),
             heatmap_data.columns.isin(top_visit_types)
         ]
-        
+
         sns.heatmap(heatmap_filtered, annot=True, cmap="YlGnBu", fmt='d')
         plt.title('Heatmap: Healthcare Professional Type vs Visit Type', fontsize=16)
         plt.xlabel('Visit Type', fontsize=12)
@@ -209,16 +211,16 @@ class HealthcareQuestionsExporter:
         plt.tight_layout()
         plt.savefig(os.path.join(output_dir, 'heatmap_type_vs_visit.png'), dpi=300)
         plt.close()
-        
+
         print(f"Visualizations created in {output_dir}")
         return output_dir
-    
+
     def export_to_html(self, df, output_filename="healthcare_questions.html"):
         """
         Export data to an interactive HTML table with color coding
         """
         output_path = os.path.join(self.data_dir, output_filename)
-        
+
         # Create a styled HTML table
         html_content = """
         <!DOCTYPE html>
@@ -339,12 +341,12 @@ class HealthcareQuestionsExporter:
                     </thead>
                     <tbody>
         """
-        
+
         # Add rows with color coding
         for _, row in df.iterrows():
             color = row['Color']
             text_color = '#FFFFFF' if self._is_dark_color(color.lstrip('#')) else '#000000'
-            
+
             html_content += f"""
                 <tr style="background-color: {color}; color: {text_color};">
                     <td>{row['Question']}</td>
@@ -354,7 +356,7 @@ class HealthcareQuestionsExporter:
                     <td>{row['Source']}</td>
                 </tr>
             """
-        
+
         # Close the HTML structure and add JavaScript for filtering
         html_content += """
                     </tbody>
@@ -386,30 +388,30 @@ class HealthcareQuestionsExporter:
         </body>
         </html>
         """
-        
+
         # Write the HTML file
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html_content)
-        
+
         print(f"HTML file created at {output_path}")
         return output_path
-    
+
     def export_to_json(self, df, output_filename="healthcare_questions.json"):
         """
         Export data to a JSON file
         """
         output_path = os.path.join(self.data_dir, output_filename)
-        
+
         # Convert DataFrame to JSON
         json_data = df.to_dict(orient='records')
-        
+
         # Write to file
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(json_data, f, indent=2)
-        
+
         print(f"JSON file created at {output_path}")
         return output_path
-    
+
     def create_dashboard(self, df, output_filename="dashboard.html"):
         """
         Create an HTML dashboard with visualizations and interactive table
@@ -417,22 +419,22 @@ class HealthcareQuestionsExporter:
         # First create the visualizations
         viz_dir = os.path.join(self.data_dir, "visualizations")
         self.create_visualizations(df, viz_dir)
-        
+
         # Get relative paths to visualization images
         viz_paths = {
             'healthcare_type': "visualizations/healthcare_type_distribution.png",
             'visit_type': "visualizations/visit_type_distribution.png",
             'audience': "visualizations/audience_distribution.png"
         }
-        
+
         if 'Category' in df.columns:
             viz_paths['category'] = "visualizations/category_distribution.png"
-        
+
         viz_paths['heatmap'] = "visualizations/heatmap_type_vs_visit.png"
-        
+
         # Create the dashboard HTML
         output_path = os.path.join(self.data_dir, output_filename)
-        
+
         dashboard_html = """
         <!DOCTYPE html>
         <html lang="en">
@@ -603,7 +605,7 @@ class HealthcareQuestionsExporter:
                     </div>
                 </div>
         """
-        
+
         # Add category visualization if available
         if 'Category' in df.columns:
             dashboard_html += """
@@ -614,7 +616,7 @@ class HealthcareQuestionsExporter:
                     </div>
                 </div>
             """
-        
+
         # Add data table section
         dashboard_html += """
                 <div class="data-table-section">
@@ -653,12 +655,12 @@ class HealthcareQuestionsExporter:
                         </thead>
                         <tbody>
         """
-        
+
         # Add rows with color coding
         for _, row in df.iterrows():
             color = row['Color']
             text_color = '#FFFFFF' if self._is_dark_color(color.lstrip('#')) else '#000000'
-            
+
             dashboard_html += f"""
                             <tr style="background-color: {color}; color: {text_color};">
                                 <td>{row['Question']}</td>
@@ -668,7 +670,7 @@ class HealthcareQuestionsExporter:
                                 <td>{row['Source']}</td>
                             </tr>
             """
-        
+
         # Close the HTML structure and add JavaScript for filtering
         dashboard_html += """
                         </tbody>
@@ -701,11 +703,11 @@ class HealthcareQuestionsExporter:
         </body>
         </html>
         """
-        
+
         # Write the HTML file
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(dashboard_html)
-        
+
         print(f"Dashboard created at {output_path}")
         return output_path
 
@@ -714,27 +716,27 @@ class HealthcareQuestionsExporter:
 def main():
     # Initialize the exporter
     exporter = HealthcareQuestionsExporter()
-    
+
     # Load data from CSV
     csv_path = "healthcare_data/data/healthcare_questions.csv"
     df = exporter.load_csv(csv_path)
-    
+
     if df is not None:
         # Export to Excel with color coding
         excel_path = exporter.export_to_excel(df)
-        
+
         # Create visualizations
         viz_dir = exporter.create_visualizations(df)
-        
+
         # Export to HTML
         html_path = exporter.export_to_html(df)
-        
+
         # Export to JSON
         json_path = exporter.export_to_json(df)
-        
+
         # Create dashboard
         dashboard_path = exporter.create_dashboard(df)
-        
+
         print("\nExport Summary:")
         print(f"Excel file: {excel_path}")
         print(f"Visualizations: {viz_dir}")

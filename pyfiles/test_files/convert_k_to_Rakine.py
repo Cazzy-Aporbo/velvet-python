@@ -1,5 +1,6 @@
-import random
 import pprint
+import random
+
 
 def kelvin_to_rankine(kelvin):
     rankine = kelvin * 1.8

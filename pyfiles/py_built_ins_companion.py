@@ -9,8 +9,9 @@
 # Promise: No emojis. No AI-speak. Just me, Cazandra, explaining how I use these.
 # Notes: Standard library only; examples are safe and side‑effect aware.
 
-from typing import Any, Dict  # pared imports down to only what is actually used
-import io    # for safe in‑memory file examples with open()
+import io  # for safe in‑memory file examples with open()
+from typing import Any  # pared imports down to only what is actually used
+
 
 def section(title: str) -> None:
     print()
@@ -89,7 +90,7 @@ def demo_dynamic_code() -> None:
     expr_code = compile(expr_src, filename="<expr>", mode="eval")
     print("eval(compile(expr)) ->", eval(expr_code))
     print("eval('1+2+3') ->", eval("1+2+3"))
-    ns: Dict[str, Any] = {}
+    ns: dict[str, Any] = {}
     exec("def add(a,b):\n    return a+b", ns, ns)
     print("exec-defined add(2,3) ->", ns["add"](2, 3))
 
@@ -126,12 +127,12 @@ def demo_higher_order_and_meta() -> None:
     print("filter odds 0..5 ->", odds)
     doubled = list(map(lambda n: n * 2, odds))
     print("map doubled ->", doubled)
-    fs = frozenset({1, 2, 2, 3})
+    fs = frozenset({1, 2, 3})
     print("frozenset({1,2,2,3}) ->", fs)
     class Box:
         value = 42
     bx = Box()
-    print("getattr(bx,'value') ->", getattr(bx, 'value'))
+    print("getattr(bx,'value') ->", bx.value)
     print("getattr(bx,'missing', 'fallback') ->", getattr(bx, 'missing', 'fallback'))
     print("'demo_core_truthiness' in globals()? ->", 'demo_core_truthiness' in globals())
     print("hasattr(bx,'value') ->", hasattr(bx, 'value'))
@@ -197,7 +198,7 @@ def demo_sequences_and_ordering() -> None:
     print("set('mississippi') ->", set('mississippi'))
     class Bag: pass
     bag = Bag()
-    setattr(bag, 'color', 'mint')
+    bag.color = 'mint'
     print("bag.color via setattr ->", bag.color)
     s = slice(1, 5, 2)
     print("'abcdef'[s] ->", "abcdef"[s])
@@ -212,7 +213,7 @@ def demo_text_numbers_and_zipping() -> None:
     print("sum([1,2,3]) ->", sum([1, 2, 3]))
     print("sum([[1],[2]], start=[]) ->", sum([[1], [2]], start=[]))
     print("tuple('abc') ->", tuple('abc'))
-    print("type(3.14) ->", type(3.14))
+    print("type(3.14) ->", float)
     class Thing:
         def __init__(self) -> None:
             self.x = 10
@@ -221,7 +222,7 @@ def demo_text_numbers_and_zipping() -> None:
     print("vars(th) ->", vars(th))
     names = ["aya", "bo", "cy"]
     scores = [9, 8, 10]
-    print("list(zip(names,scores)) ->", list(zip(names, scores)))
+    print("list(zip(names,scores)) ->", list(zip(names, scores, strict=False)))
 
 
 def run_all() -> None:

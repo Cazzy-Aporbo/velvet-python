@@ -1,5 +1,7 @@
 import os
+
 import pandas as pd
+
 
 def create_periodic_table_csv(file_path):
     elements_data = [

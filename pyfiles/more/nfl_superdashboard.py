@@ -1,8 +1,9 @@
+from datetime import datetime
+
 import nfl_data_py as nfl
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
-from datetime import datetime
 
 # === 1. Seasons to include ===
 years = [2022, 2023, 2024]

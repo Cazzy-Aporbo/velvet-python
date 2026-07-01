@@ -1,218 +1,70 @@
-"""
-Ultra Advanced Python Import Reference 3
-Author: Cazzy
-Purpose: Collection of extremely specialized, rare, and cutting-edge Python libraries
-for advanced scientific computing, machine learning, visualization, simulation, quantum computing,
-topological data analysis, and domain-specific applications.
-"""
+"""Specialized optional imports catalog used by advanced learning tracks."""
 
-# High-Performance Numerical Computing
-import jax
-import jax.numpy as jnp
-import cupy
-import torch
-import torch.cuda
-import torch_sparse
-import torch_scatter
-import torch_geometric
-import mpi4py
-import numba
-import numba.cuda
-import pytensor
-import aesara
-import pytorch_lightning as pl
-import functorch
-import cupyx
-import tensorly
-import tensornetwork
-import einops
-import nvidia-pip
+from __future__ import annotations
 
-# Advanced Machine Learning / AI
-import diffusers
-import accelerate
-import transformers
-import timm
-import detectron2
-import monai
-import lightning
-import skorch
-import autogluon
-import flaml
-import nevergrad
-import optuna
-import ray
-import rllib
-import rl_games
-import stable_baselines3
-import gymnasium
-import gym
-import jaxopt
-import tensorflow_probability as tfp
-import pyro
-import numpyro
-import pymc3
-import bambi
-import scikit-optimize
+import importlib.util
+from typing import Iterable
 
-# Graphs, Networks & Topology
-import networkx
-import graph_tool.all as gt
-import igraph
-import pyvis
-import stellargraph
-import karateclub
-import torch_geometric
-import gudhi
-import giotto-tda
-import ripser
-import persim
-import pyflagser
-import hypernetx
-import h3
-import scikit-network as skn
 
-# Advanced Visualization
-import plotly
-import plotly.figure_factory as ff
-import holoviews as hv
-import panel as pn
-import bokeh
-import datashader as ds
-import pyvista
-import vedo
-import mayavi.mlab as mlab
-import vedo
-import vedo.pyplot as vp
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-import matplotlib.pyplot as plt
-import seaborn as sns
-import napari
-import ipyvolume as ipv
-import pythreejs
-import vtk
+ADVANCED_LIBS: list[tuple[str, str]] = [
+    ("Qiskit", "qiskit"),
+    ("Cirq", "cirq"),
+    ("PennyLane", "pennylane"),
+    ("PyTorch", "torch"),
+    ("TensorNetwork", "tensornetwork"),
+    ("Gymnasium", "gymnasium"),
+    ("Stable-Baselines3", "stable_baselines3"),
+    ("TensorFlow Probability", "tensorflow_probability"),
+    ("Scikit-Optimize", "skopt"),
+    ("PyMC", "pymc"),
+    ("Bambi", "bambi"),
+    ("NetworkX", "networkx"),
+    ("PyVIS", "pyvis"),
+    ("GUDHI", "gudhi"),
+    ("Ripser", "ripser"),
+    ("Persim", "persim"),
+    ("H3", "h3"),
+    ("Sphinx", "sphinx"),
+    ("Napari", "napari"),
+    ("Ipyvolume", "ipyvolume"),
+    ("PyDeck", "pydeck"),
+    ("Geopandas", "geopandas"),
+    ("PyArrow", "pyarrow"),
+    ("Xarray", "xarray"),
+    ("DuckDB", "duckdb"),
+    ("Dask", "dask"),
+    ("Streamz", "streamz"),
+    ("Prefect", "prefect"),
+    ("Dagster", "dagster"),
+    ("Luigi", "luigi"),
+    ("Apache Beam", "apache_beam"),
+    ("Kedro", "kedro"),
+    ("Rich", "rich"),
+    ("Typer", "typer"),
+    ("Loguru", "loguru"),
+    ("FastAPI", "fastapi"),
+    ("uvicorn", "uvicorn"),
+]
 
-# Advanced Geospatial & GIS
-import geopandas as gpd
-import fiona
-import rioxarray
-import salem
-import movingpandas
-import pyproj
-import rasterio
-import regionmask
-import skgstat
-import pysal
-import osmnx
-import folium
-import folium.plugins
-import h3
-import mapclassify
-import pydeck
 
-# Time Series, Forecasting & Streaming
-import sktime
-import darts
-import neuralprophet
-import tbats
-import prophet
-import kats
-import statsforecast
-import pmdarima
-import pyflux
-import river
-import creme
-import trino
-import apache_beam
-import faust
+def available(module_name: str) -> bool:
+    """Return True when the optional module import target can be resolved."""
+    return importlib.util.find_spec(module_name) is not None
 
-# Bioinformatics & Scientific Computing
-import biopython
-import pybiomart
-import pysam
-import scikit-bio
-import scanpy
-import anndata
-import squidpy
-import loompy
-import cellrank
-import mudata
-import scanorama
-import scanorama
 
-# Quantum Computing & Simulations
-import qiskit
-import cirq
-import braket.aws
-import qulacs
-import pennylane as qml
-import openfermion
-import openfermioncirq
-import projectq
-import pyquil
-import quilc
-import quilc.qpu
-import tensorflow_quantum as tfq
-import tensornetwork as tn
+def check(modules: Iterable[tuple[str, str]]) -> dict[str, bool]:
+    """Resolve a mapping of human-friendly names to import availability."""
+    return {name: available(import_name) for name, import_name in modules}
 
-# Advanced Optimization & Control
-import cvxpy
-import cvxopt
-import gekko
-import pyomo
-import casadi
-import do_mpc
-import pybullet
-import mujoco_py
-import gym
-import bullet3
-import topopt
 
-# File Handling, Pipelines, Streaming & Data Formats
-import h5py
-import zarr
-import netCDF4
-import pyarrow
-import parquet
-import feather
-import fastparquet
-import tables
-import odfpy
-import pdfplumber
-import PyPDF2
-import python-docx
-import xlwings
-import snakemake
-import luigi
-import prefect
-import dagster
-import kedro
-import airflow
-import streamz
-import streamz.dataframe as sdf
-import dask
-import dask.distributed as ddist
+def print_report(modules: Iterable[tuple[str, str]]) -> None:
+    """Print a clean, deterministic report used by docs and onboarding."""
+    statuses = check(modules)
+    print("Advanced library readiness:")
+    for name, is_available in sorted(statuses.items()):
+        status = "available" if is_available else "missing"
+        print(f"- {name}: {status}")
 
-# Miscellaneous Experimental Tools
-import rich
-from rich.console import Console
-from rich.table import Table
-import click
-import typer
-import loguru
-import icecream
-import tqdm
-import alive_progress
-import memory_profiler
-import line_profiler
-import pyinstrument
-import watchgod
-import fastapi
-import uvicorn
-import starlette
-import pydantic
-import typer
 
-# End of Ultra Advanced Python Import Reference 3
+if __name__ == "__main__":
+    print_report(ADVANCED_LIBS)

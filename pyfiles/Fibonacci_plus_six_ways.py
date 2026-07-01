@@ -27,18 +27,14 @@ Run
 $ python fibonacci_six_plus_ways.py
 """
 
-import sys
-import math
 import time
-from functools import lru_cache
-from collections import deque
-from itertools import islice
+from functools import cache
 
 # Optional niceties: pretty table if available; otherwise plain prints.
 try:
+    from rich import box
     from rich.console import Console
     from rich.table import Table
-    from rich import box
     RICH = True
     console = Console()
 except Exception:
@@ -91,7 +87,7 @@ def fib_gen(n: int):
         a, b = b, a + b
 
 
-@lru_cache(maxsize=None)
+@cache
 def _fib_td_single(k: int) -> int:
     # Base cases (decide them early; the rest is mechanical)
     if k < 2:

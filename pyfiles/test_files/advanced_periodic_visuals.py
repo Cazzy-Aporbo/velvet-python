@@ -1,11 +1,10 @@
 import os
-import pandas as pd
-import numpy as np
-import seaborn as sns
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import StandardScaler
-from mpl_toolkits.mplot3d import Axes3D
 
 # Generate a pastel rainbow color palette
 pastel_rainbow = sns.color_palette("rainbow", 10)  # Generate discrete pastel colors

@@ -13,22 +13,23 @@
 
 from __future__ import annotations
 
-import math                         # for log/exp in odds/metrics
-import sys                          # for environment and argv checks
-import warnings                     # to keep output tidy
-from dataclasses import dataclass   # to structure results cleanly
-from typing import Iterable, List, Optional, Tuple
+import warnings  # to keep output tidy
+from dataclasses import dataclass  # to structure results cleanly
 
-import numpy as np                  # numerical arrays
+import numpy as np  # numerical arrays
 from sklearn.datasets import make_classification  # quick, controllable data
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
-    roc_auc_score, average_precision_score, roc_curve, precision_recall_curve,
-    confusion_matrix, classification_report
+    average_precision_score,
+    classification_report,
+    confusion_matrix,
+    precision_recall_curve,
+    roc_auc_score,
+    roc_curve,
 )
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 # Optional classical inference (when I want p-values/LL):
 try:
@@ -72,7 +73,7 @@ class Metrics:
 
 # Palette and background for the ombre pink↔purple visuals (this file only)
 
-def _ombre_cmap() -> "LinearSegmentedColormap":
+def _ombre_cmap() -> LinearSegmentedColormap:
     """Pink→purple custom colormap (rose→magenta→violet)."""
     if not HAS_MPL:
         raise RuntimeError("matplotlib not available")
@@ -100,7 +101,7 @@ def _ombre_background(ax) -> None:
 
 # Synthetic dataset that still feels realistic: informative + redundant features
 
-def make_data(n: int = 1200, seed: int = 7) -> Tuple[np.ndarray, np.ndarray]:
+def make_data(n: int = 1200, seed: int = 7) -> tuple[np.ndarray, np.ndarray]:
     """Create a binary classification set with clear signal + some redundancy.
     Why synthetic: commits cleanly in a repo, no external files, reproducible.
     """
@@ -156,7 +157,7 @@ def evaluate_thresholds(y_true: np.ndarray, y_proba: np.ndarray) -> Metrics:
 
 # Visuals — ombre pink↔purple, only for this logistic regression demo
 
-def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> List[str]:
+def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> list[str]:
     """Render ROC, PR, probability hist, and confusion matrix with an
     ombre pink→purple aesthetic. Save PNGs (safe for headless) and attempt to
     show if a GUI backend exists. Returns list of saved file paths.
@@ -164,7 +165,7 @@ def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> Li
     if not HAS_MPL:
         return []
 
-    saved: List[str] = []
+    saved: list[str] = []
     cmap = _ombre_cmap()
 
     # 1) ROC
@@ -211,8 +212,8 @@ def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> Li
     # 3) Probability histogram by true class
     fig3, ax3 = plt.subplots(figsize=(6.4, 5.0), dpi=120)
     _ombre_background(ax3)
-    proba0 = [p for p, y in zip(fit.y_proba, fit.y_test) if y == 0]
-    proba1 = [p for p, y in zip(fit.y_proba, fit.y_test) if y == 1]
+    proba0 = [p for p, y in zip(fit.y_proba, fit.y_test, strict=False) if y == 0]
+    proba1 = [p for p, y in zip(fit.y_proba, fit.y_test, strict=False) if y == 1]
     ax3.hist(proba0, bins=np.linspace(0, 1, 21), alpha=0.6, label="class 0", color="#ff9ad5")
     ax3.hist(proba1, bins=np.linspace(0, 1, 21), alpha=0.6, label="class 1", color="#7b4ef0")
     ax3.axvline(m.threshold, ls=":", lw=2, color="#5a3fd8", label=f"threshold = {m.threshold:.2f}")
@@ -241,7 +242,7 @@ def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> Li
         ax4.text(j, i, str(v), ha="center", va="center",
                  color=("white" if v > vmax/2 else "black"))
     ax4.set_xticks([0, 1]); ax4.set_yticks([0, 1])
-    ax4.set_xticklabels(["Pred 0", "Pred 1"]) ; ax4.set_yticklabels(["True 0", "True 1"]) 
+    ax4.set_xticklabels(["Pred 0", "Pred 1"]) ; ax4.set_yticklabels(["True 0", "True 1"])
     ax4.set_title("Confusion Matrix @ tuned threshold")
     fig4.colorbar(im, ax=ax4, fraction=0.046, pad=0.04)
     fig4.tight_layout()
@@ -259,7 +260,7 @@ def render_plots(fit: FitResult, m: Metrics, prefix: str = "logreg_ombre") -> Li
 
 # Optional: classical inference summary via statsmodels (if available)
 
-def classical_inference(fit: FitResult) -> Optional[str]:
+def classical_inference(fit: FitResult) -> str | None:
     """Return a short statsmodels summary table (string) if available.
     I re-fit a simple GLM with a constant to compute standard errors/LL.
     """

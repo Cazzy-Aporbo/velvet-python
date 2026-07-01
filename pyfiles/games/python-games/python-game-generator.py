@@ -6,20 +6,20 @@ Demonstrates: OOP, Design Patterns, Metaclasses, Decorators, Context Managers,
 Async operations, Type hints, and advanced Python features
 """
 
-import json
-import random
-import hashlib
 import asyncio
-import logging
 import datetime
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Protocol, TypeVar, Generic
-from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
-from enum import Enum, auto
-from contextlib import contextmanager
-from functools import wraps, lru_cache
+import hashlib
+import json
+import logging
+import random
 import re
+from abc import abstractmethod
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from functools import lru_cache, wraps
+from pathlib import Path
+from typing import Any, Protocol, TypeVar
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar('T')
 GameType = TypeVar('GameType', bound='BaseGame')
 
-# ENUMS & CONSTANTS 
+# ENUMS & CONSTANTS
 class GameDifficulty(Enum):
     EASY = auto()
     MEDIUM = auto()
@@ -44,7 +44,7 @@ class GameMode(Enum):
     MATCHING = "matching"
     TIMELINE = "timeline"
 
-# DECORATORS 
+# DECORATORS
 def performance_monitor(func):
     """Decorator to monitor function performance"""
     @wraps(func)
@@ -54,7 +54,7 @@ def performance_monitor(func):
         duration = (datetime.datetime.now() - start).total_seconds()
         logger.info(f"{func.__name__} took {duration:.2f} seconds")
         return result
-    
+
     @wraps(func)
     def sync_wrapper(*args, **kwargs):
         start = datetime.datetime.now()
@@ -62,7 +62,7 @@ def performance_monitor(func):
         duration = (datetime.datetime.now() - start).total_seconds()
         logger.info(f"{func.__name__} took {duration:.2f} seconds")
         return result
-    
+
     return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
 
 def validate_input(validation_func):
@@ -76,34 +76,34 @@ def validate_input(validation_func):
         return wrapper
     return decorator
 
-# METACLASSES 
+# METACLASSES
 class GameMeta(type):
     """Metaclass for game registration and validation"""
-    _registry: Dict[str, type] = {}
-    
+    _registry: dict[str, type] = {}
+
     def __new__(mcs, name, bases, namespace, **kwargs):
         cls = super().__new__(mcs, name, bases, namespace)
         if name != 'BaseGame' and not name.startswith('Abstract'):
             mcs._registry[name.lower()] = cls
             logger.info(f"Registered game type: {name}")
         return cls
-    
+
     @classmethod
-    def get_game_class(mcs, name: str) -> Optional[type]:
+    def get_game_class(mcs, name: str) -> type | None:
         return mcs._registry.get(name.lower())
-    
+
     @classmethod
-    def list_games(mcs) -> List[str]:
+    def list_games(mcs) -> list[str]:
         return list(mcs._registry.keys())
 
 # PROTOCOLS
 class ContentGenerator(Protocol):
     """Protocol for content generation strategies"""
-    def generate(self, topic: str, count: int) -> List[Dict[str, Any]]: ...
+    def generate(self, topic: str, count: int) -> list[dict[str, Any]]: ...
 
 class Renderer(Protocol):
     """Protocol for rendering strategies"""
-    def render(self, game_data: Dict[str, Any]) -> str: ...
+    def render(self, game_data: dict[str, Any]) -> str: ...
 
 #DATA CLASSES
 @dataclass
@@ -111,14 +111,14 @@ class Question:
     """Represents a game question"""
     id: str = field(default_factory=lambda: hashlib.md5(str(random.random()).encode()).hexdigest()[:8])
     text: str = ""
-    answers: List[str] = field(default_factory=list)
+    answers: list[str] = field(default_factory=list)
     correct_answer: str = ""
     difficulty: GameDifficulty = GameDifficulty.MEDIUM
     points: int = 10
-    hint: Optional[str] = None
-    explanation: Optional[str] = None
-    media_url: Optional[str] = None
-    
+    hint: str | None = None
+    explanation: str | None = None
+    media_url: str | None = None
+
     def __post_init__(self):
         if not self.correct_answer and self.answers:
             self.correct_answer = self.answers[0]
@@ -131,17 +131,17 @@ class GameConfig:
     mode: GameMode
     difficulty: GameDifficulty = GameDifficulty.MEDIUM
     question_count: int = 10
-    time_limit: Optional[int] = None
+    time_limit: int | None = None
     enable_hints: bool = True
     enable_sound: bool = True
     theme_color: str = "#4A90E2"
     custom_css: str = ""
     custom_js: str = ""
 
-# CONTENT GENERATORS 
+# CONTENT GENERATORS
 class TopicAnalyzer:
     """Analyzes topics and generates relevant content using patterns"""
-    
+
     KNOWLEDGE_BASE = {
         "science": ["atom", "molecule", "energy", "force", "reaction", "element", "compound"],
         "history": ["event", "period", "figure", "war", "revolution", "empire", "civilization"],
@@ -150,30 +150,30 @@ class TopicAnalyzer:
         "programming": ["function", "variable", "loop", "algorithm", "data structure", "class", "method"],
         "geography": ["country", "capital", "continent", "ocean", "mountain", "river", "climate"],
     }
-    
+
     @classmethod
     @lru_cache(maxsize=128)
-    def analyze(cls, topic: str) -> Dict[str, Any]:
+    def analyze(cls, topic: str) -> dict[str, Any]:
         """Analyze topic and extract key concepts"""
         topic_lower = topic.lower()
         related_terms = []
         category = "general"
-        
+
         for cat, terms in cls.KNOWLEDGE_BASE.items():
             if cat in topic_lower or any(term in topic_lower for term in terms):
                 category = cat
                 related_terms = terms
                 break
-        
+
         return {
             "category": category,
             "related_terms": related_terms,
             "complexity": len(topic.split()),
             "key_concepts": cls._extract_concepts(topic, related_terms)
         }
-    
+
     @staticmethod
-    def _extract_concepts(topic: str, related_terms: List[str]) -> List[str]:
+    def _extract_concepts(topic: str, related_terms: list[str]) -> list[str]:
         """Extract key concepts from topic"""
         words = re.findall(r'\w+', topic.lower())
         concepts = [word for word in words if len(word) > 3]
@@ -182,28 +182,28 @@ class TopicAnalyzer:
 
 class SmartContentGenerator:
     """Generates educational content based on topic analysis"""
-    
+
     def __init__(self, topic: str):
         self.topic = topic
         self.analysis = TopicAnalyzer.analyze(topic)
-    
+
     @performance_monitor
-    def generate_questions(self, count: int = 10, difficulty: GameDifficulty = GameDifficulty.MEDIUM) -> List[Question]:
+    def generate_questions(self, count: int = 10, difficulty: GameDifficulty = GameDifficulty.MEDIUM) -> list[Question]:
         """Generate questions based on topic"""
         questions = []
         templates = self._get_templates()
-        
+
         for i in range(count):
             template = random.choice(templates)
             question = self._create_question_from_template(template, difficulty)
             questions.append(question)
-        
+
         return questions
-    
-    def _get_templates(self) -> List[Dict[str, str]]:
+
+    def _get_templates(self) -> list[dict[str, str]]:
         """Get question templates based on category"""
         category = self.analysis["category"]
-        
+
         if category == "chemistry":
             return [
                 {"q": "What is the chemical symbol for {element}?", "type": "symbol"},
@@ -222,11 +222,11 @@ class SmartContentGenerator:
                 {"q": f"Which of these is related to {self.topic}?", "type": "multiple_choice"},
                 {"q": f"True or False: {{statement}} about {self.topic}", "type": "boolean"},
             ]
-    
-    def _create_question_from_template(self, template: Dict[str, str], difficulty: GameDifficulty) -> Question:
+
+    def _create_question_from_template(self, template: dict[str, str], difficulty: GameDifficulty) -> Question:
         """Create a question from template"""
         concepts = self.analysis["key_concepts"]
-        
+
         # Generate question text
         question_text = template["q"]
         if "{element}" in question_text:
@@ -235,13 +235,13 @@ class SmartContentGenerator:
             question_text = question_text.replace("{compound}", random.choice(["H2O", "CO2", "NaCl", "CH4"]))
         if "{concept}" in question_text:
             question_text = question_text.replace("{concept}", random.choice(concepts) if concepts else "concept")
-        
+
         # Generate answers
         correct = self._generate_correct_answer(template["type"])
         incorrect = self._generate_incorrect_answers(correct, 3)
         all_answers = [correct] + incorrect
         random.shuffle(all_answers)
-        
+
         return Question(
             text=question_text,
             answers=all_answers,
@@ -251,7 +251,7 @@ class SmartContentGenerator:
             hint=f"Think about {random.choice(concepts) if concepts else 'the basics'}",
             explanation=f"The correct answer is {correct} because it relates to {self.topic}"
         )
-    
+
     def _generate_correct_answer(self, q_type: str) -> str:
         """Generate correct answer based on question type"""
         if q_type == "symbol":
@@ -263,11 +263,11 @@ class SmartContentGenerator:
             return random.choice(["True", "False"])
         else:
             return f"Correct answer about {self.topic}"
-    
-    def _generate_incorrect_answers(self, correct: str, count: int) -> List[str]:
+
+    def _generate_incorrect_answers(self, correct: str, count: int) -> list[str]:
         """Generate plausible incorrect answers"""
         incorrect = []
-        
+
         if correct.isdigit():
             # For dates/numbers
             base = int(correct)
@@ -277,7 +277,7 @@ class SmartContentGenerator:
                     incorrect.append(str(base + offset))
         elif correct in ["True", "False"]:
             incorrect = ["False"] if correct == "True" else ["True"]
-            incorrect.extend([f"Maybe", f"Sometimes"])
+            incorrect.extend(["Maybe", "Sometimes"])
         else:
             # For text answers
             variations = [
@@ -287,9 +287,9 @@ class SmartContentGenerator:
                 f"Different: {random.choice(['X', 'Y', 'Z'])}"
             ]
             incorrect = random.sample(variations, min(count, len(variations)))
-        
+
         return incorrect[:count]
-    
+
     def _calculate_points(self, difficulty: GameDifficulty) -> int:
         """Calculate points based on difficulty"""
         return {
@@ -299,27 +299,27 @@ class SmartContentGenerator:
             GameDifficulty.EXPERT: 50
         }.get(difficulty, 10)
 
-#GAME ENGINES 
+#GAME ENGINES
 class BaseGame(metaclass=GameMeta):
     """Abstract base class for all games"""
-    
+
     def __init__(self, config: GameConfig):
         self.config = config
         self.content_generator = SmartContentGenerator(config.topic)
-        self.questions: List[Question] = []
-        self.game_state: Dict[str, Any] = {}
+        self.questions: list[Question] = []
+        self.game_state: dict[str, Any] = {}
         self._setup()
-    
+
     @abstractmethod
     def _setup(self):
         """Setup game-specific initialization"""
         pass
-    
+
     @abstractmethod
     def generate_html(self) -> str:
         """Generate complete HTML game file"""
         pass
-    
+
     def _generate_base_html(self, body_content: str, additional_js: str = "", additional_css: str = "") -> str:
         """Generate base HTML structure"""
         return f"""<!DOCTYPE html>
@@ -670,13 +670,13 @@ class BaseGame(metaclass=GameMeta):
 
 class QuizGame(BaseGame):
     """Interactive Quiz Game"""
-    
+
     def _setup(self):
         self.questions = self.content_generator.generate_questions(
             self.config.question_count,
             self.config.difficulty
         )
-    
+
     def generate_html(self) -> str:
         """Generate quiz game HTML"""
         questions_json = json.dumps([{
@@ -688,7 +688,7 @@ class QuizGame(BaseGame):
             'explanation': q.explanation,
             'points': q.points
         } for q in self.questions])
-        
+
         body_content = f"""
         <div class="game-container">
             <div class="game-header">
@@ -746,7 +746,7 @@ class QuizGame(BaseGame):
             </div>
         </div>
         """
-        
+
         additional_js = f"""
         const questions = {questions_json};
         let selectedAnswer = null;
@@ -870,18 +870,18 @@ class QuizGame(BaseGame):
             loadQuestion();
         }};
         """
-        
+
         return self._generate_base_html(body_content, additional_js)
 
 class MemoryGame(BaseGame):
     """Memory Card Matching Game"""
-    
+
     def _setup(self):
         self.questions = self.content_generator.generate_questions(
             self.config.question_count // 2,  # Half for pairs
             self.config.difficulty
         )
-    
+
     def generate_html(self) -> str:
         """Generate memory game HTML"""
         # Create card pairs from questions
@@ -889,9 +889,9 @@ class MemoryGame(BaseGame):
         for q in self.questions:
             cards.append({'id': q.id + '_q', 'content': q.text, 'match': q.id})
             cards.append({'id': q.id + '_a', 'content': q.correct_answer, 'match': q.id})
-        
+
         cards_json = json.dumps(cards)
-        
+
         body_content = f"""
         <div class="game-container">
             <div class="game-header">
@@ -922,7 +922,7 @@ class MemoryGame(BaseGame):
             </div>
         </div>
         """
-        
+
         additional_css = """
         .memory-board {
             display: grid;
@@ -975,7 +975,7 @@ class MemoryGame(BaseGame):
             transform: rotateY(180deg);
         }
         """
-        
+
         additional_js = f"""
         const cards = {cards_json};
         let flippedCards = [];
@@ -1074,13 +1074,13 @@ class MemoryGame(BaseGame):
             initializeBoard();
         }};
         """
-        
+
         return self._generate_base_html(body_content, additional_js, additional_css)
 
-# GAME FACTORY 
+# GAME FACTORY
 class GameFactory:
     """Factory for creating games"""
-    
+
     @staticmethod
     def create_game(config: GameConfig) -> BaseGame:
         """Create a game based on configuration"""
@@ -1089,13 +1089,13 @@ class GameFactory:
             GameMode.MEMORY: MemoryGame,
             # Add more game types here
         }
-        
+
         game_class = game_map.get(config.mode)
         if not game_class:
             raise ValueError(f"Game mode {config.mode} not implemented")
-        
+
         return game_class(config)
-    
+
     @staticmethod
     @performance_monitor
     async def create_game_async(config: GameConfig) -> BaseGame:
@@ -1105,11 +1105,11 @@ class GameFactory:
 # GAME GENERATOR
 class AdvancedGameGenerator:
     """Main class for generating educational games"""
-    
+
     def __init__(self, output_dir: str = "generated_games"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
-    
+
     @contextmanager
     def _file_manager(self, filename: str):
         """Context manager for file operations"""
@@ -1125,17 +1125,17 @@ class AdvancedGameGenerator:
         finally:
             if file:
                 file.close()
-    
+
     def generate_game(
         self,
         topic: str,
-        title: Optional[str] = None,
+        title: str | None = None,
         mode: GameMode = GameMode.QUIZ,
         difficulty: GameDifficulty = GameDifficulty.MEDIUM,
         **kwargs
     ) -> str:
         """Generate a game from a topic"""
-        
+
         # Create configuration
         config = GameConfig(
             title=title or f"{topic.title()} Challenge",
@@ -1144,31 +1144,31 @@ class AdvancedGameGenerator:
             difficulty=difficulty,
             **kwargs
         )
-        
+
         # Create game
         game = GameFactory.create_game(config)
-        
+
         # Generate HTML
         html_content = game.generate_html()
-        
+
         # Save to file
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{topic.lower().replace(' ', '_')}_{mode.value}_{timestamp}.html"
-        
+
         with self._file_manager(filename) as file:
             file.write(html_content)
-        
+
         return str(self.output_dir / filename)
-    
+
     async def generate_multiple_games(
         self,
-        topics: List[str],
-        modes: List[GameMode] = None
-    ) -> List[str]:
+        topics: list[str],
+        modes: list[GameMode] = None
+    ) -> list[str]:
         """Generate multiple games asynchronously"""
         if modes is None:
             modes = [GameMode.QUIZ, GameMode.MEMORY]
-        
+
         tasks = []
         for topic in topics:
             for mode in modes:
@@ -1178,27 +1178,27 @@ class AdvancedGameGenerator:
                     mode=mode
                 )
                 tasks.append(GameFactory.create_game_async(config))
-        
+
         games = await asyncio.gather(*tasks)
-        
+
         files = []
         for game in games:
             html_content = game.generate_html()
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{game.config.topic.lower().replace(' ', '_')}_{game.config.mode.value}_{timestamp}.html"
-            
+
             with self._file_manager(filename) as file:
                 file.write(html_content)
-            
+
             files.append(str(self.output_dir / filename))
-        
+
         return files
 
-# MAIN EXECUTION 
+# MAIN EXECUTION
 def main():
     """Main execution function"""
     generator = AdvancedGameGenerator()
-    
+
     # Example: Generate a chemistry quiz game
     chemistry_quiz = generator.generate_game(
         topic="Chemistry and Moles",
@@ -1209,7 +1209,7 @@ def main():
         theme_color="#0EA5E9"
     )
     print(f"Created chemistry quiz: {chemistry_quiz}")
-    
+
     # Example: Generate a memory game
     memory_game = generator.generate_game(
         topic="Periodic Table Elements",
@@ -1220,17 +1220,17 @@ def main():
         theme_color="#10B981"
     )
     print(f"Created memory game: {memory_game}")
-    
+
     # Generate multiple games asynchronously
     async def generate_batch():
         topics = ["Mathematics", "Physics", "Biology", "History"]
         files = await generator.generate_multiple_games(topics, [GameMode.QUIZ])
         for file in files:
             print(f"Generated: {file}")
-    
+
     # Run async generation
     # asyncio.run(generate_batch())
-    
+
     print("\n🎮 All games generated successfully!")
     print(f"📁 Games saved to: {generator.output_dir}")
 

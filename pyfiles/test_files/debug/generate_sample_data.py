@@ -1,7 +1,7 @@
-import pandas as pd
-import numpy as np
 import random
+
 import faker
+import pandas as pd
 
 # Initialize Faker for realistic names, emails, addresses
 fake = faker.Faker()

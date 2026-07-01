@@ -7,16 +7,14 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import math
-import os
 import random
 import sys
 import textwrap
-import time
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from functools import lru_cache
-from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from functools import cache
+from typing import Any
 
 # Console helpers — consistent narrative formatting
 
@@ -28,7 +26,7 @@ def say(text: str, width: int = 78) -> None:
     print("\n".join(textwrap.wrap(text, width=width)))
 
 
-def safe_input(prompt: str, default: Optional[str] = None) -> Optional[str]:
+def safe_input(prompt: str, default: str | None = None) -> str | None:
     try:
         if not sys.stdin or not sys.stdin.isatty():
             return default
@@ -62,8 +60,8 @@ def lesson_builtins_extended() -> None:
     print("complex(2,3) ->", complex(2, 3))
     class Bag: ...
     bag = Bag()
-    setattr(bag, "item", "book")
-    print("getattr(bag,'item') ->", getattr(bag, "item"))
+    bag.item = "book"
+    print("getattr(bag,'item') ->", bag.item)
     delattr(bag, "item")
     print("hasattr after delattr ->", hasattr(bag, "item"))
     print("dict(a=1,b=2) ->", dict(a=1, b=2))
@@ -107,8 +105,8 @@ def lesson_builtins_extended() -> None:
     sl = slice(1, 3)
     print("[10,20,30,40][1:3] == [10,20,30,40][sl] ->", [10, 20, 30, 40][sl])
     print("sorted([3,1,2]) ->", sorted([3, 1, 2]))
-    print("type('hi') ->", type("hi"))
-    print("list(zip([1,2],[3,4])) ->", list(zip([1, 2], [3, 4])))
+    print("type('hi') ->", str)
+    print("list(zip([1,2],[3,4])) ->", list(zip([1, 2], [3, 4], strict=False)))
 
 # SECTION B — Random Module (from beginner to expert)
 
@@ -152,6 +150,7 @@ def lesson_random_distributions() -> None:
 
 import statistics
 
+
 def lesson_statistics() -> None:
     block("C) statistics: central tendency and spread")
     data = [10, 20, 30, 40, 50]
@@ -186,7 +185,7 @@ def fib_recursive_naive(n: int) -> int:
     if n in (0, 1): return n
     return fib_recursive_naive(n - 1) + fib_recursive_naive(n - 2)
 
-@lru_cache(maxsize=None)
+@cache
 def fib_recursive_memo(n: int) -> int:
     if n < 0: raise ValueError
     if n in (0, 1): return n
@@ -199,10 +198,10 @@ def fib_bottom_up(n: int) -> int:
     for _ in range(2, n + 1): a, b = b, a + b
     return b
 
-def permutations_backtracking(items: List[Any]) -> List[List[Any]]:
-    result: List[List[Any]] = []
+def permutations_backtracking(items: list[Any]) -> list[list[Any]]:
+    result: list[list[Any]] = []
     used = [False] * len(items)
-    path: List[Any] = []
+    path: list[Any] = []
     def dfs():
         if len(path) == len(items):
             result.append(path.copy()); return
@@ -211,8 +210,8 @@ def permutations_backtracking(items: List[Any]) -> List[List[Any]]:
             used[i] = True; path.append(v); dfs(); path.pop(); used[i] = False
     dfs(); return result
 
-def n_queens(n: int = 4) -> List[List[int]]:
-    cols: List[int] = []; solutions: List[List[int]] = []
+def n_queens(n: int = 4) -> list[list[int]]:
+    cols: list[int] = []; solutions: list[list[int]] = []
     def safe(c: int) -> bool:
         r = len(cols)
         for pr, pc in enumerate(cols):
@@ -304,7 +303,7 @@ def card_graph_logarithm() -> Card:
         b=2; xs=[0.5,1,2,4,8]; ys=[math.log(x,b) for x in xs]; print("x:",xs); print("log_2(x):",ys)
     return Card("Graph Logarithm","Slow growth; passes (1,0).","y=log_b(x)","Compress big ranges.",demo)
 
-CARDS: List[Card] = [
+CARDS: list[Card] = [
     card_logarithm_definition(), card_exponential_form(), card_product_rule(),
     card_quotient_rule(), card_power_rule(), card_change_of_base(),
     card_log_of_one(), card_log_of_base(), card_solve_exponential(),
@@ -341,7 +340,7 @@ def lab_half_life(N0: float = 100.0, half_life: float = 5.0, t: float = 12.0) ->
 # SECTION F — Flashcards Quiz Game (DS/ML Q&A condensed)
 #   (Slimmed to essentials to fit in one suite; safe in non‑interactive runs.)
 
-QA_BANK: List[Tuple[str, str]] = [
+QA_BANK: list[tuple[str, str]] = [
     ("Build logistic regression?", "Use sklearn.linear_model.LogisticRegression; fit on X,y."),
     ("LinearRegression interpret?", "Coefficients show effect sizes; intercept baseline."),
     ("Data libs?", "NumPy, SciPy, pandas, scikit‑learn, Matplotlib, Seaborn."),
@@ -351,11 +350,11 @@ QA_BANK: List[Tuple[str, str]] = [
     ("Random Forest params to tune?", "n_estimators, max_depth, min_samples_split, min_samples_leaf, max_features."),
 ]
 
-def _choice_options(correct: str, pool: Sequence[str], k: int = 4) -> List[str]:
+def _choice_options(correct: str, pool: Sequence[str], k: int = 4) -> list[str]:
     alt = [x for x in pool if x != correct]; picks = random.sample(alt, min(len(alt), k-1))
     opts = picks + [correct]; random.shuffle(opts); return opts
 
-def game_mc(limit: Optional[int] = None) -> None:
+def game_mc(limit: int | None = None) -> None:
     block("F) Flashcards: Multiple Choice")
     random.shuffle(QA_BANK); all_answers=[a for _,a in QA_BANK]
     correct=0; total=0
@@ -410,7 +409,7 @@ def menu_flashcards() -> None:
 
 # Entry point
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="The Python Lesson — unified suite")
     parser.add_argument("--auto", action="store_true", help="run a brief non‑interactive tour and exit")
     args = parser.parse_args(argv)

@@ -4,12 +4,12 @@
 
 import os
 import time
-import re
-import requests
-import pandas as pd
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 from datetime import datetime
+from urllib.parse import urljoin
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RAW_DATA_DIR = os.path.join(BASE_DIR, "raw_data")

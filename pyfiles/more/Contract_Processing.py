@@ -7,6 +7,7 @@ Extracts key clauses, identifies potential risks, and generates summary reports.
 """
 
 import logging
+
 import pandas as pd
 import requests
 
@@ -97,7 +98,7 @@ if __name__ == "__main__":
         if clauses:
             risk_df = classify_risk(clauses)
             summary = generate_summary(risk_df)
-            
+
             print("\nContract Risk Report:")
             print(risk_df)
             print("\nSummary:")

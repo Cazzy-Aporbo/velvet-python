@@ -1,5 +1,6 @@
-import pandas as pd
 import os
+
+import pandas as pd
 
 file_path = "sample_data.csv"
 

@@ -45,9 +45,7 @@ def save_combined_data(df):
     latest_path = os.path.join(OUTPUT_DIR, "womens_health_combined_latest.csv")
     df.to_csv(combined_path, index=False)
     df.to_csv(latest_path, index=False)
-    print(f"📁 Saved integrated dataset to:
-  - {combined_path}
-  - {latest_path}")
+    print(f"Saved integrated dataset to:\n  - {combined_path}\n  - {latest_path}")
 
 def main():
     print("🔄 Starting integration of specified processed data files...")

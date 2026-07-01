@@ -1,7 +1,9 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-from datetime import datetime
 import random
+from datetime import datetime
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
 
 def get_flight_data():
     # Simulate flight data (replace with real API call)

@@ -32,20 +32,15 @@ $ python linear_regression_four_ways.py
 from __future__ import annotations
 
 import os
-import sys
-import math
 import textwrap
 from dataclasses import dataclass
-from typing import Dict, Tuple, List
 from pathlib import Path
 
-
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 from sklearn.datasets import make_regression
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # statsmodels is optional; we degrade gracefully if missing
 try:
@@ -66,13 +61,13 @@ class FitResult:
     mae: float
 
 
-def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
+def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
     """'#RRGGBB' -> (R, G, B) ints."""
     hex_color = hex_color.strip().lstrip("#")
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))  # type: ignore
 
 
-def _rgb_to_hex(rgb: Tuple[int, int, int]) -> str:
+def _rgb_to_hex(rgb: tuple[int, int, int]) -> str:
     """(R, G, B) -> '#RRGGBB'."""
     return "#{:02X}{:02X}{:02X}".format(*rgb)
 
@@ -82,7 +77,7 @@ def _interp(a: int, b: int, t: float) -> int:
     return int(round(a + (b - a) * t))
 
 
-def make_ombre(start_hex: str, end_hex: str, n: int) -> List[str]:
+def make_ombre(start_hex: str, end_hex: str, n: int) -> list[str]:
     """
     Create n-step gradient from start_hex to end_hex inclusive.
     Example: make_ombre('#FFB5CC', '#D4FFE4', 100)
@@ -98,7 +93,7 @@ def make_ombre(start_hex: str, end_hex: str, n: int) -> List[str]:
     return steps
 
 
-def choose_palette() -> Dict[str, List[str]]:
+def choose_palette() -> dict[str, list[str]]:
     """
     Ask user for a theme. Return a small dictionary of ombre lists we can use.
     """
@@ -122,7 +117,7 @@ def choose_palette() -> Dict[str, List[str]]:
     return {"scatter": scatter_ombre, "line": line_ombre}
 
 
-def build_dataset(n: int = 120, random_state: int = 7) -> Tuple[np.ndarray, np.ndarray]:
+def build_dataset(n: int = 120, random_state: int = 7) -> tuple[np.ndarray, np.ndarray]:
     """
     Create a 1D linear dataset with noise and a few deliberate outliers.
     Returns:
@@ -264,7 +259,7 @@ def ensure_output_dir(path: str | None = None) -> str:
 
 
 def fig1_basic_scatter_and_line(
-    X: np.ndarray, y: np.ndarray, result: FitResult, palette: Dict[str, List[str]], outdir: str
+    X: np.ndarray, y: np.ndarray, result: FitResult, palette: dict[str, list[str]], outdir: str
 ) -> None:
     """
     F1: foundational view: scatter + best fit line.
@@ -295,7 +290,7 @@ def fig1_basic_scatter_and_line(
 
 
 def fig2_titled_with_reading_guide(
-    X: np.ndarray, y: np.ndarray, result: FitResult, palette: Dict[str, List[str]], outdir: str
+    X: np.ndarray, y: np.ndarray, result: FitResult, palette: dict[str, list[str]], outdir: str
 ) -> None:
     """
     F2: titles, axis labels, and an inline 'how to read' panel.
@@ -338,7 +333,7 @@ def fig2_titled_with_reading_guide(
 
 
 def fig3_highlight_outliers(
-    X: np.ndarray, y: np.ndarray, result: FitResult, palette: Dict[str, List[str]], outdir: str, z_thresh: float = 2.5
+    X: np.ndarray, y: np.ndarray, result: FitResult, palette: dict[str, list[str]], outdir: str, z_thresh: float = 2.5
 ) -> None:
     """
     F3: highlight probable outliers using standardized residuals (|z| >= z_thresh).
@@ -355,7 +350,7 @@ def fig3_highlight_outliers(
 
     # Highlight outliers with rings + labels
     plt.scatter(x[outlier_mask], y[outlier_mask], s=80, facecolor="none", edgecolor="#C00000", linewidth=1.8, label=f"outliers (|z|≥{z_thresh})")
-    for xi, yi, zi in zip(x[outlier_mask], y[outlier_mask], z[outlier_mask]):
+    for xi, yi, zi in zip(x[outlier_mask], y[outlier_mask], z[outlier_mask], strict=False):
         plt.annotate(f"z={zi:.1f}", (xi, yi), textcoords="offset points", xytext=(6, 6), fontsize=8, color="#9A0000")
 
     # Fitted line
@@ -376,7 +371,7 @@ def fig3_highlight_outliers(
 
 
 def fig4_residuals_vs_fitted(
-    X: np.ndarray, y: np.ndarray, result: FitResult, palette: Dict[str, List[str]], outdir: str
+    X: np.ndarray, y: np.ndarray, result: FitResult, palette: dict[str, list[str]], outdir: str
 ) -> None:
     """
     F4: residuals vs fitted — a diagnostic view.
@@ -426,7 +421,7 @@ def main() -> int:
     X, y = build_dataset(n=140, random_state=42)
 
     # 2) Fit models in four ways
-    fits: List[FitResult] = []
+    fits: list[FitResult] = []
     fits.append(fit_normal_equation(X, y))
     fits.append(fit_gradient_descent(X, y, lr=8e-4, epochs=12000))
     fits.append(fit_sklearn(X, y))

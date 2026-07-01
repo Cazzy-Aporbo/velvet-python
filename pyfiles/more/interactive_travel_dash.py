@@ -1,6 +1,7 @@
-import pandas as pd
 import random
 from datetime import datetime
+
+import pandas as pd
 import plotly.express as px
 import plotly.io as pio
 

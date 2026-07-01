@@ -10,12 +10,12 @@ data to sound. This is meant to inspire, educate, and demonstrate mastery across
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 # Quantum Random Numbers
 def demo_quantum_rng():
     try:
-        from qiskit import QuantumCircuit, Aer, execute
+        from qiskit import Aer, QuantumCircuit, execute
         qc = QuantumCircuit(1,1)
         qc.h(0)
         qc.measure(0,0)
@@ -29,8 +29,8 @@ def demo_quantum_rng():
 # Topological Data Analysis
 def demo_topology():
     try:
-        from ripser import ripser
         import persim
+        from ripser import ripser
         data = np.random.rand(50,3)
         diagrams = ripser(data)['dgms']
         persim.plot_diagrams(diagrams, show=True)
@@ -56,8 +56,8 @@ def demo_graph_nn():
 # Lorenz Attractor Simulation in 3D
 def demo_lorenz_attractor():
     try:
-        from scipy.integrate import solve_ivp
         import pyvista as pv
+        from scipy.integrate import solve_ivp
         def lorenz(t, state, sigma=10, beta=8/3, rho=28):
             x, y, z = state
             dx = sigma*(y-x)
@@ -78,9 +78,8 @@ def demo_lorenz_attractor():
 # Musical Data Science from Numeric Data
 def demo_dna_music():
     try:
-        from Bio.Seq import Seq
-        import librosa
         import soundfile as sf
+        from Bio.Seq import Seq
         seq = Seq("AGCTAGCAGT")
         notes = [ord(c)%12+60 for c in seq] # map letters to MIDI notes
         y = np.sin(2*np.pi*np.linspace(0,1,22050)*np.array(notes)[:,None])

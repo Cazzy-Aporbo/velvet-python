@@ -1,374 +1,264 @@
-<div align="center">
+<h1 align="center" style="color:#9d7fbf;">velvet-python</h1>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,16,18,20,22&height=220&section=header&text=Velvet%20Python&fontSize=80&animation=fadeIn&fontAlignY=35&desc=Where%20curiosity%20becomes%20code&descAlignY=56&descSize=22&fontColor=8B7D8B" />
+<p align="center" style="color:#74608a;">
+From clean examples to reproducible systems.
+</p>
 
-<br>
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-F4DEFF?style=for-the-badge&logo=python&logoColor=5B4B79&labelColor=D8C5F0" alt="Python"/>
+  <img src="https://img.shields.io/badge/Tests-Pytest-F2E2FF?style=for-the-badge&logo=pytest&logoColor=4B3B66&labelColor=E8D4F4" alt="Pytest"/>
+  <img src="https://img.shields.io/badge/Quality-Ruff-F8E5FF?style=for-the-badge&logo=ruff&logoColor=5A4B6C&labelColor=EED9F7" alt="Ruff"/>
+  <img src="https://img.shields.io/badge/License-MIT-EED9FF?style=for-the-badge&logo=open-source&labelColor=DCC2EE" alt="License"/>
+</p>
 
-[![CI](https://img.shields.io/github/actions/workflow/status/Cazzy-Aporbo/velvet-python/ci.yml?style=for-the-badge&label=CI&color=EDE5FF&labelColor=706B70)](https://github.com/Cazzy-Aporbo/velvet-python/actions)
-&nbsp;
-[![Python](https://img.shields.io/badge/Python-3.10+-FFE4E1?style=for-the-badge&logo=python&logoColor=706B70)](https://www.python.org/)
-&nbsp;
-[![License](https://img.shields.io/badge/License-MIT-F0E6FF?style=for-the-badge)](LICENSE)
-&nbsp;
-[![Last Commit](https://img.shields.io/github/last-commit/Cazzy-Aporbo/velvet-python?style=for-the-badge&color=FFEFD5&labelColor=706B70)](https://github.com/Cazzy-Aporbo/velvet-python/commits)
+## What this repository is for
 
-<br>
+`velvet-python` is a teaching-oriented but production-minded project where code, tests, and CLI outputs are part of the curriculum.
 
-*A personal Python laboratory. Classification algorithms built from first principles.*
-*Recursive thinking explored six ways. Sankey diagrams from real data.*
-*Games that teach chemistry through electron physics.*
-*Everything here runs.*
+It is designed around one principle:
 
-</div>
+- **Every useful claim has a reproducible artifact**
 
-<br>
+You learn by reading code, running the same experiment twice, and checking whether your results match the stored manifests.
 
-## The Idea
+## Why this is different
 
-Most Python repositories are either tutorials that simplify past the point of usefulness, or production code that's impenetrable without three months of onboarding. This is neither.
+Most learning repositories end at “how to make it run.”
 
-Every module in this repo exists because I needed to understand something deeply enough to build it from scratch — no frameworks hiding the math, no black-box imports replacing the thinking. When I implement Naive Bayes, the Bayesian math is in the docstring. When I write a TF-IDF classifier, the vector algebra is visible in every method. When I compute Fibonacci, I do it six different ways and time them all.
+This one keeps going until the behavior is explainable:
 
-Started January 2025. Still going.
+- deterministic dataset contracts in `src/data_utils.py`
+- reproducible train/test splits in `src/pipeline.py`
+- model sweep automation in `scripts/run_experiments.py`
+- dataset audits for input quality in `scripts/dataset_audit.py`
+- tests that pin expected behavior in `tests/`
 
-<br>
+The result is a practical path for:
 
-## Architecture
+- students who want stronger habits than random snippets,
+- data engineers who need to keep assumptions explicit,
+- interview candidates who want to explain tradeoffs under pressure.
 
-<div align="center">
+## Repository map
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#FFE4E1', 'primaryBorderColor':'#8B7D8B', 'primaryTextColor':'#4A4A4A', 'lineColor':'#DDA0DD', 'fontFamily':'Georgia, serif'}}}%%
-
-graph LR
-    subgraph Core ["src/"]
-        A[ai.py<br/><i>3 classifiers</i>] --> B[ml_pipeline.py<br/><i>TF-IDF + FreqModel</i>]
-        B --> C[data_utils.py<br/><i>load · split · validate</i>]
-    end
-
-    subgraph Tests ["tests/"]
-        D[Unit Tests] --> E[Benchmarks]
-        E --> F[Integration]
-    end
-
-    subgraph Lab ["pyfiles/"]
-        G[recursion_masterclass.py<br/><i>6 approaches</i>]
-        H[variable_atlas.py<br/><i>stats → Python bridge</i>]
-        I[python_lessons_suite.py<br/><i>complete builtins tour</i>]
-    end
-
-    subgraph Games ["games/"]
-        J[Molecular Cascade<br/><i>electron physics</i>]
-        K[Backprop Adventure<br/><i>neural net learning</i>]
-        L[Quantum Navigator<br/><i>maze algorithms</i>]
-    end
-
-    subgraph Tools ["scripts/"]
-        M[Environment Builders]
-        N[Import Encyclopedia]
-        O[Sankey Visualizations]
-    end
-
-    Core --> Tests
-    Lab --> Core
-    Games --> Lab
-    Tools --> Core
-
-    style Core fill:#FFE4E1,stroke:#8B7D8B,stroke-width:2px
-    style Tests fill:#EDE5FF,stroke:#8B7D8B,stroke-width:2px
-    style Lab fill:#F0E6FF,stroke:#8B7D8B,stroke-width:2px
-    style Games fill:#FFF0F5,stroke:#8B7D8B,stroke-width:2px
-    style Tools fill:#FFEFD5,stroke:#8B7D8B,stroke-width:2px
+```text
+velvet-python/
+├─ src/
+│  ├─ ai.py              Rule/Bayes/Cosine classifiers
+│  ├─ data_utils.py      Dataset loading and deterministic validation
+│  ├─ ml_pipeline.py     Feature + model wrappers
+│  ├─ pipeline.py        Experiment orchestration and manifests
+│  └─ __init__.py
+├─ scripts/
+│  ├─ run_experiments.py  CLI baseline sweep + JSON/CVS outputs
+│  ├─ dataset_audit.py    Data health checks and hashable evidence
+│  └─ other demos for exploration
+├─ tests/
+│  ├─ pipeline and data utility tests
+│  └─ CLI and benchmark smoke checks
+├─ docs/
+│  ├─ learning-path.md
+│  ├─ experiment-ledger.md
+│  └─ practice-labs.md
+├─ pyfiles/               Reference implementations and exercises
+├─ makefile              Quality and onboarding commands
+└─ README.md
 ```
 
-</div>
+## Core engineering ideas (in practice)
 
-<br>
+### 1) Deterministic data and fast failure
 
-## What Lives Here
+`load_dataset`, `load_csv`, and `validate_dataset` enforce structure before any model sees data:
 
-<div align="center">
-<table>
-<tr>
-<td width="50%" valign="top">
+- every row must be `(text, label)`
+- empty text/labels fail immediately
+- duplicated, missing, malformed, and malformed header cases are explicit
 
-### `src/` — The Core Library
+No implicit coercion is the goal. If a dataset is wrong, you want to know early.
 
-**Three classification strategies in `ai.py`:**
+### 2) Reproducible experiment runs
 
-| Strategy | Math | Lines |
-|:---------|:-----|------:|
-| Rule-based | Pattern matching | ~15 |
-| Naive Bayes | P(c\|text) ∝ Π P(w\|c) · P(c) | ~70 |
-| Cosine Similarity | cos(θ) = A·B / (\|\|A\|\| · \|\|B\|\|) | ~60 |
+`run_classification_pipeline` returns an `ExperimentRun` with stable metadata:
 
-**Two ML pipelines in `ml_pipeline.py`:**
+- `seed`, `test_ratio`, and split sizes
+- split results, accuracy, class coverage
+- confusion matrix and dataset hash
+- run-specific `parameters`
 
-| Model | Approach | Key Insight |
-|:------|:---------|:------------|
-| WordFrequencyModel | Token overlap scoring | Baseline — fast, transparent |
-| TFIDFModel | TF·IDF weighted cosine | Rare words matter most |
+This makes model choices defensible and reviewable.
 
-Plus: `confusion_matrix()`, `evaluate()`, `train_test_split()` — all from scratch, no sklearn.
+### 3) Evidence-first outputs
 
-</td>
-<td width="50%" valign="top">
+Every non-trivial script writes machine-readable outputs:
 
-### `pyfiles/` — The Sketchbook
+- JSON manifests per run (`artifacts/*.json`)
+- optional `summary.csv` for spreadsheet comparison
+- optional dataset audit report (`dataset_audit.py --write-json`)
 
-**`recursion_masterclass.py`** — Factorial and Fibonacci computed six ways:
-- Naive recursion (O(2ⁿ) — feel the pain)
-- Memoized with `@lru_cache`
-- Bottom-up dynamic programming
-- Explicit stack (no recursion at all)
-- Tail-call style accumulator
-- Mutual recursion (`is_even` ↔ `is_odd`)
+If you cannot compare run artifacts over time, you are guessing.
 
-Plus: N-Queens backtracking, permutation generation, DFS tree traversal. Every function has inline tests.
+## Quick start (10-minute onboarding)
 
-**`variable_atlas.py`** — Variables as contracts, not boxes. Maps statistical notation (y, X, β) to Python with dataclasses, validation, and a complete OLS regression built on the standard library.
-
-**`python_lessons_suite.py`** — A 493-line teaching program that tours Python's builtins with live demonstrations.
-
-</td>
-</tr>
-</table>
-</div>
-
-<div align="center">
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### `scripts/` — Standalone Tools
-
-- **Environment Builders** — Audit your Python installation, generate reproducible setups, test package compatibility
-- **Import Encyclopedia** — Map every module in Python's standard library
-- **Sankey Toolkit** — Plotly-based flow visualizations with Titanic passenger data
-- **JH Presentation** — A talk I gave at Johns Hopkins
-- **Games** — Backpropagation adventure, pattern recognition challenges, recursive thinking puzzles, chaotic space navigation
-
-</td>
-<td width="50%" valign="top">
-
-### `data/` — Real Datasets
-
-| Domain | Contents |
-|:-------|:---------|
-| Health | Patient records, breast cancer research, supplement studies |
-| NLP | Doctor-patient dialogue corpora |
-| Finance | Time series, market data |
-| Epidemiology | Our World in Data exports |
-| Demographics | Census data, fisherman mercury studies |
-| Transport | Airline passenger datasets |
-
-Nothing synthetic unless explicitly labeled.
-
-</td>
-</tr>
-</table>
-</div>
-
-<div align="center">
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### `pyfiles/games/` — Learning Through Play
-
-| Game | What It Teaches |
-|:-----|:----------------|
-| Molecular Cascade | Electron shells, valence bonds, chain reactions — via Pygame |
-| Cardiovascular Model | Hemodynamics simulation |
-| Quantum Navigator | Maze solving with quantum-inspired algorithms |
-| Crystal Engine | Lattice structures and symmetry |
-| Aerospace Systems | Orbital mechanics fundamentals |
-
-</td>
-<td width="50%" valign="top">
-
-### `tests/` — The Proof
-
-```
-tests/
-├── test_ai.py                  # 3 classifiers, parametrized
-├── test_ml_pipeline.py         # Both models + confusion matrix
-├── test_pipeline_integration.py # train → split → evaluate
-├── test_benchmark.py           # Speed gates
-├── test_benchmark_performance.py
-└── test_example.py             # Smoke tests
-```
-
-Every `src/` function has a corresponding test.
-Benchmarks enforce sub-100ms training and sub-500ms for 9000 predictions.
-
-</td>
-</tr>
-</table>
-</div>
-
-<br>
-
-## Quick Start
+### Setup
 
 ```bash
-git clone https://github.com/Cazzy-Aporbo/velvet-python.git
-cd velvet-python
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-pytest tests/ -v
+pip install -e ".[dev]"
 ```
 
-Or with the Makefile:
+### First quality checks
 
 ```bash
-make install    # pip install -r requirements.txt
-make test       # pytest tests/ -v --tb=short
-make lint       # ruff check src/ tests/
-make check      # lint + test in one pass
-make clean      # remove __pycache__, .pytest_cache, etc.
+make install
+make check
 ```
 
-<br>
+### Run one learning sweep
 
-## Code Samples
-
-<div align="center">
-
-### Naive Bayes — The Math Behind Spam Filters
-
-</div>
-
-```python
-from src.ai import NaiveBayesClassifier
-
-nb = NaiveBayesClassifier(alpha=1.0)  # Laplace smoothing
-
-nb.train(
-    texts=["great movie loved it", "terrible waste of time",
-           "amazing performance", "boring and dull"],
-    labels=["positive", "negative", "positive", "negative"],
-)
-
-# P(positive | "loved the movie") ∝ P("loved"|pos) · P("the"|pos) · P("movie"|pos) · P(pos)
-nb.predict("loved the movie")           # → "positive"
-nb.predict_proba("loved the movie")     # → {"positive": 0.83, "negative": 0.17}
+```bash
+python scripts/run_experiments.py --epochs 2 --seed 42
 ```
 
-<div align="center">
+Artifacts are written to `artifacts/`.
 
-### TF-IDF — Why Rare Words Matter
+### Generate a dataset audit profile
 
-</div>
-
-```python
-from src.ml_pipeline import TFIDFModel, evaluate
-from src.data_utils import load_dataset, train_test_split
-
-data = load_dataset()
-train, test = train_test_split(data, test_ratio=0.3, seed=42)
-
-model = TFIDFModel()
-model.train(
-    texts=[t for t, _ in train],
-    labels=[l for _, l in train],
-)
-
-# TF("learning", doc) = count("learning") / len(doc)
-# IDF("learning") = log(N / docs_containing("learning"))
-# Weight = TF × IDF — common words get low weight, distinctive words get high weight
-
-accuracy = evaluate(model, test)
+```bash
+python scripts/dataset_audit.py --source builtin --batch-size 2 --write-json artifacts/dataset.json
 ```
 
-<div align="center">
+### Run the CLI pipeline from Typer
 
-### Recursion — Six Ways to Compute the Same Thing
-
-</div>
-
-```python
-# From pyfiles/recursion_masterclass.py
-
-factorial_recursive(6)           # 720  — classic, hits recursion limit at ~1000
-factorial_iterative(6)           # 720  — no stack overhead
-factorial_with_explicit_stack(6) # 720  — recursion without recursion
-factorial_tail_like(6)           # 720  — accumulator pattern (Python doesn't optimize TCO, but the pattern teaches)
-
-fib_recursive_naive(30)          # 832040 — takes ~0.3s (O(2ⁿ) — feel it)
-fib_recursive_memo(30)           # 832040 — takes ~0.00001s (O(n) with @lru_cache)
-fib_bottom_up(30)                # 832040 — takes ~0.00001s (O(n), O(1) space)
+```bash
+python CLI.py pipeline --epochs 2 --seed 44 --output artifacts
 ```
 
-<br>
+## How to interpret outputs (so you can trust results)
 
-## Philosophy
+### Manifest fields (baseline)
 
-<div align="center">
-<table>
-<tr>
-<td width="33%" align="center" style="padding: 20px;">
+- `run_id`, `started_at`, `finished_at`
+- `model_name`, `model_type`
+- `seed`, `test_ratio`, `train_size`, `test_size`
+- `accuracy`, `confusion_matrix`, `class_coverage`
+- `dataset_profile` (quality signals like duplicate rate and label imbalance)
+- `dataset_hash`
 
-**Build the math first**
+### Practical interpretation rules
 
-If I can't derive it on paper,
-I don't trust it in code.
-Every classifier in `src/ai.py`
-has its formula in the docstring.
+- **Accuracy changes while split is fixed?** Check model behavior and preprocessing first.
+- **Confusion gets worse but accuracy looks stable?** Verify class balance and label coverage.
+- **`dataset_hash` changes without intent?** Freeze upstream corpus source and rerun from scratch.
 
-</td>
-<td width="33%" align="center" style="padding: 20px;">
+Use these checks before any “improvement” claim.
 
-**Multiple approaches**
+## Learning by role
 
-One solution means you memorized it.
-Three solutions means you understand it.
-Fibonacci six ways. Classification three ways.
-The comparison *is* the lesson.
+| Role | First pass | Second pass |
+|---|---|---|
+| Beginner developer | `CLI.py pipeline`, `src/data_utils.py` | `tests/test_data_pipeline_utils.py`, `test_run_experiments_cli.py` |
+| Data engineer | `dataset_audit.py`, split strategy + hash checks | add a malformed CSV case to tests and assert failure behavior |
+| ML engineer | `run_epochs`, builder registry, manifest schema | compare model runs across seeds and record variance |
+| Interview prep | failure patterns in `docs/experiment-ledger.md` | explain one run where variance improves accuracy but hurts recall |
 
-</td>
-<td width="33%" align="center" style="padding: 20px;">
+## Practical workflow for contributors
 
-**Everything runs**
+1. Add or refactor one change.
+2. Add/extend one test that captures behavior.
+3. Run:
 
-No pseudocode. No placeholder functions.
-No `# TODO: implement this`.
-If it's in this repo, `python file.py`
-produces output.
+```bash
+make lint
+autotest=$(make test-fast)
+```
 
-</td>
-</tr>
-</table>
-</div>
+4. Re-run the relevant workflow and commit manifest evidence in your PR notes.
 
-<br>
+## Added utility: audit + lab-oriented scripts
 
-## Contributing
+### `scripts/run_experiments.py`
 
-See [`contributions.md`](contributions.md). The short version: fork, branch, test, PR. Format with ruff. If you add code to `src/`, add a test to `tests/`.
+- adds model filters with `--models`
+- stores one manifest per model x epoch
+- optional `--summary-csv` for easy review
+
+### `scripts/dataset_audit.py`
+
+- computes dataset quality profile
+- supports builtin dataset and CSV input
+- optional preview of batch extraction
+- optional JSON report for auditability
+
+### `docs/practice-labs.md`
+
+- staged practical exercises
+- role-specific prompts
+- evidence checklists for each task
+
+## Testing strategy
+
+Use one command for the gate:
+
+```bash
+make check
+```
+
+For deeper evidence before major changes, use the focused verification set:
+
+```bash
+pytest \
+  tests/test_data_pipeline_utils.py \
+  tests/test_dataset_audit_cli.py \
+  tests/test_run_experiments_cli.py \
+  tests/test_algorithm_guide_registry.py \
+  tests/test_data_utils_and_ingestion.py \
+  tests/test_cli_recommend_command.py
+```
+
+Current test scope:
+
+- `tests/test_data_pipeline_utils.py` — data contracts and batching
+- `tests/test_run_experiments_cli.py` — reproducible scripts and outputs
+- `tests/test_dataset_audit_cli.py` — dataset health CLI behavior
+- `tests/test_algorithm_guide_registry.py` — recommendation + registry consistency
+- `tests/test_data_utils_and_ingestion.py` — CSV/data integrity and hash invariants
+- `tests/test_cli_recommend_command.py` — recommendation flow from the command line
+- core baseline and integration tests in existing suite
+
+## Roadmap (pragmatic)
+
+### 1–2 days
+
+- add two small model variants in a safe way
+- expand bad-input cases in dataset loading tests
+- tighten summary reporting defaults
+
+### 1–2 weeks
+
+- add `schema_version` and loader provenance to manifests
+- include replayability checks (rerun and diff hash behavior)
+- add a small benchmarking guide for CPU/runtime drift
+
+### 1–3 months
+
+- add lightweight streaming demo input using fixed-size batches
+- grow the lab docs into topic tracks for fairness, observability, and release-readiness
+- publish one reference “engineering playbook” PR example with evidence
+
+## Next read
+
+- [docs/learning-path.md](docs/learning-path.md)
+- [docs/experiment-ledger.md](docs/experiment-ledger.md)
+- [docs/practice-labs.md](docs/practice-labs.md)
+- [contributions.md](contributions.md)
 
 ## License
 
-MIT (code) &nbsp;·&nbsp; CC-BY-4.0 (documentation and datasets)
+MIT for source code.
 
-<div align="center">
+## Attribution
 
-<br>
-
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,16,18,20,22&height=100&section=footer&animation=fadeIn&fontColor=8B7D8B" />
-
-**Cazzy Aporbo** · Started January 2025
-
-<a href="https://github.com/Cazzy-Aporbo/velvet-python/issues">
-<img src="https://img.shields.io/badge/Questions-Open_Issue-FFE4E1?style=flat-square&labelColor=706B70" />
-</a>
-&nbsp;
-<a href="https://github.com/Cazzy-Aporbo/velvet-python/stargazers">
-<img src="https://img.shields.io/badge/Star-For_Updates-EDE5FF?style=flat-square&labelColor=706B70" />
-</a>
-&nbsp;
-<a href="https://github.com/Cazzy-Aporbo/velvet-python/fork">
-<img src="https://img.shields.io/badge/Fork-Contribute-F0E6FF?style=flat-square&labelColor=706B70" />
-</a>
-
-</div>
+Built and maintained by [Cazzy Aporbo](https://github.com/Cazzy-Aporbo).

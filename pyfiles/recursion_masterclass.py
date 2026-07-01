@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import sys
-from functools import lru_cache
-from typing import Any, Dict, List
+from functools import cache
+from typing import Any
 
 
 def factorial_recursive(n: int) -> int:
@@ -30,7 +29,7 @@ def fib_recursive_naive(n: int) -> int:
     return fib_recursive_naive(n - 1) + fib_recursive_naive(n - 2)
 
 
-@lru_cache(maxsize=None)
+@cache
 def fib_recursive_memo(n: int) -> int:
     if n < 0:
         raise ValueError("Fibonacci is undefined for negative integers")
@@ -50,10 +49,10 @@ def fib_bottom_up(n: int) -> int:
     return b
 
 
-def permutations_backtracking(items: List[Any]) -> List[List[Any]]:
-    result: List[List[Any]] = []
+def permutations_backtracking(items: list[Any]) -> list[list[Any]]:
+    result: list[list[Any]] = []
     used = [False] * len(items)
-    path: List[Any] = []
+    path: list[Any] = []
 
     def dfs() -> None:
         if len(path) == len(items):
@@ -72,9 +71,9 @@ def permutations_backtracking(items: List[Any]) -> List[List[Any]]:
     return result
 
 
-def n_queens(n: int = 4) -> List[List[int]]:
-    cols: List[int] = []
-    solutions: List[List[int]] = []
+def n_queens(n: int = 4) -> list[list[int]]:
+    cols: list[int] = []
+    solutions: list[list[int]] = []
 
     def safe(c: int) -> bool:
         r = len(cols)
@@ -97,10 +96,10 @@ def n_queens(n: int = 4) -> List[List[int]]:
     return solutions
 
 
-def dfs_tree(tree: Dict[str, Any]) -> List[str]:
-    order: List[str] = []
+def dfs_tree(tree: dict[str, Any]) -> list[str]:
+    order: list[str] = []
 
-    def visit(node: Dict[str, Any]) -> None:
+    def visit(node: dict[str, Any]) -> None:
         order.append(node["name"])
         for child in node.get("children", []):
             visit(child)
@@ -124,7 +123,7 @@ def is_odd(n: int) -> bool:
 def factorial_with_explicit_stack(n: int) -> int:
     if n < 0:
         raise ValueError("factorial is undefined for negative integers")
-    stack: List[int] = []
+    stack: list[int] = []
     while n > 1:
         stack.append(n)
         n -= 1

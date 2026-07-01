@@ -800,4 +800,19 @@ def reverse_tail(s, accumulator=""):
     return reverse_tail(s[1:], s[0] + accumulator)  # Build result forward
         """)
         
-        print("\nKEY INSIGHT: Instead of building the result on the way back,
+        print("\nKEY INSIGHT: Instead of building the result on the way back,")
+        print("tail recursion carries the partial answer forward in an accumulator.")
+        print("That keeps call frames shallow and avoids stack growth.")
+
+        if (
+            "def reverse_tail" in solution.lower()
+            and "accumulator" in solution.lower()
+            and "return" in solution.lower()
+        ):
+            print("Great job spotting the accumulator pattern.")
+            print("\nTRACE reverse_tail('abcd', ''):")
+            self.trace_tail_sum(['a', 'b', 'c', 'd'], "")
+            return 1
+
+        print("Build the function with an explicit accumulator argument.")
+        return 0

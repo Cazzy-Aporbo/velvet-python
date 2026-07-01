@@ -10,23 +10,14 @@ Please use your imaginaion
 
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.patches import Circle, Ellipse, Polygon, FancyBboxPatch, Wedge
-from matplotlib.collections import LineCollection, PatchCollection
-from matplotlib.path import Path
-import matplotlib.patches as mpatches
-from scipy.interpolate import splprep, splev
-from scipy.ndimage import gaussian_filter
-from dataclasses import dataclass, field
-from typing import List, Dict, Tuple, Optional, Any
-from collections import deque, defaultdict
-from enum import Enum, auto
-import colorsys
-import math
 import random
-import cmath
+from collections import defaultdict, deque
+from dataclasses import dataclass, field
+from typing import Any
+
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
+import numpy as np
 
 # Aurora Enhanced Palette - Darker backgrounds with vivid aurora colors
 AURORA_PALETTE = {
@@ -63,23 +54,23 @@ AURORA_PALETTE = {
 @dataclass
 class SolarWindParticle:
     """Charged particle from solar wind interacting with magnetosphere"""
-    
+
     position: np.ndarray
     velocity: np.ndarray
     charge: float = 1.0  # +1 for proton, -1 for electron
     energy: float = 1.0
     particle_type: str = 'proton'  # proton, electron, alpha
     color: str = '#FFE8D6'
-    trail: List[np.ndarray] = field(default_factory=list)
+    trail: list[np.ndarray] = field(default_factory=list)
     magnetosphere_entry_time: float = 0
     aurora_probability: float = 0
-    
+
     def __post_init__(self):
         if len(self.position) != 3:
             self.position = np.array([0.0, 0.0, 0.0])
         if len(self.velocity) != 3:
             self.velocity = np.array([1.0, 0.0, 0.0])
-        
+
         # Set particle properties based on type
         if self.particle_type == 'electron':
             self.charge = -1.0
@@ -90,38 +81,38 @@ class SolarWindParticle:
         elif self.particle_type == 'alpha':
             self.charge = 2.0
             self.color = AURORA_PALETTE['aurora_amber']
-    
+
     def move(self, magnetic_field: np.ndarray, electric_field: np.ndarray, dt: float = 0.01):
         """Move particle according to Lorentz force"""
         # Lorentz force: F = q(E + v × B)
         cross_product = np.cross(self.velocity, magnetic_field)
         lorentz_force = self.charge * (electric_field + cross_product)
-        
+
         # Update velocity (F = ma, assume mass = 1 for simplicity)
         self.velocity += lorentz_force * dt
-        
+
         # Limit velocity to speed of light (normalized units)
         speed = np.linalg.norm(self.velocity)
         if speed > 10:  # Relativistic limit
             self.velocity = self.velocity / speed * 10
-        
+
         # Update position
         self.position += self.velocity * dt
-        
+
         # Add to trail
         self.trail.append(self.position.copy())
         if len(self.trail) > 50:  # Limit trail length
             self.trail.pop(0)
-    
-    def calculate_aurora_emission(self, atmosphere_density: float, altitude: float) -> Dict[str, float]:
+
+    def calculate_aurora_emission(self, atmosphere_density: float, altitude: float) -> dict[str, float]:
         """Calculate aurora emission based on particle collision with atmosphere"""
         # Aurora typically occurs at 80-500 km altitude
         if altitude < 80 or altitude > 500:
             return {'intensity': 0, 'wavelength': 0, 'color': self.color}
-        
+
         # Energy deposition rate
         energy_deposition = self.energy * atmosphere_density * 0.1
-        
+
         # Different atmospheric gases emit different colors
         if self.particle_type == 'electron' and self.energy > 0.5:
             # High-energy electrons excite oxygen -> green/red aurora
@@ -146,13 +137,13 @@ class SolarWindParticle:
                 'wavelength': 428.0,
                 'color': AURORA_PALETTE['northern_lavender']
             }
-        
+
         return {'intensity': 0, 'wavelength': 0, 'color': self.color}
 
 
 class MagnetosphereField:
     """Earth's magnetosphere with field lines and current systems"""
-    
+
     def __init__(self, earth_radius: float = 10):
         self.earth_radius = earth_radius
         self.dipole_moment = 100  # Earth's magnetic dipole strength
@@ -160,43 +151,43 @@ class MagnetosphereField:
         self.current_systems = []
         self.solar_wind_pressure = 1.0
         self.substorm_activity = 0.0
-        
+
         self._generate_field_lines()
         self._create_current_systems()
-    
+
     def _generate_field_lines(self):
         """Generate dipolar magnetic field lines"""
         n_field_lines = 20
-        
+
         for i in range(n_field_lines):
             # Magnetic colatitude (angle from magnetic north pole)
             colatitude = np.pi * (i + 1) / (n_field_lines + 1)
-            
+
             # Generate field line from north to south
             n_points = 100
             field_line_points = []
-            
+
             for j in range(n_points):
                 # Parameter along field line
                 t = j / (n_points - 1)
-                
+
                 # Dipolar field line equation in spherical coordinates
                 # r = L * sin²(λ) where L is the L-shell parameter
                 L_shell = self.earth_radius / (np.sin(colatitude)**2) * 3
-                
+
                 # Latitude along field line
                 latitude = np.arccos(np.sqrt((1 - t) * np.cos(colatitude)**2 + t * np.cos(np.pi - colatitude)**2))
-                
+
                 # Radius at this latitude
                 r = L_shell * np.sin(latitude)**2
-                
+
                 # Convert to Cartesian coordinates
                 x = r * np.sin(latitude) * np.cos(0)  # Simplified: all in x-z plane
                 y = 0
                 z = r * np.cos(latitude)
-                
+
                 field_line_points.append(np.array([x, y, z]))
-            
+
             self.field_lines.append({
                 'points': field_line_points,
                 'L_shell': L_shell,
@@ -207,7 +198,7 @@ class MagnetosphereField:
                     AURORA_PALETTE['polar_sage']
                 ])
             })
-    
+
     def _create_current_systems(self):
         """Create magnetospheric current systems"""
         # Ring current
@@ -217,7 +208,7 @@ class MagnetosphereField:
             'intensity': 1.0,
             'particles': []
         }
-        
+
         # Create ring current particles
         n_ring_particles = 30
         for i in range(n_ring_particles):
@@ -227,14 +218,14 @@ class MagnetosphereField:
                 ring_current['radius'] * np.sin(angle),
                 random.uniform(-2, 2)
             ])
-            
+
             # Drift velocity
             velocity = np.array([
                 -np.sin(angle),  # Westward drift
                 np.cos(angle),
                 0
             ]) * 2
-            
+
             particle = SolarWindParticle(
                 position=position,
                 velocity=velocity,
@@ -242,9 +233,9 @@ class MagnetosphereField:
                 energy=random.uniform(1, 3)
             )
             ring_current['particles'].append(particle)
-        
+
         self.current_systems.append(ring_current)
-        
+
         # Field-aligned currents (Birkeland currents)
         for field_line in self.field_lines[::3]:  # Every 3rd field line
             birkeland_current = {
@@ -254,42 +245,42 @@ class MagnetosphereField:
                 'direction': random.choice([1, -1])  # Up or down
             }
             self.current_systems.append(birkeland_current)
-    
+
     def get_magnetic_field(self, position: np.ndarray) -> np.ndarray:
         """Calculate magnetic field at given position using dipole model"""
         r = np.linalg.norm(position)
-        
+
         if r < self.earth_radius * 0.9:  # Inside Earth
             return np.array([0, 0, -2])  # Strong downward field
-        
+
         # Dipole field in Cartesian coordinates
         # B = (μ₀/4π) * (3(m·r̂)r̂ - m) / r³
-        
+
         # Magnetic dipole moment (pointing north)
         m = np.array([0, 0, self.dipole_moment])
-        
+
         r_hat = position / r
         m_dot_r = np.dot(m, r_hat)
-        
+
         # Dipole field
         B = (3 * m_dot_r * r_hat - m) / (r**3)
-        
+
         # Add perturbations from solar wind
         perturbation = self.solar_wind_pressure * np.array([
             0.1 * np.sin(r * 0.1),
             0.1 * np.cos(r * 0.1),
             0
         ])
-        
+
         return B + perturbation
-    
+
     def evolve(self, time: float, solar_wind_strength: float):
         """Evolve magnetosphere based on solar wind conditions"""
         self.solar_wind_pressure = solar_wind_strength
-        
+
         # Substorm activity
         self.substorm_activity = 0.5 + 0.4 * np.sin(time * 0.05) * solar_wind_strength
-        
+
         # Evolve ring current
         for current_system in self.current_systems:
             if current_system['type'] == 'ring':
@@ -297,13 +288,13 @@ class MagnetosphereField:
                     # Ring current drift
                     magnetic_field = self.get_magnetic_field(particle.position)
                     electric_field = np.array([0, 0, 0])  # Simplified
-                    
+
                     particle.move(magnetic_field, electric_field, 0.02)
 
 
 class AtmosphericLayer:
     """Atmospheric layers where aurora emissions occur"""
-    
+
     def __init__(self):
         self.layers = {
             'thermosphere': {
@@ -319,43 +310,43 @@ class AtmosphericLayer:
                 'temperature': lambda alt: 270 - (alt - 50) * 3  # K
             }
         }
-        
+
         self.aurora_emissions = []
-    
+
     def _thermosphere_density(self, altitude: float) -> float:
         """Density profile of thermosphere"""
         # Exponential decay with altitude
         scale_height = 50  # km
         base_density = 1e-12  # kg/m³ at 80 km
         return base_density * np.exp(-(altitude - 80) / scale_height)
-    
+
     def _mesosphere_density(self, altitude: float) -> float:
         """Density profile of mesosphere"""
         scale_height = 7  # km
         base_density = 1e-6  # kg/m³ at 50 km
         return base_density * np.exp(-(altitude - 50) / scale_height)
-    
-    def particle_collision(self, particle: SolarWindParticle, altitude: float) -> Optional[Dict[str, Any]]:
+
+    def particle_collision(self, particle: SolarWindParticle, altitude: float) -> dict[str, Any] | None:
         """Calculate particle collision with atmospheric gases"""
         if altitude < 50 or altitude > 500:
             return None
-        
+
         # Determine atmospheric layer
         if 80 <= altitude <= 500:
             layer = self.layers['thermosphere']
         else:
             layer = self.layers['mesosphere']
-        
+
         # Get atmospheric density
         density = layer['density_profile'](altitude)
-        
+
         # Collision probability
         collision_prob = density * particle.energy * 0.01
-        
+
         if random.random() < collision_prob:
             # Create aurora emission
             emission = particle.calculate_aurora_emission(density, altitude)
-            
+
             if emission['intensity'] > 0:
                 aurora_point = {
                     'position': particle.position.copy(),
@@ -367,21 +358,21 @@ class AtmosphericLayer:
                     'age': 0,
                     'particle_type': particle.particle_type
                 }
-                
+
                 self.aurora_emissions.append(aurora_point)
                 return aurora_point
-        
+
         return None
-    
+
     def evolve_emissions(self, dt: float):
         """Evolve aurora emission points"""
         for emission in self.aurora_emissions[:]:
             emission['age'] += dt
-            
+
             # Fade over time
             fade_factor = max(0, 1 - emission['age'] / emission['lifetime'])
             emission['intensity'] *= fade_factor
-            
+
             # Remove dead emissions
             if emission['intensity'] < 0.01:
                 self.aurora_emissions.remove(emission)
@@ -389,7 +380,7 @@ class AtmosphericLayer:
 
 class AuroraCurtain:
     """Aurora curtain structure with dancing, flowing motion"""
-    
+
     def __init__(self, base_altitude: float = 100, width: float = 50):
         self.base_altitude = base_altitude
         self.width = width
@@ -399,35 +390,35 @@ class AuroraCurtain:
         self.wave_frequency = random.uniform(0.1, 0.3)
         self.intensity_profile = []
         self.color_profile = []
-        
+
         self._generate_curtain_structure()
-    
+
     def _generate_curtain_structure(self):
         """Generate 3D curtain structure"""
         n_vertical = 20
         n_horizontal = 15
-        
+
         for i in range(n_horizontal):
             vertical_line = []
             x = (i - n_horizontal/2) * self.width / n_horizontal
-            
+
             for j in range(n_vertical):
                 y = random.uniform(-10, 10)  # Depth variation
                 z = self.base_altitude + (j / n_vertical) * self.height
-                
+
                 point = np.array([x, y, z])
                 vertical_line.append(point)
-            
+
             self.curtain_points.append(vertical_line)
-            
+
             # Intensity profile for this vertical line
             intensities = []
             colors = []
-            
+
             for j in range(n_vertical):
                 # Typical aurora intensity profile
                 normalized_height = j / n_vertical
-                
+
                 if normalized_height < 0.2:  # Lower edge - weak
                     intensity = normalized_height * 0.5
                     color = AURORA_PALETTE['aurora_rose']
@@ -440,43 +431,43 @@ class AuroraCurtain:
                 else:  # Upper edge - fading
                     intensity = (1 - normalized_height) * 2
                     color = AURORA_PALETTE['polar_aqua']
-                
+
                 intensities.append(intensity)
                 colors.append(color)
-            
+
             self.intensity_profile.append(intensities)
             self.color_profile.append(colors)
-    
+
     def dance(self, time: float):
         """Animate curtain dancing motion"""
         self.motion_phase += 0.05
-        
+
         # Wave motion through curtain
         for i, vertical_line in enumerate(self.curtain_points):
             x_offset = i / len(self.curtain_points) * 2 * np.pi
-            
+
             for j, point in enumerate(vertical_line):
                 # Vertical wave
                 wave_amplitude = 5 + 3 * np.sin(time * 0.1)
                 vertical_wave = wave_amplitude * np.sin(
                     self.wave_frequency * j + self.motion_phase + x_offset
                 )
-                
+
                 # Horizontal sway
                 horizontal_sway = 3 * np.sin(
                     time * 0.07 + x_offset + j * 0.1
                 )
-                
+
                 # Update position with wave motion
                 original_x = (i - len(self.curtain_points)/2) * self.width / len(self.curtain_points)
                 original_z = self.base_altitude + (j / len(vertical_line)) * self.height
-                
+
                 vertical_line[j] = np.array([
                     original_x + horizontal_sway,
                     vertical_wave,
                     original_z
                 ])
-        
+
         # Intensity fluctuations
         for i, intensities in enumerate(self.intensity_profile):
             for j in range(len(intensities)):
@@ -488,7 +479,7 @@ class AuroraCurtain:
 
 class SolarWindStream:
     """Solar wind particle stream from the Sun"""
-    
+
     def __init__(self):
         self.particles = []
         self.wind_speed = 400  # km/s typical
@@ -497,7 +488,7 @@ class SolarWindStream:
         self.magnetic_field_strength = 5e-9  # Tesla
         self.coronal_mass_ejection = False
         self.cme_strength = 0
-        
+
     def generate_particles(self, n_particles: int = 10):
         """Generate new solar wind particles"""
         for _ in range(n_particles):
@@ -507,7 +498,7 @@ class SolarWindStream:
                 random.uniform(-100, 100),
                 random.uniform(-50, 50)
             ])
-            
+
             # Solar wind velocity (mostly in +x direction)
             base_velocity = self.wind_speed * 0.01  # Scaled for visualization
             velocity = np.array([
@@ -515,7 +506,7 @@ class SolarWindStream:
                 random.uniform(-0.2, 0.2),
                 random.uniform(-0.2, 0.2)
             ])
-            
+
             # Particle type distribution
             if random.random() < 0.96:  # 96% protons
                 particle_type = 'proton'
@@ -526,29 +517,29 @@ class SolarWindStream:
             else:  # 1% electrons
                 particle_type = 'electron'
                 energy = random.uniform(0.1, 1.0)
-            
+
             # CME enhancement
             if self.coronal_mass_ejection:
                 energy *= (1 + self.cme_strength)
                 velocity *= (1 + self.cme_strength * 0.5)
-            
+
             particle = SolarWindParticle(
                 position=position,
                 velocity=velocity,
                 particle_type=particle_type,
                 energy=energy
             )
-            
+
             self.particles.append(particle)
-    
+
     def trigger_cme(self):
         """Trigger coronal mass ejection"""
         self.coronal_mass_ejection = True
         self.cme_strength = random.uniform(2, 5)
-        
+
         # Generate burst of high-energy particles
         self.generate_particles(50)
-    
+
     def evolve(self, time: float):
         """Evolve solar wind conditions"""
         # Gradually decay CME
@@ -557,11 +548,11 @@ class SolarWindStream:
             if self.cme_strength < 0.1:
                 self.coronal_mass_ejection = False
                 self.cme_strength = 0
-        
+
         # Randomly trigger CME
         if random.random() < 0.001:  # Rare event
             self.trigger_cme()
-        
+
         # Variable solar wind conditions
         self.wind_speed = 400 + 100 * np.sin(time * 0.02)
         self.density = 5 + 2 * np.sin(time * 0.03)
@@ -569,59 +560,59 @@ class SolarWindStream:
 
 class AuroraVisualizer:
     """Main visualization system for aurora phenomena"""
-    
-    def __init__(self, figsize: Tuple[int, int] = (20, 12)):
+
+    def __init__(self, figsize: tuple[int, int] = (20, 12)):
         # Setup figure with deep space background
         self.fig = plt.figure(figsize=figsize, facecolor=AURORA_PALETTE['deep_space'])
-        self.fig.suptitle('Aurora Quantum Symphony - Northern Lights Dancing Across the Sky', 
+        self.fig.suptitle('Aurora Quantum Symphony - Northern Lights Dancing Across the Sky',
                          fontsize=18, color=AURORA_PALETTE['ice_crystal'], fontweight='bold')
-        
+
         # Create layout
         gs = self.fig.add_gridspec(3, 4, hspace=0.25, wspace=0.25)
-        
+
         # Main aurora view (large central panel)
         self.ax_aurora = self.fig.add_subplot(gs[0:2, 0:3], projection='3d')
-        
+
         # Solar wind monitor (top right)
         self.ax_solar_wind = self.fig.add_subplot(gs[0, 3])
-        
+
         # Magnetosphere activity (middle right)
         self.ax_magnetosphere = self.fig.add_subplot(gs[1, 3])
-        
+
         # Aurora spectrum (bottom left)
         self.ax_spectrum = self.fig.add_subplot(gs[2, 0])
-        
+
         # Atmospheric layers (bottom center-left)
         self.ax_atmosphere = self.fig.add_subplot(gs[2, 1])
-        
+
         # Aurora curtain profile (bottom center-right)
         self.ax_curtain = self.fig.add_subplot(gs[2, 2])
-        
+
         # Geomagnetic activity (bottom right)
         self.ax_geomagnetic = self.fig.add_subplot(gs[2, 3])
-        
+
         # Style all axes
         self._style_axes()
-        
+
         # Initialize aurora system components
         self.solar_wind = SolarWindStream()
         self.magnetosphere = MagnetosphereField()
         self.atmosphere = AtmosphericLayer()
         self.aurora_curtains = []
-        
+
         # Animation state
         self.time = 0
         self.aurora_activity = 0.5
         self.geomagnetic_index = 3  # Kp index
-        
+
         # Data tracking
         self.aurora_intensity_history = deque(maxlen=100)
         self.solar_wind_history = deque(maxlen=100)
         self.spectrum_data = defaultdict(list)
-        
+
         # Initialize aurora curtains
         self._create_aurora_curtains()
-        
+
     def _style_axes(self):
         """Style all axes for aurora theme"""
         # Main 3D aurora view
@@ -630,57 +621,57 @@ class AuroraVisualizer:
         self.ax_aurora.yaxis.pane.fill = False
         self.ax_aurora.zaxis.pane.fill = False
         self.ax_aurora.grid(False)
-        
+
         # 2D axes
-        for ax in [self.ax_solar_wind, self.ax_magnetosphere, self.ax_spectrum, 
+        for ax in [self.ax_solar_wind, self.ax_magnetosphere, self.ax_spectrum,
                    self.ax_atmosphere, self.ax_curtain, self.ax_geomagnetic]:
             ax.set_facecolor(AURORA_PALETTE['deep_space'])
             for spine in ax.spines.values():
                 spine.set_color(AURORA_PALETTE['stellar_silver'])
                 spine.set_linewidth(0.8)
             ax.tick_params(colors=AURORA_PALETTE['ice_crystal'], labelsize=8)
-    
+
     def _create_aurora_curtains(self):
         """Create multiple aurora curtains"""
         for i in range(6):  # More curtains for richer display
             base_altitude = 80 + i * 40 + random.uniform(-15, 15)
             width = random.uniform(50, 100)
-            
+
             curtain = AuroraCurtain(base_altitude, width)
             self.aurora_curtains.append(curtain)
-    
+
     def update_aurora_system(self, frame: int):
         """Update the entire aurora system"""
         self.time = frame * 0.05
-        
+
         # Generate new solar wind particles
         if frame % 3 == 0:  # Every 3rd frame
             n_new = random.randint(3, 8)
             self.solar_wind.generate_particles(n_new)
-        
+
         # Evolve solar wind
         self.solar_wind.evolve(self.time)
-        
+
         # Update magnetosphere
         solar_wind_strength = self.solar_wind.wind_speed / 400  # Normalized
         self.magnetosphere.evolve(self.time, solar_wind_strength)
-        
+
         # Move solar wind particles through magnetosphere
         for particle in self.solar_wind.particles[:]:
             # Check if particle reached Earth region
             distance_to_earth = np.linalg.norm(particle.position)
-            
+
             if distance_to_earth > 300:  # Particle escaped
                 self.solar_wind.particles.remove(particle)
                 continue
-            
+
             # Get magnetic and electric fields
             magnetic_field = self.magnetosphere.get_magnetic_field(particle.position)
             electric_field = np.array([0, 0, 0])  # Simplified
-            
+
             # Move particle
             particle.move(magnetic_field, electric_field)
-            
+
             # Check for atmospheric collision
             altitude = particle.position[2]  # z-coordinate as altitude
             if 50 <= altitude <= 500:
@@ -688,134 +679,134 @@ class AuroraVisualizer:
                 if collision:
                     # Particle created aurora emission
                     pass
-        
+
         # Evolve atmospheric emissions
         self.atmosphere.evolve_emissions(0.05)
-        
+
         # Animate aurora curtains
         for curtain in self.aurora_curtains:
             curtain.dance(self.time)
-        
+
         # Update activity indices
         self._update_activity_indices()
-        
+
         # Clear and redraw
         self._clear_axes()
         self._render_aurora_system()
-        
+
         # Update activity indices
         self._update_activity_indices()
-        
+
         # Clear and redraw
         self._clear_axes()
         self._render_aurora_system()
-    
+
     def _trigger_substorm_burst(self):
         """Trigger dramatic substorm particle burst"""
         # Initialize substorm_bursts if it doesn't exist
         if not hasattr(self, 'substorm_bursts'):
             self.substorm_bursts = []
-        
+
         # Initialize substorm_intensity if it doesn't exist
         if not hasattr(self, 'substorm_intensity'):
             self.substorm_intensity = 0.0
-            
+
         self.substorm_intensity = random.uniform(2.0, 5.0)
-        
+
         # Create burst of high-energy particles
         burst_center = np.array([random.uniform(-50, 50), random.uniform(-50, 50), random.uniform(150, 250)])
-        
+
         for _ in range(20):
             # Burst particles radiate outward
             direction = np.random.randn(3)
             direction = direction / np.linalg.norm(direction)
-            
+
             burst_particle = {
                 'position': burst_center + direction * random.uniform(5, 15),
                 'velocity': direction * random.uniform(3, 8),
                 'energy': random.uniform(2.0, 5.0),
                 'lifetime': random.uniform(2.0, 5.0),
                 'age': 0,
-                'color': random.choice([AURORA_PALETTE['plasma_fire'], 
-                                      AURORA_PALETTE['aurora_electric'], 
+                'color': random.choice([AURORA_PALETTE['plasma_fire'],
+                                      AURORA_PALETTE['aurora_electric'],
                                       AURORA_PALETTE['quantum_violet']])
             }
             self.substorm_bursts.append(burst_particle)
-        
+
         # Update existing substorm bursts
         for burst in self.substorm_bursts[:]:
             burst['age'] += 0.05
             burst['position'] += burst['velocity'] * 0.05
             burst['energy'] *= 0.99
-            
+
             if burst['age'] > burst['lifetime'] or burst['energy'] < 0.1:
                 self.substorm_bursts.remove(burst)
-        
+
         # Update activity indices
         self._update_activity_indices()
-        
+
         # Clear and redraw
         self._clear_axes()
         self._render_aurora_system()
-    
+
     def _trigger_substorm_burst(self):
         """Trigger dramatic substorm particle burst"""
         self.substorm_intensity = random.uniform(2.0, 5.0)
-        
+
         # Create burst of high-energy particles
         burst_center = np.array([random.uniform(-50, 50), random.uniform(-50, 50), random.uniform(150, 250)])
-        
+
         for _ in range(20):
             # Burst particles radiate outward
             direction = np.random.randn(3)
             direction = direction / np.linalg.norm(direction)
-            
+
             burst_particle = {
                 'position': burst_center + direction * random.uniform(5, 15),
                 'velocity': direction * random.uniform(3, 8),
                 'energy': random.uniform(2.0, 5.0),
                 'lifetime': random.uniform(2.0, 5.0),
                 'age': 0,
-                'color': random.choice([AURORA_PALETTE['plasma_fire'], 
-                                      AURORA_PALETTE['aurora_electric'], 
+                'color': random.choice([AURORA_PALETTE['plasma_fire'],
+                                      AURORA_PALETTE['aurora_electric'],
                                       AURORA_PALETTE['quantum_violet']])
             }
             self.substorm_bursts.append(burst_particle)
-        
+
         # Update substorm bursts
         for burst in self.substorm_bursts[:]:
             burst['age'] += 0.05
             burst['position'] += burst['velocity'] * 0.05
             burst['energy'] *= 0.99
-            
+
             if burst['age'] > burst['lifetime'] or burst['energy'] < 0.1:
                 self.substorm_bursts.remove(burst)
-    
+
     def _update_activity_indices(self):
         """Update aurora and geomagnetic activity indices"""
         # Calculate aurora activity based on emissions
         current_intensity = sum(e['intensity'] for e in self.atmosphere.aurora_emissions)
         self.aurora_intensity_history.append(current_intensity)
-        
+
         # Solar wind activity
         solar_activity = len(self.solar_wind.particles) * self.solar_wind.wind_speed / 400
         self.solar_wind_history.append(solar_activity)
-        
+
         # Geomagnetic activity (Kp index simulation)
         base_activity = len(self.atmosphere.aurora_emissions) / 10
         cme_boost = self.solar_wind.cme_strength if self.solar_wind.coronal_mass_ejection else 0
         self.geomagnetic_index = min(9, base_activity + cme_boost)
-        
+
         # Update spectrum data
         for emission in self.atmosphere.aurora_emissions:
             wavelength = emission['wavelength']
             if wavelength > 0:
                 self.spectrum_data[wavelength].append(emission['intensity'])
-                
+
                 # Limit history
                 if len(self.spectrum_data[wavelength]) > 50:
                     self.spectrum_data[wavelength].pop(0)
-    
+
     def _clear_axes(self):
         """Clear all axes for redrawing"""
         self.ax_aurora.clear()
@@ -825,9 +816,9 @@ class AuroraVisualizer:
         self.ax_atmosphere.clear()
         self.ax_curtain.clear()
         self.ax_geomagnetic.clear()
-        
+
         self._style_axes()
-    
+
     def _render_aurora_system(self):
         """Render the complete aurora system"""
         self._render_3d_aurora()
@@ -837,12 +828,12 @@ class AuroraVisualizer:
         self._render_atmospheric_layers()
         self._render_curtain_profile()
         self._render_geomagnetic_activity()
-    
+
     def _render_3d_aurora(self):
         """Render main 3D aurora visualization"""
-        self.ax_aurora.set_title('Aurora Borealis - The Northern Lights', 
+        self.ax_aurora.set_title('Aurora Borealis - The Northern Lights',
                                 color=AURORA_PALETTE['ice_crystal'], fontsize=14, pad=20)
-        
+
         # Render Earth as a sphere with better contrast
         earth_radius = 10
         u = np.linspace(0, 2 * np.pi, 20)
@@ -850,34 +841,34 @@ class AuroraVisualizer:
         earth_x = earth_radius * np.outer(np.cos(u), np.sin(v))
         earth_y = earth_radius * np.outer(np.sin(u), np.sin(v))
         earth_z = earth_radius * np.outer(np.ones(np.size(u)), np.cos(v))
-        
-        self.ax_aurora.plot_surface(earth_x, earth_y, earth_z, 
+
+        self.ax_aurora.plot_surface(earth_x, earth_y, earth_z,
                                    color=AURORA_PALETTE['deep_space'], alpha=0.8,
                                    edgecolor=AURORA_PALETTE['twilight_periwinkle'], linewidth=0.5)
-        
+
         # Render magnetosphere field lines with enhanced visibility
         for field_line in self.magnetosphere.field_lines[::2]:
             if len(field_line['points']) > 1:
                 points = np.array(field_line['points'])
-                
+
                 # Enhanced field line visibility
                 alpha = 0.4 + field_line['activity'] * 0.6
                 linewidth = 1 + field_line['activity'] * 2
-                
+
                 self.ax_aurora.plot(points[:, 0], points[:, 1], points[:, 2],
                                    color=field_line['color'], alpha=alpha, linewidth=linewidth)
-        
+
         # Render solar wind particles with enhanced glow
         for particle in self.solar_wind.particles:
             x, y, z = particle.position
             size = 30 + particle.energy * 50  # Larger particles
-            
+
             # Main particle
             self.ax_aurora.scatter(x, y, z, s=size, c=particle.color, alpha=0.9, edgecolors='white', linewidth=0.5)
-            
+
             # Glow effect
             self.ax_aurora.scatter(x, y, z, s=size*2, c=particle.color, alpha=0.3)
-            
+
             # Enhanced particle trail
             if len(particle.trail) > 1:
                 trail_points = np.array(particle.trail[-15:])
@@ -887,24 +878,24 @@ class AuroraVisualizer:
                                        [trail_points[i,1], trail_points[i+1,1]],
                                        [trail_points[i,2], trail_points[i+1,2]],
                                        color=particle.color, alpha=alpha_trail, linewidth=2)
-        
+
         # Render aurora emissions with dramatic glow
         for emission in self.atmosphere.aurora_emissions:
             pos = emission['position']
             intensity = emission['intensity']
-            
+
             if intensity > 0.05:
                 # Main emission point
                 size = 60 + intensity * 300
                 alpha = min(1.0, intensity * 3)
-                
-                self.ax_aurora.scatter(pos[0], pos[1], pos[2], 
+
+                self.ax_aurora.scatter(pos[0], pos[1], pos[2],
                                       s=size, c=emission['color'], alpha=alpha)
-                
+
                 # Large glow halo
-                self.ax_aurora.scatter(pos[0], pos[1], pos[2], 
+                self.ax_aurora.scatter(pos[0], pos[1], pos[2],
                                       s=size*3, c=emission['color'], alpha=alpha*0.2)
-        
+
         # Render enhanced aurora curtains
         for curtain in self.aurora_curtains:
             for i, vertical_line in enumerate(curtain.curtain_points):
@@ -912,88 +903,88 @@ class AuroraVisualizer:
                     points = np.array(vertical_line)
                     intensities = curtain.intensity_profile[i]
                     colors = curtain.color_profile[i]
-                    
+
                     # Draw enhanced curtain segments
                     for j in range(len(points) - 1):
                         if intensities[j] > 0.05:
                             start = points[j]
                             end = points[j + 1]
-                            
+
                             alpha = intensities[j] * 0.9
                             linewidth = 3 + intensities[j] * 5  # Thicker lines
-                            
+
                             # Main curtain line
-                            self.ax_aurora.plot([start[0], end[0]], 
-                                              [start[1], end[1]], 
+                            self.ax_aurora.plot([start[0], end[0]],
+                                              [start[1], end[1]],
                                               [start[2], end[2]],
-                                              color=colors[j], alpha=alpha, 
+                                              color=colors[j], alpha=alpha,
                                               linewidth=linewidth)
-                            
+
                             # Glow effect for bright sections
                             if intensities[j] > 0.7:
-                                self.ax_aurora.plot([start[0], end[0]], 
-                                                  [start[1], end[1]], 
+                                self.ax_aurora.plot([start[0], end[0]],
+                                                  [start[1], end[1]],
                                                   [start[2], end[2]],
-                                                  color=colors[j], alpha=alpha*0.3, 
+                                                  color=colors[j], alpha=alpha*0.3,
                                                   linewidth=linewidth*2)
-        
+
         # Enhanced starfield
         for _ in range(100):  # More stars
             star_x = random.uniform(-200, 200)
             star_y = random.uniform(-200, 200)
             star_z = random.uniform(250, 500)
-            
+
             brightness = random.choice([10, 20, 30])
             self.ax_aurora.scatter(star_x, star_y, star_z, s=brightness,
-                                  c=AURORA_PALETTE['stellar_silver'], alpha=random.uniform(0.3, 0.9), 
+                                  c=AURORA_PALETTE['stellar_silver'], alpha=random.uniform(0.3, 0.9),
                                   marker='*')
-        
+
         # Set 3D limits
         self.ax_aurora.set_xlim(-150, 150)
         self.ax_aurora.set_ylim(-150, 150)
         self.ax_aurora.set_zlim(-50, 300)
-        
+
         # Remove axis labels
         self.ax_aurora.set_xticks([])
         self.ax_aurora.set_yticks([])
         self.ax_aurora.set_zticks([])
-    
+
     def _render_solar_wind_monitor(self):
         """Render solar wind conditions"""
-        self.ax_solar_wind.set_title('Solar Wind Monitor', 
+        self.ax_solar_wind.set_title('Solar Wind Monitor',
                                     color=AURORA_PALETTE['ice_crystal'], fontsize=12)
-        
+
         if len(self.solar_wind_history) > 1:
             time_axis = range(len(self.solar_wind_history))
-            
+
             # Solar wind speed
             wind_speeds = [self.solar_wind.wind_speed] * len(self.solar_wind_history)
             self.ax_solar_wind.fill_between(time_axis, 0, wind_speeds,
                                            color=AURORA_PALETTE['solar_peach'], alpha=0.3)
             self.ax_solar_wind.plot(time_axis, wind_speeds,
                                    color=AURORA_PALETTE['solar_peach'], linewidth=2)
-            
+
             # Particle density
             density_scaled = [self.solar_wind.density * 50] * len(self.solar_wind_history)
             self.ax_solar_wind.plot(time_axis, density_scaled,
                                    color=AURORA_PALETTE['aurora_amber'], linewidth=2, linestyle='--')
-            
+
             # CME indicator
             if self.solar_wind.coronal_mass_ejection:
                 cme_level = 400 + self.solar_wind.cme_strength * 100
                 self.ax_solar_wind.axhline(y=cme_level, color=AURORA_PALETTE['aurora_rose'],
                                           linewidth=3, alpha=0.8, label='CME')
-                
+
                 # Add CME burst effect
                 for _ in range(int(self.solar_wind.cme_strength * 5)):
                     burst_x = random.choice(time_axis[-10:]) if len(time_axis) >= 10 else 0
                     burst_y = random.uniform(cme_level - 50, cme_level + 50)
                     self.ax_solar_wind.scatter(burst_x, burst_y, s=30,
                                               c=AURORA_PALETTE['aurora_rose'], alpha=0.7, marker='*')
-        
+
         self.ax_solar_wind.set_ylabel('Speed (km/s)', color=AURORA_PALETTE['ice_crystal'], fontsize=9)
         self.ax_solar_wind.set_ylim(0, 800)
-        
+
         # Add legend
         if hasattr(self, '_solar_legend_added'):
             pass
@@ -1003,72 +994,72 @@ class AuroraVisualizer:
                                    color=AURORA_PALETTE['ice_crystal'], fontsize=8,
                                    verticalalignment='top')
             self._solar_legend_added = True
-    
+
     def _render_magnetosphere_activity(self):
         """Render magnetosphere field activity"""
-        self.ax_magnetosphere.set_title('Magnetosphere Activity', 
+        self.ax_magnetosphere.set_title('Magnetosphere Activity',
                                        color=AURORA_PALETTE['ice_crystal'], fontsize=12)
-        
+
         # Substorm activity indicator
         substorm_level = self.magnetosphere.substorm_activity
-        
+
         # Create substorm visualization
         theta = np.linspace(0, 2*np.pi, 100)
         for i in range(3):
             radius = (i + 1) * substorm_level * 0.3
             x = radius * np.cos(theta + self.time * (i + 1) * 0.5)
             y = radius * np.sin(theta + self.time * (i + 1) * 0.5)
-            
-            colors = [AURORA_PALETTE['magnetic_mauve'], 
-                     AURORA_PALETTE['twilight_periwinkle'], 
+
+            colors = [AURORA_PALETTE['magnetic_mauve'],
+                     AURORA_PALETTE['twilight_periwinkle'],
                      AURORA_PALETTE['polar_sage']]
-            
+
             self.ax_magnetosphere.fill(x, y, color=colors[i], alpha=0.3)
             self.ax_magnetosphere.plot(x, y, color=colors[i], linewidth=2, alpha=0.6)
-        
+
         # Ring current particles
         for current_system in self.magnetosphere.current_systems:
             if current_system['type'] == 'ring':
                 for particle in current_system['particles'][:10]:  # Show subset
                     x, y = particle.position[0] * 0.01, particle.position[1] * 0.01  # Scale down
                     self.ax_magnetosphere.scatter(x, y, s=20, c=particle.color, alpha=0.7)
-        
+
         self.ax_magnetosphere.set_xlim(-2, 2)
         self.ax_magnetosphere.set_ylim(-2, 2)
         self.ax_magnetosphere.set_aspect('equal')
         self.ax_magnetosphere.set_xticks([])
         self.ax_magnetosphere.set_yticks([])
-        
+
         # Activity level text
         activity_text = f'Substorm Level: {substorm_level:.2f}'
         self.ax_magnetosphere.text(0.02, 0.98, activity_text,
                                   transform=self.ax_magnetosphere.transAxes,
                                   color=AURORA_PALETTE['ice_crystal'], fontsize=9,
                                   verticalalignment='top')
-    
+
     def _render_aurora_spectrum(self):
         """Render aurora emission spectrum"""
-        self.ax_spectrum.set_title('Aurora Emission Spectrum', 
+        self.ax_spectrum.set_title('Aurora Emission Spectrum',
                                   color=AURORA_PALETTE['ice_crystal'], fontsize=12)
-        
+
         # Always show some baseline spectrum data for visibility
         if not self.spectrum_data or len(self.spectrum_data) == 0:
             # Create sample spectrum data if none exists
             sample_wavelengths = [557.7, 630.0, 428.0, 391.4]  # Common aurora lines
             sample_names = ['Green O', 'Red O', 'Blue N₂', 'Violet N₂⁺']
             sample_intensities = [random.uniform(0.3, 1.0) for _ in sample_wavelengths]
-            sample_colors = [AURORA_PALETTE['oxygen_jade'], AURORA_PALETTE['aurora_rose'], 
+            sample_colors = [AURORA_PALETTE['oxygen_jade'], AURORA_PALETTE['aurora_rose'],
                            AURORA_PALETTE['northern_lavender'], AURORA_PALETTE['quantum_violet']]
-            
+
             bars = self.ax_spectrum.bar(range(len(sample_wavelengths)), sample_intensities,
                                        color=sample_colors, alpha=0.8, width=0.6)
-            
+
             # Add labels
             self.ax_spectrum.set_xticks(range(len(sample_wavelengths)))
             self.ax_spectrum.set_xticklabels(sample_names, fontsize=8)
-            
+
             # Add glow effects
-            for i, (bar, intensity) in enumerate(zip(bars, sample_intensities)):
+            for i, (bar, intensity) in enumerate(zip(bars, sample_intensities, strict=False)):
                 if intensity > 0.5:
                     glow_x = bar.get_x() + bar.get_width()/2
                     glow_y = bar.get_height()
@@ -1077,9 +1068,9 @@ class AuroraVisualizer:
         else:
             # Use actual spectrum data
             wavelengths = list(self.spectrum_data.keys())
-            intensities = [np.mean(self.spectrum_data[wl][-10:]) 
+            intensities = [np.mean(self.spectrum_data[wl][-10:])
                           if self.spectrum_data[wl] else 0 for wl in wavelengths]
-            
+
             # Color map for emission lines
             colors = []
             labels = []
@@ -1096,142 +1087,142 @@ class AuroraVisualizer:
                 else:
                     colors.append(AURORA_PALETTE['polar_aqua'])
                     labels.append(f'{wl:.0f}')
-            
+
             # Bar chart of emission lines
             bars = self.ax_spectrum.bar(range(len(wavelengths)), intensities,
                                        color=colors, alpha=0.9, width=0.6,
                                        edgecolor=AURORA_PALETTE['ice_crystal'], linewidth=0.5)
-            
+
             # Add glow effects for strong lines
-            for i, (bar, intensity) in enumerate(zip(bars, intensities)):
+            for i, (bar, intensity) in enumerate(zip(bars, intensities, strict=False)):
                 if intensity > 0.3:
                     glow_height = bar.get_height()
                     glow_x = bar.get_x() + bar.get_width()/2
-                    
+
                     # Add glow
                     self.ax_spectrum.scatter(glow_x, glow_height, s=intensity*400,
                                            c=colors[i], alpha=0.3, marker='o')
-            
+
             # Wavelength labels
             if wavelengths:
                 self.ax_spectrum.set_xticks(range(len(wavelengths)))
                 self.ax_spectrum.set_xticklabels(labels, rotation=45, fontsize=8)
-        
+
         # Add animated spectral lines that pulse
         n_lines = 4
         for i in range(n_lines):
             x_pos = i
             height = 0.8 + 0.2 * np.sin(self.time * 2 + i)
-            
+
             # Vertical spectral lines that pulse
-            self.ax_spectrum.axvline(x=x_pos, ymin=0, ymax=height, 
-                                   color=AURORA_PALETTE['ice_crystal'], 
+            self.ax_spectrum.axvline(x=x_pos, ymin=0, ymax=height,
+                                   color=AURORA_PALETTE['ice_crystal'],
                                    alpha=0.3, linewidth=1, linestyle='--')
-        
+
         self.ax_spectrum.set_ylabel('Intensity', color=AURORA_PALETTE['ice_crystal'], fontsize=9)
         self.ax_spectrum.set_xlabel('Emission Lines', color=AURORA_PALETTE['ice_crystal'], fontsize=9)
         self.ax_spectrum.set_ylim(0, 1.2)
-        
+
         # Add background grid for better visibility
         self.ax_spectrum.grid(True, alpha=0.2, color=AURORA_PALETTE['stellar_silver'])
-    
+
     def _render_atmospheric_layers(self):
         """Render atmospheric layers and density profile"""
-        self.ax_atmosphere.set_title('Atmospheric Layers', 
+        self.ax_atmosphere.set_title('Atmospheric Layers',
                                     color=AURORA_PALETTE['ice_crystal'], fontsize=12)
-        
+
         # Altitude profile
         altitudes = np.linspace(50, 500, 100)
-        thermosphere_density = [self.atmosphere._thermosphere_density(alt) 
+        thermosphere_density = [self.atmosphere._thermosphere_density(alt)
                                if alt >= 80 else 0 for alt in altitudes]
-        mesosphere_density = [self.atmosphere._mesosphere_density(alt) 
+        mesosphere_density = [self.atmosphere._mesosphere_density(alt)
                              if alt < 80 else 0 for alt in altitudes]
-        
+
         # Log scale for density
         thermo_log = [np.log10(d + 1e-20) for d in thermosphere_density]
         meso_log = [np.log10(d + 1e-20) for d in mesosphere_density]
-        
+
         # Fill atmospheric layers
-        self.ax_atmosphere.fill_between(thermo_log, altitudes, 
+        self.ax_atmosphere.fill_between(thermo_log, altitudes,
                                        color=AURORA_PALETTE['aurora_rose'], alpha=0.3,
                                        label='Thermosphere')
         self.ax_atmosphere.fill_between(meso_log, altitudes,
                                        color=AURORA_PALETTE['polar_aqua'], alpha=0.3,
                                        label='Mesosphere')
-        
+
         # Mark aurora altitude range
-        self.ax_atmosphere.axhspan(80, 500, color=AURORA_PALETTE['oxygen_jade'], 
+        self.ax_atmosphere.axhspan(80, 500, color=AURORA_PALETTE['oxygen_jade'],
                                   alpha=0.1, label='Aurora Zone')
-        
+
         # Show current aurora emissions
         for emission in self.atmosphere.aurora_emissions[-10:]:  # Recent emissions
             alt = emission['altitude']
             intensity_scaled = emission['intensity'] * 2 - 20  # Scale for x-axis
-            
+
             self.ax_atmosphere.scatter(intensity_scaled, alt, s=50,
                                       c=emission['color'], alpha=0.8, marker='o')
-        
-        self.ax_atmosphere.set_xlabel('Log Density / Intensity', 
+
+        self.ax_atmosphere.set_xlabel('Log Density / Intensity',
                                      color=AURORA_PALETTE['ice_crystal'], fontsize=9)
-        self.ax_atmosphere.set_ylabel('Altitude (km)', 
+        self.ax_atmosphere.set_ylabel('Altitude (km)',
                                      color=AURORA_PALETTE['ice_crystal'], fontsize=9)
         self.ax_atmosphere.set_ylim(50, 500)
         self.ax_atmosphere.legend(fontsize=8, framealpha=0.3)
-    
+
     def _render_curtain_profile(self):
         """Render aurora curtain intensity profile"""
-        self.ax_curtain.set_title('Aurora Curtain Profile', 
+        self.ax_curtain.set_title('Aurora Curtain Profile',
                                  color=AURORA_PALETTE['ice_crystal'], fontsize=12)
-        
+
         if self.aurora_curtains:
             # Show intensity profile of first curtain
             curtain = self.aurora_curtains[0]
-            
-            for i, (intensities, colors) in enumerate(zip(curtain.intensity_profile, 
-                                                         curtain.color_profile)):
+
+            for i, (intensities, colors) in enumerate(zip(curtain.intensity_profile,
+                                                         curtain.color_profile, strict=False)):
                 if i % 3 == 0:  # Show every 3rd profile line
-                    altitudes = np.linspace(curtain.base_altitude, 
-                                          curtain.base_altitude + curtain.height, 
+                    altitudes = np.linspace(curtain.base_altitude,
+                                          curtain.base_altitude + curtain.height,
                                           len(intensities))
-                    
+
                     # Offset x position for each profile
                     x_offset = i * 0.1
                     x_values = [x_offset + intensity for intensity in intensities]
-                    
+
                     # Draw profile
                     for j in range(len(altitudes) - 1):
-                        self.ax_curtain.plot([x_values[j], x_values[j+1]], 
+                        self.ax_curtain.plot([x_values[j], x_values[j+1]],
                                            [altitudes[j], altitudes[j+1]],
                                            color=colors[j], alpha=0.7, linewidth=2)
-                        
+
                         # Add glow for bright regions
                         if intensities[j] > 0.7:
                             self.ax_curtain.scatter(x_values[j], altitudes[j], s=100,
                                                    c=colors[j], alpha=0.3)
-        
-        self.ax_curtain.set_xlabel('Intensity + Position', 
+
+        self.ax_curtain.set_xlabel('Intensity + Position',
                                   color=AURORA_PALETTE['ice_crystal'], fontsize=9)
-        self.ax_curtain.set_ylabel('Altitude (km)', 
+        self.ax_curtain.set_ylabel('Altitude (km)',
                                   color=AURORA_PALETTE['ice_crystal'], fontsize=9)
         self.ax_curtain.set_xlim(0, 2)
-    
+
     def _render_geomagnetic_activity(self):
         """Render geomagnetic activity indices"""
-        self.ax_geomagnetic.set_title('Geomagnetic Activity', 
+        self.ax_geomagnetic.set_title('Geomagnetic Activity',
                                      color=AURORA_PALETTE['ice_crystal'], fontsize=12)
-        
+
         # Kp index visualization
         kp_levels = np.arange(10)
-        kp_colors = [AURORA_PALETTE['ice_crystal'] if i <= self.geomagnetic_index 
+        kp_colors = [AURORA_PALETTE['ice_crystal'] if i <= self.geomagnetic_index
                     else AURORA_PALETTE['midnight_navy'] for i in kp_levels]
-        
-        bars = self.ax_geomagnetic.barh(kp_levels, np.ones(10), 
+
+        bars = self.ax_geomagnetic.barh(kp_levels, np.ones(10),
                                        color=kp_colors, alpha=0.8)
-        
+
         # Highlight current Kp level
         if self.geomagnetic_index < 9:
             bars[int(self.geomagnetic_index)].set_color(AURORA_PALETTE['aurora_rose'])
-        
+
         # Activity level indicators
         activity_levels = ['Quiet', 'Unsettled', 'Active', 'Minor Storm', 'Major Storm', 'Severe Storm']
         if self.geomagnetic_index <= 2:
@@ -1252,7 +1243,7 @@ class AuroraVisualizer:
         else:
             activity = activity_levels[5]
             activity_color = AURORA_PALETTE['plasma_pink']
-        
+
         # Add activity sparkles for high activity
         if self.geomagnetic_index > 6:
             for _ in range(int(self.geomagnetic_index)):
@@ -1260,18 +1251,18 @@ class AuroraVisualizer:
                 sparkle_y = random.uniform(0, 9)
                 self.ax_geomagnetic.scatter(sparkle_x, sparkle_y, s=20,
                                            c=activity_color, alpha=0.8, marker='*')
-        
+
         self.ax_geomagnetic.set_xlim(0, 2)
         self.ax_geomagnetic.set_ylim(-0.5, 9.5)
         self.ax_geomagnetic.set_yticks(kp_levels)
         self.ax_geomagnetic.set_ylabel('Kp Index', color=AURORA_PALETTE['ice_crystal'], fontsize=9)
-        
+
         # Activity level text
         self.ax_geomagnetic.text(0.02, 0.98, f'{activity}\nKp = {self.geomagnetic_index:.1f}',
                                 transform=self.ax_geomagnetic.transAxes,
                                 color=activity_color, fontsize=9,
                                 verticalalignment='top', weight='bold')
-    
+
     def animate(self):
         """Start the aurora visualization animation"""
         def update(frame):
@@ -1280,7 +1271,7 @@ class AuroraVisualizer:
             except Exception as e:
                 print(f"Animation error at frame {frame}: {e}")
             return []
-        
+
         self.anim = animation.FuncAnimation(
             self.fig, update,
             frames=2000,
@@ -1288,7 +1279,7 @@ class AuroraVisualizer:
             blit=False,
             repeat=True
         )
-        
+
         plt.show()
 
 
@@ -1308,7 +1299,7 @@ def run_aurora_symphony():
     print()
     print("Watch as charged particles from the Sun dance through Earth's")
     print("magnetic field, creating the magical Northern Lights...")
-    
+
     try:
         aurora_system = AuroraVisualizer()
         aurora_system.animate()

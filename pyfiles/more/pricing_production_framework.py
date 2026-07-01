@@ -11,11 +11,12 @@ Includes:
 - Logging for sanity checks
 """
 
+import logging
+
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-import logging
 
 # Logging Setup
 
@@ -50,7 +51,7 @@ def validate_data(data):
     missing = [col for col in required_columns if col not in data.columns]
     if missing:
         raise ValueError(f"Missing required columns: {missing}")
-    
+
     if (data[['base_price', 'competitor_price', 'marketing_spend', 'demand']] < 0).any().any():
         logging.warning("Negative values detected, check your data.")
 
@@ -64,10 +65,10 @@ def build_demand_model(data, degree=2):
     """
     X = data[['base_price', 'competitor_price', 'marketing_spend']]
     y = data['demand']
-    
+
     poly = PolynomialFeatures(degree=degree, include_bias=False)
     X_poly = poly.fit_transform(X)
-    
+
     model = LinearRegression()
     model.fit(X_poly, y)
 
@@ -79,11 +80,11 @@ def predict_demand(model, poly, base_price, competitor_price, marketing_spend):
                             columns=['base_price', 'competitor_price', 'marketing_spend'])
     features_poly = poly.transform(features)
     predicted_demand = model.predict(features_poly)[0]
-    
+
     if predicted_demand < 0:
         logging.warning("Predicted demand negative, resetting to 0.")
         predicted_demand = 0
-    
+
     return predicted_demand
 
 
@@ -126,10 +127,10 @@ if __name__ == "__main__":
     competitor_price = 55
     marketing_spend = 7000
     price, revenue = optimal_price(model, poly, competitor_price, marketing_spend)
-    
+
     # Step 4: Forecast revenue
     forecasted_revenue = forecast_revenue(model, poly, price, competitor_price, marketing_spend, units=1)
-    
+
     print(f"\nOptimal Price: ${price:.2f}")
     print(f"Expected Revenue: ${revenue:.2f}")
     print(f"Forecasted Revenue (1 unit scenario): ${forecasted_revenue:.2f}")

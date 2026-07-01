@@ -16,14 +16,10 @@ CITATIONS (documentation I reference while coding):
 - Seaborn lineplot: https://seaborn.pydata.org/generated/seaborn.lineplot.html
 """
 
-import os
-import sys
-from pathlib import Path
-from typing import Tuple, Dict, Any
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Seaborn is used in the second half; I keep it optional if you prefer pure Matplotlib.
 try:
@@ -34,7 +30,7 @@ except Exception:
 
 
 # A) Pastel ombré theme (once), and a tiny utility for gradient backgrounds
-def ombre_palette_core_cazzy() -> Dict[str, str]:
+def ombre_palette_core_cazzy() -> dict[str, str]:
     """My house palette for the lesson: pastel pink → lavender → mint → blue."""
     return {
         "ombre_pink_hex": "#FFD6E8",
@@ -68,7 +64,7 @@ def ombre_apply_rcparams_cazzy() -> None:
     })
 
 
-def ombre_axes_background_gradient_cazzy(ax_handle, color_sequence: Tuple[str, str, str, str]) -> None:
+def ombre_axes_background_gradient_cazzy(ax_handle, color_sequence: tuple[str, str, str, str]) -> None:
     """
     Paint a subtle left→right gradient behind the plotting area using imshow.
     This stays *behind* data (zorder low) and keeps labels readable.
@@ -77,7 +73,7 @@ def ombre_axes_background_gradient_cazzy(ax_handle, color_sequence: Tuple[str, s
     gradient_canvas = np.linspace(0, 1, 256)[None, :]
     # Create a 256×4 RGBA from the requested colors
     # We'll fade from color A to B to C to D by blending quarters.
-    from matplotlib.colors import to_rgba, to_rgb
+    from matplotlib.colors import to_rgb
     cA, cB, cC, cD = map(to_rgb, color_sequence)
 
     # compute 256 colors via piecewise linear blend

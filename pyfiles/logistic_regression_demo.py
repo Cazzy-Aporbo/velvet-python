@@ -1189,8 +1189,8 @@ def main():
     train_sizes, (train_scores, val_scores) = analyzer.plot_learning_curve(X_train, y_train)
     
     print("Training set sizes:", train_sizes[:5], "...")
-    print("Final training score:", train_scores[-1]:.4f)
-    print("Final validation score:", val_scores[-1]:.4f)
+    print(f"Final training score: {train_scores[-1]:.4f}")
+    print(f"Final validation score: {val_scores[-1]:.4f}")
     
     if train_scores[-1] - val_scores[-1] > 0.1:
         print("Note: Gap suggests overfitting - consider stronger regularization")

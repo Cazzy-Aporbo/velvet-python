@@ -9,11 +9,11 @@ realistic, illustrative ways. This is about demonstrating both technical depth a
 thoughtfulness.
 """
 
-import subprocess
-import sys
 import importlib
 import logging
 import platform
+import subprocess
+import sys
 import warnings
 
 # Logging setup
@@ -64,9 +64,9 @@ def demo_numpy_pandas():
     logging.info("Numpy/Pandas demo ran successfully")
 
 def demo_scikit_learn():
+    import numpy as np
     from sklearn.linear_model import LinearRegression
     from sklearn.preprocessing import PolynomialFeatures
-    import numpy as np
     X = np.array([[1], [2], [3], [4], [5]])
     y = np.array([2, 4, 6, 8, 10])
     poly = PolynomialFeatures(degree=2)
@@ -78,9 +78,9 @@ def demo_scikit_learn():
     logging.info("Scikit-learn demo ran successfully")
 
 def demo_torch_jax():
-    import torch
     import jax
     import jax.numpy as jnp
+    import torch
     x_torch = torch.tensor([1.0, 2.0, 3.0])
     x_jax = jnp.array([1.0, 2.0, 3.0])
     print("\nTorch tensor:", x_torch, "CUDA available:", torch.cuda.is_available())
@@ -96,10 +96,10 @@ def demo_visualization():
     plt.close()
 
     fig = px.bar(x=["A", "B", "C"], y=[5, 10, 7])
-    
+
     cube = pv.Cube()
     sphere = pv.Sphere()
-    
+
     print("\nVisualization demo executed for Matplotlib, Plotly, and PyVista")
     logging.info("Visualization demo ran successfully")
 
@@ -152,10 +152,10 @@ def create_requirements(packages):
 
 def main():
     print("\nStarting Ultimate Portfolio Extended Demo Installation...\n")
-    
+
     for pkg in all_packages:
         install_package(pkg)
-    
+
     print("\nRunning portfolio demos with multiple examples...\n")
     demo_numpy_pandas()
     demo_scikit_learn()
@@ -165,7 +165,7 @@ def main():
     demo_distributed()
     demo_quantum()
     demo_bioinformatics()
-    
+
     create_requirements(all_packages)
     print("\nAll demos complete. Check ultimate_portfolio_demo_extended_log.txt for details.")
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 GeoPandas Masterclass - Six Ways to Think and Teach
 Author: Cazandra Aporbo  |  December 2024
@@ -24,22 +23,21 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Tuple, List, Optional
 
+import geopandas as gpd
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import geopandas as gpd
+from pyproj import CRS
+from shapely import distance as shp_distance
 from shapely.geometry import box
 from shapely.ops import unary_union
-from shapely import distance as shp_distance
-import matplotlib.pyplot as plt
-from pyproj import CRS
 
 # Optional pretty console output
 try:
+    from rich import box as rich_box
     from rich.console import Console
     from rich.table import Table
-    from rich import box as rich_box
     RICH = True
     console = Console()
 except Exception:
@@ -138,17 +136,17 @@ def build_dataset(seed: int = 11) -> ToyData:
     return ToyData(admin=admin, cities=cities, clinics=clinics)
 
 
-def demo_basics(data: ToyData, out_png: Optional[str] = None) -> None:
+def demo_basics(data: ToyData, out_png: str | None = None) -> None:
     """Basic visualization - always look at your data first"""
     g_admin = make_valid(data.admin)
     ensure_crs(g_admin, "EPSG:4326")
-    
+
     ax = g_admin.boundary.plot(figsize=(7.5, 7), color="#888")
     data.cities.plot(ax=ax, color="#004DFF", markersize=6, alpha=0.7, label="cities")
     data.clinics.plot(ax=ax, color="#FF006E", markersize=18, marker="^", alpha=0.8, label="clinics")
     ax.set_title("Synthetic Dataset (CRS=EPSG:4326)\nDo not measure distances/areas in this CRS")
     ax.legend(loc="lower left")
-    
+
     if out_png:
         plt.tight_layout(); plt.savefig(out_png, dpi=160)
     plt.close()
@@ -165,14 +163,14 @@ def cities_to_admin_rollup(data: ToyData) -> gpd.GeoDataFrame:
         predicate="within",
         how="left"
     )
-    
+
     joined["admin_id"] = joined["admin_id"].fillna(-1).astype(int)
-    
+
     roll = joined.groupby("admin_id", as_index=False).agg(
         pop_total=("pop", "sum"),
         n_cities=("name", "count"),
     )
-    
+
     out = data.admin.merge(roll, on="admin_id", how="left").fillna({"pop_total": 0, "n_cities": 0})
     return out
 
@@ -197,7 +195,7 @@ def service_areas(data: ToyData, radius_km: float = 25.0):
     inter = gpd.overlay(admin_m, service_union, how="intersection")
     admin_m["area_m2"] = admin_m.area
     inter["area_m2"] = inter.area
-    
+
     cov = inter.groupby("admin_id", as_index=False)["area_m2"].sum().rename(columns={"area_m2": "covered_m2"})
     admin_cov = admin_m.merge(cov, on="admin_id", how="left").fillna({"covered_m2": 0.0})
     admin_cov["coverage_pct"] = (admin_cov["covered_m2"] / admin_cov["area_m2"]).clip(0, 1) * 100.0
@@ -210,14 +208,14 @@ def nearest_facility_sjoin(data: ToyData, max_km: float = 50.0) -> gpd.GeoDataFr
     laea = local_equal_area_crs(data.cities)
     cities_m = data.cities.to_crs(laea)
     clinics_m = data.clinics.to_crs(laea)
-    
+
     joined = gpd.sjoin_nearest(
         cities_m,
         clinics_m[["name", "capacity", "geometry"]],
         how="left",
         distance_col="dist_m"
     )
-    
+
     joined["within_max_km"] = (joined["dist_m"] <= max_km * 1000.0)
     return joined
 
@@ -238,7 +236,7 @@ def nearest_facility_query_manual(data: ToyData) -> pd.DataFrame:
                 cities_m.geometry,
                 return_distance=True,
             )
-            
+
             if isinstance(res, tuple) and len(res) == 3:
                 left_ix, right_ix, dist = res
                 left_ix = np.asarray(left_ix, dtype=int)
@@ -253,23 +251,23 @@ def nearest_facility_query_manual(data: ToyData) -> pd.DataFrame:
                 dist = np.asarray(shp_distance(c_pts, k_pts), dtype=float)
         else:
             raise AttributeError("No query_nearest")
-            
+
     except (AttributeError, TypeError):
         # Fallback for older geopandas versions
         print("  (using fallback method - consider upgrading geopandas)")
-        
+
         city_names = []
         clinic_names = []
         distances = []
-        
+
         for idx, city_geom in enumerate(cities_m.geometry):
             dists = clinics_m.geometry.distance(city_geom)
             nearest_idx = dists.idxmin()
-            
+
             city_names.append(cities_m.loc[idx, "name"])
             clinic_names.append(clinics_m.loc[nearest_idx, "name"])
             distances.append(dists[nearest_idx])
-        
+
         return pd.DataFrame({
             "city": city_names,
             "clinic": clinic_names,
@@ -296,18 +294,18 @@ def coverage_by_weighted_join(data: ToyData, buf: gpd.GeoDataFrame) -> pd.Series
     """
     laea = local_equal_area_crs(data.admin)
     admin_m = data.admin.to_crs(laea).copy()
-    
+
     # Get centroids of admin regions
     admin_m["centroid"] = admin_m.geometry.centroid
     cent = admin_m[["admin_id", "centroid"]].copy()
     cent = cent.set_geometry("centroid")
-    
+
     # Union all clinic buffers
     union = gpd.GeoDataFrame(geometry=[unary_union(buf.geometry)], crs=laea)
-    
+
     # Which centroids are within coverage?
     hit = gpd.sjoin(cent, union, predicate="within", how="left")
-    
+
     # Count hits vs total
     n_total = cent.groupby("admin_id").size().rename("n_total")
     n_hit = hit.dropna().groupby("admin_id").size().rename("n_hit")
@@ -335,29 +333,29 @@ def windowed_join(cities: gpd.GeoDataFrame, clinics: gpd.GeoDataFrame, window_km
     tree = clinics_m.sindex
     out_rows = []
     has_query_nearest = hasattr(tree, 'query_nearest')
-    
+
     for i in range(len(xs) - 1):
         for j in range(len(ys) - 1):
             cell = box(xs[i], ys[j], xs[i+1], ys[j+1])
-            
+
             cities_cell = cities_m[cities_m.intersects(cell)]
             if cities_cell.empty:
                 continue
-                
+
             idx = list(tree.query(cell))
             if not idx:
                 continue
-                
+
             cand = clinics_m.iloc[idx]
-            
+
             if has_query_nearest and hasattr(cand.sindex, 'query_nearest'):
                 try:
                     left_ix, right_ix = cand.sindex.query_nearest(
-                        cities_cell.geometry, 
+                        cities_cell.geometry,
                         return_distance=False
                     )
                     seen = set()
-                    for ci, ki in zip(left_ix, right_ix):
+                    for ci, ki in zip(left_ix, right_ix, strict=False):
                         city_idx = cities_cell.index[ci]
                         if city_idx not in seen:
                             seen.add(city_idx)
@@ -367,7 +365,7 @@ def windowed_join(cities: gpd.GeoDataFrame, clinics: gpd.GeoDataFrame, window_km
                             out_rows.append((city_idx, cand.index[ki], dist))
                 except:
                     has_query_nearest = False
-            
+
             if not has_query_nearest:
                 # Fallback to brute force within window
                 for ci, city_geom in enumerate(cities_cell.geometry):
@@ -402,7 +400,7 @@ def game(data: ToyData) -> None:
     guess = input("Is coverage >= 50%? (y/n): ").strip().lower()
     truth = pct >= 50.0
     print(f"Coverage is {pct:.1f}% -> correct answer: {'YES' if truth else 'NO'}")
-    
+
     city = data.cities.sample(1, random_state=7).iloc[0]
     nearest = nearest_facility_sjoin(data, max_km=1e6)
     row = nearest.loc[nearest["name"] == city["name"]].iloc[0]
@@ -425,7 +423,7 @@ def quick_plot_service(data: ToyData, buf: gpd.GeoDataFrame, admin_cov: gpd.GeoD
 def main() -> int:
     """Run through all six spatial analysis patterns with timing"""
     print("\nGeoPandas Masterclass - by Cazandra Aporbo\n")
-    
+
     # Version check
     try:
         import geopandas
@@ -492,11 +490,11 @@ def main() -> int:
     print("  • Use spatial joins for point-in-polygon operations")
     print("  • Buffer + overlay for coverage analysis")
     print("  • Consider windowed approaches for large datasets")
-    
+
     print("\nGenerated files:")
     print("  • 00_basics.png (dataset overview)")
     print("  • 01_coverage.png (service coverage map)")
-    
+
     print("\nDone - Cazandra\n")
     return 0
 

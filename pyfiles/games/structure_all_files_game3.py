@@ -20,24 +20,18 @@ Python Requirements: 3.9+
 Dependencies: Standard library only (for game itself)
 """
 
-import time
-import random
 import os
-import sys
-import textwrap
-from typing import List, Dict, Tuple, Optional, Any, Set
-from datetime import datetime, timedelta
-from difflib import SequenceMatcher
-import json
-import hashlib
 import pickle
+import time
+from collections import defaultdict
+from datetime import datetime
+from difflib import SequenceMatcher
 from pathlib import Path
-from collections import deque, defaultdict, OrderedDict
-import re
+
 
 class DataScienceTypingGame:
     """Advanced typing game specialized for data science structures"""
-    
+
     def __init__(self):
         self.user_structures = {}
         self.library_knowledge = self._initialize_library_database()
@@ -47,7 +41,7 @@ class DataScienceTypingGame:
         self.level = 1
         self.xp = 0
         self.combo_multiplier = 1
-        
+
         # Enhanced stats for DS/ML focus
         self.stats = {
             'total_imports_typed': 0,
@@ -61,7 +55,7 @@ class DataScienceTypingGame:
             'pipelines_built': 0,
             'neural_networks_typed': 0
         }
-        
+
         # DS/ML specific achievements
         self.achievements = {
             'import_master': False,  # Type 50 different imports
@@ -80,7 +74,7 @@ class DataScienceTypingGame:
             'production_pro': False,  # Build production ML structure
             'library_collector': False  # Use 30+ different libraries
         }
-        
+
         # Power-ups enhanced for DS/ML
         self.power_ups = {
             'import_autocomplete': 0,
@@ -89,11 +83,11 @@ class DataScienceTypingGame:
             'gpu_boost': 0,
             'memory_optimizer': 0
         }
-        
+
         self.save_file = Path.home() / '.ds_typing_game.save'
         self.load_game_data()
-    
-    def _initialize_library_database(self) -> Dict[str, Dict]:
+
+    def _initialize_library_database(self) -> dict[str, dict]:
         """Initialize comprehensive DS/ML library database"""
         return {
             # Core Scientific Computing
@@ -118,7 +112,7 @@ class DataScienceTypingGame:
                 'category': 'scientific',
                 'difficulty': 2
             },
-            
+
             # Data Manipulation
             'pandas': {
                 'imports': [
@@ -159,7 +153,7 @@ class DataScienceTypingGame:
                 'category': 'data',
                 'difficulty': 3
             },
-            
+
             # Machine Learning Frameworks
             'sklearn': {
                 'imports': [
@@ -203,7 +197,7 @@ class DataScienceTypingGame:
                 'category': 'ml',
                 'difficulty': 2
             },
-            
+
             # Deep Learning Frameworks
             'torch': {
                 'imports': [
@@ -261,7 +255,7 @@ class DataScienceTypingGame:
                 'category': 'deep_learning',
                 'difficulty': 3
             },
-            
+
             # Computer Vision
             'cv2': {
                 'imports': [
@@ -298,7 +292,7 @@ class DataScienceTypingGame:
                 'category': 'computer_vision',
                 'difficulty': 4
             },
-            
+
             # NLP Libraries
             'transformers': {
                 'imports': [
@@ -345,7 +339,7 @@ class DataScienceTypingGame:
                 'category': 'nlp',
                 'difficulty': 3
             },
-            
+
             # Visualization
             'matplotlib': {
                 'imports': [
@@ -394,7 +388,7 @@ class DataScienceTypingGame:
                 'category': 'visualization',
                 'difficulty': 2
             },
-            
+
             # Time Series
             'prophet': {
                 'imports': [
@@ -423,7 +417,7 @@ class DataScienceTypingGame:
                 'category': 'timeseries',
                 'difficulty': 3
             },
-            
+
             # AutoML
             'autogluon': {
                 'imports': [
@@ -457,7 +451,7 @@ class DataScienceTypingGame:
                 'category': 'automl',
                 'difficulty': 2
             },
-            
+
             # Distributed/Parallel Computing
             'ray': {
                 'imports': [
@@ -480,7 +474,7 @@ class DataScienceTypingGame:
                 'category': 'distributed',
                 'difficulty': 4
             },
-            
+
             # GPU Computing
             'cupy': {
                 'imports': [
@@ -499,7 +493,7 @@ class DataScienceTypingGame:
                 'category': 'gpu',
                 'difficulty': 4
             },
-            
+
             # Experiment Tracking
             'mlflow': {
                 'imports': [
@@ -526,7 +520,7 @@ class DataScienceTypingGame:
                 'category': 'mlops',
                 'difficulty': 2
             },
-            
+
             # Additional Scientific Libraries
             'sympy': {
                 'imports': [
@@ -553,25 +547,25 @@ class DataScienceTypingGame:
                 'difficulty': 3
             }
         }
-    
+
     def clear_screen(self):
         """Clear the terminal screen"""
         os.system('cls' if os.name == 'nt' else 'clear')
-    
+
     def generate_ascii_banner(self, text: str) -> str:
         """Generate ASCII art style banner"""
         width = len(text) + 4
         return f"╔{'═' * width}╗\n║  {text}  ║\n╚{'═' * width}╝"
-    
+
     def display_welcome(self):
         """Display welcome screen with ML theme"""
         self.clear_screen()
-        
+
         print("="*70)
         print(self.generate_ascii_banner("DATA SCIENCE TYPING ARENA").center(70))
         print("="*70)
         print("\nMaster ML/DS Libraries Through Typing Practice!")
-        
+
         print("\n>>> LOADING NEURAL NETWORKS...")
         time.sleep(0.5)
         print(">>> IMPORTING SCIENTIFIC LIBRARIES...")
@@ -579,18 +573,18 @@ class DataScienceTypingGame:
         print(">>> INITIALIZING GPU ACCELERATION...")
         time.sleep(0.5)
         print(">>> READY FOR DATA SCIENCE!")
-        
+
         print(f"\nLevel: {self.level} | XP: {self.xp}")
         print(f"Libraries Mastered: {len(self.stats['libraries_mastered'])}")
-        
+
         print("\nPress ENTER to begin...")
         input()
-    
+
     def create_ml_structure(self):
         """Create a data science/ML focused structure"""
         self.clear_screen()
         print(self.generate_ascii_banner("ML STRUCTURE CREATOR"))
-        
+
         print("\nChoose structure template:")
         print("1. DATA PREPROCESSING PIPELINE")
         print("2. NEURAL NETWORK MODEL")
@@ -601,14 +595,14 @@ class DataScienceTypingGame:
         print("7. AUTOML PIPELINE")
         print("8. DISTRIBUTED TRAINING SCRIPT")
         print("9. CUSTOM STRUCTURE")
-        
+
         choice = input("\nSelect (1-9): ").strip()
-        
+
         if choice == '9':
             self.create_custom_ml_structure()
         else:
             self.create_template_structure(choice)
-    
+
     def create_template_structure(self, template_type: str):
         """Create structure from template with specific libraries"""
         templates = {
@@ -621,12 +615,12 @@ class DataScienceTypingGame:
             '7': self.generate_automl_template,
             '8': self.generate_distributed_template
         }
-        
+
         if template_type in templates:
             structure_name, content = templates[template_type]()
             self.save_structure(structure_name, content, template_type)
-    
-    def generate_preprocessing_template(self) -> Tuple[str, str]:
+
+    def generate_preprocessing_template(self) -> tuple[str, str]:
         """Generate data preprocessing pipeline template"""
         name = "DATA_PREPROCESSING_PIPELINE"
         content = '''"""
@@ -674,10 +668,10 @@ class DataPreprocessor:
         
     def clean_data(self, df: DataFrame) -> DataFrame:
         pass'''
-        
+
         return name, content
-    
-    def generate_neural_network_template(self) -> Tuple[str, str]:
+
+    def generate_neural_network_template(self) -> tuple[str, str]:
         """Generate neural network template"""
         name = "DEEP_NEURAL_NETWORK"
         content = '''"""
@@ -728,10 +722,10 @@ class NeuralNetwork(LightningModule):
         
     def forward(self, x):
         return self.model(x)'''
-        
+
         return name, content
-    
-    def generate_ml_experiment_template(self) -> Tuple[str, str]:
+
+    def generate_ml_experiment_template(self) -> tuple[str, str]:
         """Generate ML experiment template"""
         name = "ML_EXPERIMENT_FRAMEWORK"
         content = '''"""
@@ -780,10 +774,10 @@ import seaborn as sns
 
 def run_experiment():
     pass'''
-        
+
         return name, content
-    
-    def generate_cv_template(self) -> Tuple[str, str]:
+
+    def generate_cv_template(self) -> tuple[str, str]:
         """Generate computer vision template"""
         name = "COMPUTER_VISION_APPLICATION"
         content = '''"""
@@ -818,10 +812,10 @@ from detectron2.config import get_cfg
 
 def process_image(image_path):
     pass'''
-        
+
         return name, content
-    
-    def generate_nlp_template(self) -> Tuple[str, str]:
+
+    def generate_nlp_template(self) -> tuple[str, str]:
         """Generate NLP template"""
         name = "NLP_TRANSFORMER_PIPELINE"
         content = '''"""
@@ -853,10 +847,10 @@ import spacy
 
 def process_text(text):
     pass'''
-        
+
         return name, content
-    
-    def generate_timeseries_template(self) -> Tuple[str, str]:
+
+    def generate_timeseries_template(self) -> tuple[str, str]:
         """Generate time series template"""
         name = "TIMESERIES_FORECASTING"
         content = '''"""
@@ -888,10 +882,10 @@ from tslearn.clustering import TimeSeriesKMeans
 
 def forecast():
     pass'''
-        
+
         return name, content
-    
-    def generate_automl_template(self) -> Tuple[str, str]:
+
+    def generate_automl_template(self) -> tuple[str, str]:
         """Generate AutoML template"""
         name = "AUTOML_PIPELINE"
         content = '''"""
@@ -916,10 +910,10 @@ from pycaret.classification import setup, compare_models
 
 def automl_train():
     pass'''
-        
+
         return name, content
-    
-    def generate_distributed_template(self) -> Tuple[str, str]:
+
+    def generate_distributed_template(self) -> tuple[str, str]:
         """Generate distributed computing template"""
         name = "DISTRIBUTED_TRAINING"
         content = '''"""
@@ -953,75 +947,75 @@ import cudf
 
 def distributed_train():
     pass'''
-        
+
         return name, content
-    
+
     def create_custom_ml_structure(self):
         """Create fully custom ML/DS structure"""
         self.clear_screen()
         print(self.generate_ascii_banner("CUSTOM ML STRUCTURE"))
-        
+
         name = input("Structure name: ").strip().upper()
         if not name:
             name = f"ML_STRUCTURE_{len(self.user_structures) + 1}"
-        
+
         print("\nSelect libraries to include (comma-separated):")
         print("Categories: numpy, pandas, sklearn, torch, tensorflow, transformers, etc.")
         print("Or type 'list' to see all available libraries")
-        
+
         lib_input = input("\nLibraries: ").strip().lower()
-        
+
         if lib_input == 'list':
             self.display_library_list()
             lib_input = input("\nLibraries: ").strip().lower()
-        
+
         selected_libs = [lib.strip() for lib in lib_input.split(',')]
-        
+
         # Generate imports
         print("\n" + "="*70)
         print("GENERATING STRUCTURE")
         print("="*70)
-        
+
         content_lines = ['"""', name, 'Custom ML/DS Structure', '', 'Libraries included:']
         for lib in selected_libs:
             if lib in self.library_knowledge:
                 content_lines.append(f'- {lib}')
-        
+
         content_lines.extend(['', 'Author: Your Name', 'Version: 1.0.0', '"""', ''])
-        
+
         # Add imports
         for lib in selected_libs:
             if lib in self.library_knowledge:
                 for imp in self.library_knowledge[lib]['imports'][:3]:
                     content_lines.append(imp)
-        
+
         content_lines.extend(['', '', 'def main():', '    pass'])
-        
+
         content = '\n'.join(content_lines)
-        
+
         print("Generated structure:")
         print("-"*70)
         print(content)
         print("-"*70)
-        
+
         confirm = input("\nSave this structure? (y/n): ").strip().lower()
         if confirm == 'y':
             self.save_structure(name, content, 'custom')
-    
+
     def display_library_list(self):
         """Display all available libraries by category"""
         categories = defaultdict(list)
         for lib, data in self.library_knowledge.items():
             categories[data['category']].append(lib)
-        
+
         print("\n" + "="*70)
         print("AVAILABLE LIBRARIES")
         print("="*70)
-        
+
         for category, libs in sorted(categories.items()):
             print(f"\n{category.upper().replace('_', ' ')}:")
             print(', '.join(sorted(libs)))
-    
+
     def save_structure(self, name: str, content: str, structure_type: str):
         """Save a structure"""
         self.user_structures[name] = {
@@ -1034,37 +1028,37 @@ def distributed_train():
             'best_wpm': 0,
             'libraries_used': self._extract_libraries(content)
         }
-        
+
         self.stats['total_structures_created'] += 1
         self.xp += 100
-        
+
         print(f"\nStructure saved: {name}")
-        print(f"XP earned: +100")
-        
+        print("XP earned: +100")
+
         # Check library achievements
         libs_used = self._extract_libraries(content)
         self.stats['libraries_mastered'].update(libs_used)
-        
+
         if len(self.stats['libraries_mastered']) >= 30 and not self.achievements['library_collector']:
             self.unlock_achievement('library_collector', 'Library Collector - Used 30+ libraries!')
-        
+
         input("\nPress ENTER to continue...")
-    
-    def _extract_libraries(self, content: str) -> Set[str]:
+
+    def _extract_libraries(self, content: str) -> set[str]:
         """Extract which libraries are used in content"""
         libraries = set()
         for lib in self.library_knowledge:
             if lib in content or f'import {lib}' in content:
                 libraries.add(lib)
         return libraries
-    
+
     def _calculate_complexity(self, content: str) -> int:
         """Calculate structure complexity"""
         score = 1
-        
+
         lines = content.split('\n')
         score += len(lines) // 20
-        
+
         # Check for various ML/DS patterns
         if 'class' in content:
             score += 2
@@ -1078,25 +1072,25 @@ def distributed_train():
             score += 2
         if 'GridSearchCV' in content:
             score += 2
-        
+
         return min(10, score)
-    
+
     def practice_typing(self):
         """Practice typing ML/DS structures"""
         if not self.user_structures:
             print("\nNo structures available! Create one first.")
             input("Press ENTER to continue...")
             return
-        
+
         self.clear_screen()
         print(self.generate_ascii_banner("SELECT STRUCTURE"))
-        
+
         for idx, (name, data) in enumerate(self.user_structures.items(), 1):
             libs = ', '.join(list(data.get('libraries_used', []))[:3])
             print(f"{idx}. {name} (Libraries: {libs})")
-        
+
         choice = input("\nSelect number: ").strip()
-        
+
         try:
             idx = int(choice) - 1
             structure_name = list(self.user_structures.keys())[idx]
@@ -1104,12 +1098,12 @@ def distributed_train():
         except:
             print("Invalid selection!")
             time.sleep(1)
-    
+
     def typing_challenge(self, structure_name: str):
         """Main typing challenge"""
         structure = self.user_structures[structure_name]
         content = structure['content']
-        
+
         # Display for study
         self.clear_screen()
         print(self.generate_ascii_banner(f"STUDY: {structure_name}"))
@@ -1118,14 +1112,14 @@ def distributed_train():
         print("-"*70)
         print(content)
         print("-"*70)
-        
+
         study_time = max(15, len(content) // 40)
         print(f"\nStudy time: {study_time} seconds")
-        
+
         for i in range(study_time, 0, -1):
             print(f"\r{i} seconds remaining...", end='')
             time.sleep(1)
-        
+
         # Typing phase
         self.clear_screen()
         print(self.generate_ascii_banner(f"TYPE: {structure_name}"))
@@ -1133,52 +1127,52 @@ def distributed_train():
         print("Focus on getting the imports correct!")
         print("Type 'DONE' when finished")
         print("-"*70)
-        
+
         lines = []
         start_time = time.time()
         imports_typed = 0
-        
+
         while True:
             line = input()
             if line.strip() == 'DONE':
                 break
             lines.append(line)
-            
+
             # Track imports
             if 'import' in line or 'from' in line:
                 imports_typed += 1
                 print(f"    [Import {imports_typed} captured]")
-        
+
         elapsed = time.time() - start_time
         user_input = '\n'.join(lines)
-        
+
         # Calculate results
         accuracy = self.calculate_accuracy(content, user_input)
         wpm = (len(user_input.split()) * 60) / elapsed if elapsed > 0 else 0
-        
+
         # Update stats
         structure['practice_count'] += 1
         self.stats['total_imports_typed'] += imports_typed
-        
+
         if accuracy > structure['best_accuracy']:
             structure['best_accuracy'] = accuracy
         if wpm > structure['best_wpm']:
             structure['best_wpm'] = wpm
-        
+
         self.display_results(structure_name, accuracy, wpm, elapsed, imports_typed)
-    
+
     def calculate_accuracy(self, expected: str, actual: str) -> float:
         """Calculate typing accuracy"""
         if not actual:
             return 0.0
-        
+
         matcher = SequenceMatcher(None, expected.strip(), actual.strip())
         base_accuracy = matcher.ratio()
-        
+
         # Bonus for getting imports right
         expected_lines = expected.split('\n')
         actual_lines = actual.split('\n')
-        
+
         import_bonus = 0
         for exp_line in expected_lines:
             if 'import' in exp_line or 'from' in exp_line:
@@ -1186,45 +1180,45 @@ def distributed_train():
                     if exp_line.strip() == act_line.strip():
                         import_bonus += 0.02
                         break
-        
+
         return min(1.0, base_accuracy + import_bonus)
-    
-    def display_results(self, structure_name: str, accuracy: float, 
+
+    def display_results(self, structure_name: str, accuracy: float,
                        wpm: float, elapsed: float, imports_typed: int):
         """Display typing results"""
         self.clear_screen()
         print(self.generate_ascii_banner("RESULTS"))
-        
+
         base_score = int(accuracy * 1000)
         import_bonus = imports_typed * 20
         speed_bonus = int(wpm * 5)
         total_score = base_score + import_bonus + speed_bonus
-        
+
         print(f"\nStructure: {structure_name}")
         print(f"Accuracy: {accuracy*100:.1f}%")
         print(f"Speed: {wpm:.1f} WPM")
         print(f"Time: {elapsed:.1f} seconds")
         print(f"Imports typed: {imports_typed}")
-        
+
         print("\nSCORE:")
         print(f"  Base: {base_score}")
         print(f"  Import bonus: {import_bonus}")
         print(f"  Speed bonus: {speed_bonus}")
         print(f"  TOTAL: {total_score}")
-        
+
         self.score += total_score
         self.xp += total_score // 10
-        
+
         # Check achievements
         if wpm > 100 and not self.achievements['import_master']:
             self.unlock_achievement('import_master', 'Import Master!')
-        
+
         if 'torch' in self.user_structures[structure_name].get('libraries_used', []):
             if accuracy > 0.95 and not self.achievements['pytorch_pro']:
                 self.unlock_achievement('pytorch_pro', 'PyTorch Pro!')
-        
+
         input("\nPress ENTER to continue...")
-    
+
     def unlock_achievement(self, achievement: str, message: str):
         """Unlock achievement"""
         self.achievements[achievement] = True
@@ -1232,30 +1226,30 @@ def distributed_train():
         print(f"ACHIEVEMENT UNLOCKED: {message}")
         print(f"{'='*50}")
         time.sleep(2)
-    
+
     def view_stats(self):
         """View statistics"""
         self.clear_screen()
         print(self.generate_ascii_banner("ML/DS STATISTICS"))
-        
+
         print(f"\nLevel: {self.level} | XP: {self.xp}")
         print(f"Total Score: {self.score}")
-        
+
         print("\nLIBRARY MASTERY:")
         print(f"  Libraries used: {len(self.stats['libraries_mastered'])}")
         print(f"  Total imports typed: {self.stats['total_imports_typed']}")
-        
+
         if self.stats['libraries_mastered']:
             print("\n  Mastered libraries:")
             for lib in sorted(list(self.stats['libraries_mastered'])[:10]):
                 print(f"    - {lib}")
-        
+
         print("\nACHIEVEMENTS:")
         unlocked = sum(1 for v in self.achievements.values() if v)
         print(f"  Unlocked: {unlocked}/{len(self.achievements)}")
-        
+
         input("\nPress ENTER to continue...")
-    
+
     def save_game_data(self):
         """Save game progress"""
         save_data = {
@@ -1266,13 +1260,13 @@ def distributed_train():
             'level': self.level,
             'xp': self.xp
         }
-        
+
         try:
             with open(self.save_file, 'wb') as f:
                 pickle.dump(save_data, f)
         except:
             pass
-    
+
     def load_game_data(self):
         """Load saved progress"""
         if self.save_file.exists():
@@ -1287,29 +1281,29 @@ def distributed_train():
                     self.xp = data.get('xp', 0)
             except:
                 pass
-    
+
     def main_menu(self) -> str:
         """Main menu"""
         self.clear_screen()
         print(self.generate_ascii_banner("DATA SCIENCE TYPING GAME"))
-        
+
         print(f"\nLevel {self.level} | {self.xp} XP | Score: {self.score}")
-        
+
         print("\n1. CREATE ML STRUCTURE")
         print("2. PRACTICE TYPING")
         print("3. VIEW LIBRARY DATABASE")
         print("4. STATISTICS")
         print("5. QUIT")
-        
+
         return input("\nChoice: ").strip()
-    
+
     def run(self):
         """Main game loop"""
         self.display_welcome()
-        
+
         while True:
             choice = self.main_menu()
-            
+
             if choice == '1':
                 self.create_ml_structure()
             elif choice == '2':

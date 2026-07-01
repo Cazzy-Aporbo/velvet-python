@@ -1,6 +1,7 @@
 import random
 import time  # Import the time module
 
+
 # take a number, p, and return true if it is prime and false otherwise.
 def isPrime(p):
     if p <= 1:
@@ -54,7 +55,6 @@ for bit_length in bit_lengths:
     bit_length_factorization_times.append((bit_length, elapsed_time_ms))
     print("Bit Length:", bit_length, "Elapsed Time (ms):", elapsed_time_ms)
 
-from math import exp
 # Calculate the estimated time to crack a 1024-bit key
 bit_length_1024 = 1024
 estimated_time_ms = 2 ** (bit_length_1024 - 15) * 0.08

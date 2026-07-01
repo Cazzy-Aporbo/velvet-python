@@ -1,7 +1,8 @@
-import pandas as pd
-import numpy as np
 import random
+
 import faker
+import numpy as np
+import pandas as pd
 
 fake = faker.Faker()
 num_rows = 500

@@ -6,7 +6,6 @@ Sankey diagram. The goal is to show the distribution from class to gender to sur
 outcome in a clear, visually appealing way.
 """
 
-import pandas as pd
 import plotly.graph_objects as go
 import seaborn as sns
 

@@ -189,7 +189,7 @@ class CosineSimilarityClassifier:
         vec = self._vectorize(text)
         vec_norm = self._norm(vec)
         if vec_norm == 0:
-            return next(iter(self.centroids), "unknown")
+            return "unknown"
 
         best_class, best_sim = "unknown", -1.0
         for label, centroid in self.centroids.items():

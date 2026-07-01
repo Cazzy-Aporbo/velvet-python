@@ -1,5 +1,4 @@
-#!/usr/bin/env python3  # Shebang for Unix-like systems 
-# -*- coding: utf-8 -*-  # Source encoding declaration 
+#!/usr/bin/env python3  # Shebang for Unix-like systems
 
 """
 Cazzy Odyssey Game — It is meant to be an an endless, terminal-friendly skill game.  
@@ -13,19 +12,26 @@ Every single line is commented to help learners think in terms of:  # Explanatio
 Quit any time with: /quit, /q, or Ctrl+C.  # Usage hint (str)
 """
 
-from __future__ import annotations  # Future import to allow postponed annotations (module-level directive)
-import sys  # System-specific functions and parameters (module)
+from __future__ import (
+    annotations,  # Future import to allow postponed annotations (module-level directive)
+)
+
 import math  # Math functions (module)
 import random  # RNG utilities (module)
-import time  # Time functions (module)
 import re  # Regular expressions (module)
-from dataclasses import dataclass  # Dataclass decorator and function (callable)
-from typing import Callable, Dict, List, Tuple, Optional, Any, Iterable  # Type hints (types)
-from functools import lru_cache, wraps  # Caching decorator and utility decorator (callables)
+import time  # Time functions (module)
+from collections import namedtuple  # Data utilities (classes)
+from collections.abc import Callable, Iterable
 from contextlib import contextmanager  # Context manager helper (callable)
+from dataclasses import dataclass  # Dataclass decorator and function (callable)
 from enum import Enum, auto  # Enumerations (class factory, function)
-from itertools import islice  # Iterator slicing helper (function)
-from collections import Counter, namedtuple  # Data utilities (classes)
+from functools import (  # Caching decorator and utility decorator (callables)
+    lru_cache,
+    wraps,
+)
+from typing import (  # Type hints (types)
+    Any,
+)
 
 PASTEL = {  # Dict[str,str] — ANSI-ish pastel-ish color codes (basic) for terminal flavor; safe if not supported
     "reset": "\033[0m",  # ANSI reset (str)
@@ -96,10 +102,10 @@ class Vector2D:  # Custom class demonstrating dunder methods (class)
     x: float  # Field x (float)
     y: float  # Field y (float)
 
-    def __add__(self, other: "Vector2D") -> "Vector2D":  # Magic method for + (callable)
+    def __add__(self, other: Vector2D) -> Vector2D:  # Magic method for + (callable)
         return Vector2D(self.x + other.x, self.y + other.y)  # New Vector2D (object)
 
-    def __mul__(self, k: float) -> "Vector2D":  # Magic method for scalar * (callable)
+    def __mul__(self, k: float) -> Vector2D:  # Magic method for scalar * (callable)
         return Vector2D(self.x * k, self.y * k)  # Scaled vector (object)
 
     def __len__(self) -> int:  # Magic method to define "length" in terms of components count (callable)
@@ -114,11 +120,11 @@ class Vector2D:  # Custom class demonstrating dunder methods (class)
         return math.hypot(self.x, self.y)  # sqrt(x^2 + y^2) (float)
 
     @classmethod  # Classmethod as alternate constructor (decorator)
-    def from_tuple(cls, t: Tuple[float, float]) -> "Vector2D":  # Receive class and tuple (callable)
+    def from_tuple(cls, t: tuple[float, float]) -> Vector2D:  # Receive class and tuple (callable)
         return cls(float(t[0]), float(t[1]))  # Construct instance (object)
 
     @staticmethod  # Staticmethod independent utility (decorator)
-    def dot(a: "Vector2D", b: "Vector2D") -> float:  # Dot product (callable)
+    def dot(a: Vector2D, b: Vector2D) -> float:  # Dot product (callable)
         return a.x * b.x + a.y * b.y  # Scalar (float)
 
 @dataclass  # Dataclass for simple container (decorator)
@@ -144,7 +150,7 @@ class Topic(Enum):  # Enumeration base (class)
     ALGO = auto()  # Algorithms (enum member)
     MISC = auto()  # Miscellaneous (enum member)
 
-def challenge_arith() -> Tuple[str, Any, str, Topic]:
+def challenge_arith() -> tuple[str, Any, str, Topic]:
     """Create an arithmetic challenge.  # Docstring (str)"""
     a = random.randint(5, 25)  # Random int a (int)
     b = random.randint(2, 9)  # Random int b (int)
@@ -156,7 +162,7 @@ def challenge_arith() -> Tuple[str, Any, str, Topic]:
     explain = "int math with operators + - * // % ; remember // is floor division."  # Explanation (str)
     return prompt, expected, explain, Topic.ARITH  # Return tuple (tuple)
 
-def challenge_strings() -> Tuple[str, Any, str, Topic]:
+def challenge_strings() -> tuple[str, Any, str, Topic]:
     """Create a string slicing/formatting challenge.  # Docstring (str)"""
     s = random.choice(["FoXX_Health", "Pythonic", "Data-Science", "Lavender"])  # Source string (str)
     i = random.randint(1, len(s)-1)  # Split index (int)
@@ -165,7 +171,7 @@ def challenge_strings() -> Tuple[str, Any, str, Topic]:
     explain = "slicing is non-destructive; s[:i] + s[i:] reconstructs the original string."  # Explanation (str)
     return prompt, expected, explain, Topic.STRINGS  # Return tuple (tuple)
 
-def challenge_ds() -> Tuple[str, Any, str, Topic]:
+def challenge_ds() -> tuple[str, Any, str, Topic]:
     """Create a data-structure challenge (list/dict/set/tuple).  # Docstring (str)"""
     nums = [random.randint(1, 9) for _ in range(5)]  # List of ints (list[int])
     unique = sorted(set(nums))  # Unique sorted values (list[int])
@@ -175,7 +181,7 @@ def challenge_ds() -> Tuple[str, Any, str, Topic]:
     explain = f"set removes duplicates; sorted orders; dict shown for mapping: {mapping}."  # Explanation (str)
     return prompt, expected, explain, Topic.DS  # Return tuple (tuple)
 
-def challenge_oop() -> Tuple[str, Any, str, Topic]:
+def challenge_oop() -> tuple[str, Any, str, Topic]:
     """OOP challenge using Vector2D and dunder methods.  # Docstring (str)"""
     v1 = Vector2D(random.randint(1,4), random.randint(1,4))  # Vector2D instance (object)
     v2 = Vector2D(random.randint(1,4), random.randint(1,4))  # Another instance (object)
@@ -192,7 +198,7 @@ def fib(n: int) -> int:  # Recursive fibonacci with caching (callable)
         return n  # Return n for 0/1 (int)
     return fib(n-1) + fib(n+ -2 + 0)  # Slightly playful expression same as fib(n-2) (int)
 
-def challenge_algo() -> Tuple[str, Any, str, Topic]:
+def challenge_algo() -> tuple[str, Any, str, Topic]:
     """Algorithmic challenge — Fibonacci with caching.  # Docstring (str)"""
     n = random.randint(6, 10)  # Random n (int)
     prompt = f"Algorithm: fib({n}) = ?"  # Prompt (str)
@@ -200,7 +206,7 @@ def challenge_algo() -> Tuple[str, Any, str, Topic]:
     explain = "lru_cache memoizes results; recursion adds smaller subproblems."  # Explanation (str)
     return prompt, expected, explain, Topic.ALGO  # Return tuple (tuple)
 
-def challenge_misc() -> Tuple[str, Any, str, Topic]:
+def challenge_misc() -> tuple[str, Any, str, Topic]:
     """Misc challenge — boolean truthiness & regex.  # Docstring (str)"""
     text = random.choice(["Email me at test@example.com", "No contact here"])  # Text (str)
     found = bool(re.search(r"\w+@\w+\.\w+", text))  # Regex email-like match (bool)
@@ -210,7 +216,7 @@ def challenge_misc() -> Tuple[str, Any, str, Topic]:
     return prompt, expected, explain, Topic.MISC  # Return tuple (tuple)
 
 # Registry of factories for random selection — list of callables (list[Callable])
-CHALLENGES: List[Callable[[], Tuple[str, Any, str, Topic]]] = [  # Annotated list (list)
+CHALLENGES: list[Callable[[], tuple[str, Any, str, Topic]]] = [  # Annotated list (list)
     challenge_arith,  # Arithmetic factory (callable)
     challenge_strings,  # String factory (callable)
     challenge_ds,  # DS factory (callable)
@@ -236,7 +242,7 @@ Commands:
   /help             -> show this help
 """  # End of help text (str)
 
-def pick_challenge(bias: Optional[Topic]) -> Tuple[str, Any, str, Topic]:
+def pick_challenge(bias: Topic | None) -> tuple[str, Any, str, Topic]:
     """Pick a challenge, optionally biased to a topic.  # Docstring (str)"""
     # If bias is set, pick matching factory; else uniform random (callable selection)
     if bias:  # If a Topic is provided (bool)
@@ -251,7 +257,7 @@ def pick_challenge(bias: Optional[Topic]) -> Tuple[str, Any, str, Topic]:
     return fn()  # Produce a challenge (tuple)
 
 @call_counter  # Decorated to demonstrate closures and side effects (decorator)
-def play_round(score: ScoreBoard, bias: Optional[Topic]) -> bool:
+def play_round(score: ScoreBoard, bias: Topic | None) -> bool:
     """Play one round; return False if player exits, else True.  # Docstring (str)"""
     bump_global_combo()  # Touch global state as a playful side quest (side-effect)
     # Choose challenge under a timer context manager (with) — shows __enter__/__exit__ semantics (comment)
@@ -283,7 +289,7 @@ def play_round(score: ScoreBoard, bias: Optional[Topic]) -> bool:
                 new_bias = Topic[name]  # Enum indexing by name (Topic)
                 print(f"Bias set to {new_bias.name}")  # Confirm (I/O)
                 # Store bias into score object by monkey-patching (educational trick — dynamic attribute) (comment)
-                setattr(score, "_bias", new_bias)  # Attach attribute dynamically (side-effect)
+                score._bias = new_bias  # Attach attribute dynamically (side-effect)
             except KeyError:  # Invalid name (exception)
                 print("Unknown topic. Use ARITH/STRINGS/DS/OOP/ALGO/MISC")  # Hint (I/O)
         else:  # No name provided (else branch)
@@ -307,7 +313,7 @@ def main() -> None:
     """Run the endless loop until the player opts out.  # Docstring (str)"""
     random.seed()  # Seed RNG from system entropy (None)
     score = ScoreBoard()  # Initialize scoreboard (ScoreBoard)
-    bias: Optional[Topic] = getattr(score, "_bias", None)  # Read bias if set later (Optional[Topic])
+    bias: Topic | None = getattr(score, "_bias", None)  # Read bias if set later (Optional[Topic])
     banner("Welcome to Cazzy Python Odyssey — the most comprehensive terminal game ever!")  # Intro (I/O)
     print("Type /help any time. Quit with /quit or /q.")  # Instructions (I/O)
     # Endless loop; user can break with command or Ctrl+C (comment)

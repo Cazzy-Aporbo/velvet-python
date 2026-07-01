@@ -73,9 +73,9 @@ def integrate_data():
         integrated_df.to_csv(integrated_file, index=False)
         integrated_df.to_csv(latest_file, index=False)
         print(f"✅ Integrated {len(integrated_df)} total records")
-        print(f"📁 Saved to:
-  - {integrated_file}
-  - {latest_file}")
+        print("📁 Saved to:")
+        print(f"  - {integrated_file}")
+        print(f"  - {latest_file}")
     else:
         print("❌ No data found to integrate.")
 

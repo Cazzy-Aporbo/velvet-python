@@ -14,14 +14,9 @@
 #        this file.
 
 # SECTION 0 — Imports I actually use (all from the standard library)
-from dataclasses import dataclass  # Lightweight records for clean examples
-from typing import Any, Iterable, Dict, List, Tuple, Set, Optional  # Type hints
-import math  # A few numeric examples (e.g., floor division intuition)
 import itertools  # Iteration utilities to level up loops
-import textwrap  # Pretty printing long strings in the console
-import sys  # Access to the interpreter and argv
-import os  # Interact with the operating system
-import subprocess  # Safely demonstrate shell commands as strings (no exec)
+from dataclasses import dataclass  # Lightweight records for clean examples
+from typing import Any
 
 # Helper: tiny print block wrapper so examples are clear in the console
 
@@ -165,25 +160,25 @@ def lesson_data_structures() -> None:
     block("4) Data Structures: list, tuple, set, dict")
 
     # Lists: ordered, mutable, allow duplicates
-    fruits: List[str] = ["apple", "banana", "banana"]
+    fruits: list[str] = ["apple", "banana", "banana"]
     fruits.append("cherry")  # Add an item at the end
     print("list example:", fruits)
 
     # Tuples: ordered, immutable, allow duplicates
-    point: Tuple[int, int] = (3, 4)
+    point: tuple[int, int] = (3, 4)
     print("tuple example:", point)
 
     # Sets: unordered, unique members
-    unique: Set[str] = {"a", "b", "a"}
+    unique: set[str] = {"a", "b"}
     print("set example (deduped):", unique)
 
     # Dicts: key/value mapping, insertion-ordered in modern Python
-    person: Dict[str, Any] = {"name": "Cazandra", "role": "Data Scientist"}
+    person: dict[str, Any] = {"name": "Cazandra", "role": "Data Scientist"}
     person["tools"] = ["Python", "Git", "CLI"]  # Add another key
     print("dict example:", person)
 
     # A tiny real pattern: grouping counts with a dict
-    counts: Dict[str, int] = {}
+    counts: dict[str, int] = {}
     for item in fruits:  # Count occurrences in the list
         counts[item] = counts.get(item, 0) + 1
     print("frequency dict pattern:", counts)
@@ -311,7 +306,7 @@ def lesson_mastery_patterns() -> None:
     print("first:", first, "middle:", middle, "last:", last)
 
     # EAFP: Easier to Ask Forgiveness than Permission — try/except over pre-checks
-    def safe_div(a: float, b: float) -> Optional[float]:
+    def safe_div(a: float, b: float) -> float | None:
         try:
             return a / b
         except ZeroDivisionError:
@@ -323,7 +318,7 @@ def lesson_mastery_patterns() -> None:
     class Person:
         name: str
         role: str = "Learner"
-        skills: List[str] = None  # Default uses None; we fix it in __post_init__
+        skills: list[str] = None  # Default uses None; we fix it in __post_init__
         def __post_init__(self):
             if self.skills is None:
                 self.skills = []

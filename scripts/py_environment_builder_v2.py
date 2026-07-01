@@ -6,11 +6,11 @@ visualization, geospatial, scientific computing, web, and system utilities.
 Designed for maximum professionalism and reproducibility.
 """
 
-import subprocess
-import sys
 import importlib
 import logging
 import platform
+import subprocess
+import sys
 
 # Logging setup
 logging.basicConfig(
@@ -106,10 +106,10 @@ def select_categories():
     for index, category in enumerate(package_categories.keys(), start=1):
         print(f"{index}. {category}")
     print("Enter numbers separated by commas for categories you want to install, or 'all' for everything.")
-    
+
     user_input = input("Your selection: ").strip().lower()
     selected_packages = []
-    
+
     if user_input == "all":
         for packages in package_categories.values():
             selected_packages.extend(packages)
@@ -119,7 +119,7 @@ def select_categories():
         for i in indices:
             if 1 <= i <= len(keys):
                 selected_packages.extend(package_categories[keys[i-1]])
-    
+
     return selected_packages
 
 # Function to create requirements.txt
@@ -144,10 +144,10 @@ def main():
     """
     selected_packages = select_categories()
     print("\nStarting installation process...\n")
-    
+
     for package in selected_packages:
         install_package(package)
-    
+
     create_requirements_file(selected_packages)
     print("\nEnvironment build complete. Check environment_build_log.txt for details.")
 

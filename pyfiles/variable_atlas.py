@@ -18,7 +18,7 @@ import math
 import random
 import textwrap
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Any
 
 try:
     import numpy as _np  # optional acceleration path
@@ -51,7 +51,7 @@ class VarSpec:
     value: Any = None          # the value bound right now
     notes: str = ""            # optional nuance: units, caveats, etc.
 
-    def bind(self, value: Any) -> "VarSpec":
+    def bind(self, value: Any) -> VarSpec:
         # I return self so you can chain .bind() while building the table.
         self.value = value
         return self
@@ -66,8 +66,8 @@ class VarSpec:
 # I write a minimal matrix toolkit to avoid external dependencies.
 # It is not meant to be the fastest; it's meant to be readable.
 
-Matrix = List[List[float]]
-Vector = List[float]
+Matrix = list[list[float]]
+Vector = list[float]
 
 
 def mt(rows: int, cols: int, fill: float = 0.0) -> Matrix:
@@ -76,7 +76,7 @@ def mt(rows: int, cols: int, fill: float = 0.0) -> Matrix:
 
 
 def transpose(A: Matrix) -> Matrix:
-    return [list(row) for row in zip(*A)]
+    return [list(row) for row in zip(*A, strict=False)]
 
 
 def matmul(A: Matrix, B: Matrix) -> Matrix:
@@ -95,12 +95,12 @@ def matmul(A: Matrix, B: Matrix) -> Matrix:
 
 def matvec(A: Matrix, x: Vector) -> Vector:
     assert len(A[0]) == len(x)
-    return [sum(aij * xj for aij, xj in zip(row, x)) for row in A]
+    return [sum(aij * xj for aij, xj in zip(row, x, strict=False)) for row in A]
 
 
 def dot(u: Vector, v: Vector) -> float:
     assert len(u) == len(v)
-    return sum(ui * vi for ui, vi in zip(u, v))
+    return sum(ui * vi for ui, vi in zip(u, v, strict=False))
 
 
 def identity(n: int) -> Matrix:
@@ -135,8 +135,8 @@ def invert(A: Matrix) -> Matrix:
                 continue
             factor = M[r][col]
             if factor != 0.0:
-                M[r] = [rv - factor * cv for rv, cv in zip(M[r], M[col])]
-                Inv[r] = [rv - factor * cv for rv, cv in zip(Inv[r], Inv[col])]
+                M[r] = [rv - factor * cv for rv, cv in zip(M[r], M[col], strict=False)]
+                Inv[r] = [rv - factor * cv for rv, cv in zip(Inv[r], Inv[col], strict=False)]
     return Inv
 
 
@@ -171,7 +171,7 @@ class LinearDataset:
         # Build X by possibly adding a 1_n intercept column.
         if self.add_intercept:
             ones = [[1.0] for _ in range(self.n)]
-            self.X = [oi + row for oi, row in zip(ones, self.X_no_intercept)]
+            self.X = [oi + row for oi, row in zip(ones, self.X_no_intercept, strict=False)]
         else:
             self.X = [row[:] for row in self.X_no_intercept]
         self.p = len(self.X[0])  # number of columns after intercept decision
@@ -218,7 +218,7 @@ def ols_pure_python(ds: LinearDataset, ridge_lambda: float = 0.0) -> OLSResult:
 
     # 4) Fitted values and residuals
     fitted = matvec(X, beta)
-    resid = [yi - fi for yi, fi in zip(y, fitted)]  # y - Xβ
+    resid = [yi - fi for yi, fi in zip(y, fitted, strict=False)]  # y - Xβ
 
     # 5) Variance σ^2 = (1/n) * residual' residual  (MLE)
     rss = dot(resid, resid)
@@ -244,7 +244,7 @@ def ols_pure_python(ds: LinearDataset, ridge_lambda: float = 0.0) -> OLSResult:
     return OLSResult(beta, fitted, resid, sigma2, r2, aic, bic, se_beta, loglik)
 
 
-def ols_numpy(ds: LinearDataset, ridge_lambda: float = 0.0) -> Optional[OLSResult]:
+def ols_numpy(ds: LinearDataset, ridge_lambda: float = 0.0) -> OLSResult | None:
     """Same calculation using NumPy if available. Why include it: to contrast
     ergonomics and performance with the pure-Python path.
     """
@@ -287,12 +287,12 @@ def ols_gradient_descent(ds: LinearDataset, lr: float = 0.01, iters: int = 2000)
     for t in range(iters):
         # Gradient of (1/2n)||y - Xβ||^2 is  -(1/n) X^T (y - Xβ)
         pred = matvec(X, beta)
-        resid = [yi - pi for yi, pi in zip(y, pred)]
+        resid = [yi - pi for yi, pi in zip(y, pred, strict=False)]
         # Compute gradient g = -(1/n) X^T resid
         XT = transpose(X)
         g = [-(1.0 / n) * dot(col, resid) for col in XT]
         # Update rule: β ← β - lr * g
-        beta = [bi - lr * gi for bi, gi in zip(beta, g)]
+        beta = [bi - lr * gi for bi, gi in zip(beta, g, strict=False)]
         # Optional: stop early if gradient is tiny
         if max(abs(gi) for gi in g) < 1e-9:
             break
@@ -332,7 +332,7 @@ def show_variable_ledger(ds: LinearDataset, res: OLSResult) -> None:
     XTy = [dot(col, y) for col in XT]
     XtX_beta = matvec(XTX, beta)
 
-    ledger: List[VarSpec] = [
+    ledger: list[VarSpec] = [
         VarSpec("y", "y", "Outcome vector (dependent variable)", "(n,)", y, "Often a list/array.").
             bind(y),
         VarSpec("X", "X", "Design matrix with intercept column 1_n first", "(n,p)", X).
@@ -371,8 +371,8 @@ def show_variable_ledger(ds: LinearDataset, res: OLSResult) -> None:
         VarSpec("λ", "ridge_lambda", "Regularization strength for Ridge", "scalar", 0.0).bind(0.0),
         VarSpec("y^T y", "yTy", "Sum of squares of y", "scalar", dot(y, y)).bind(dot(y, y)),
         VarSpec("X^T X β", "XtX_beta", "Left-hand of normal equation", "(p,)", XtX_beta).bind(XtX_beta),
-        VarSpec("Xβ - y", "neg_resid", "Alternative residual sign", "(n,)", [fi - yi for yi,fi in zip(y,fitted)]).
-            bind([fi - yi for yi,fi in zip(y,fitted)]),
+        VarSpec("Xβ - y", "neg_resid", "Alternative residual sign", "(n,)", [fi - yi for yi,fi in zip(y,fitted, strict=False)]).
+            bind([fi - yi for yi,fi in zip(y,fitted, strict=False)]),
     ]
     for vs in ledger:
         vs.show()
@@ -428,7 +428,7 @@ def run_demo() -> None:
         res_np = ols_numpy(ds)
         assert res_np is not None
         # I sanity-check that all β estimates broadly agree.
-        for b1, b2 in zip(res_py.beta, res_np.beta):
+        for b1, b2 in zip(res_py.beta, res_np.beta, strict=False):
             assert abs(b1 - b2) < 1e-6
     else:
         res_np = None
@@ -482,7 +482,7 @@ def _tests() -> None:
     assert 0.0 <= res.r2 <= 1.0
     # Recompute via gradient descent and compare roughly
     beta_gd = ols_gradient_descent(ds, lr=0.05, iters=1500)
-    for b1, b2 in zip(res.beta, beta_gd):
+    for b1, b2 in zip(res.beta, beta_gd, strict=False):
         assert abs(b1 - b2) < 0.2  # gradient descent is approximate here
     # Inversion correctness: A*(A^-1) ≈ I for a random SPD example
     X = [[1.0, 2.0], [2.0, 5.0]]

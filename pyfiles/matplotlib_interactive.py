@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Matplotlib Masterclass — Interactive How-To (advanced, aesthetic, didactic)
 Author: Cazzy Aporbo  •  made September 16, 2025
@@ -22,22 +21,22 @@ Tip: If you’re in a headless environment, the script falls back to saving figu
 
 from __future__ import annotations
 
-import math
-import os
-import sys
-import time
 from dataclasses import dataclass
-from typing import Dict, Tuple
 
-import numpy as np
 import matplotlib as mpl
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button, RadioButtons, CheckButtons, TextBox, RangeSlider
-from matplotlib.collections import LineCollection
-from matplotlib.ticker import FuncFormatter, AutoMinorLocator
-from matplotlib.patches import Rectangle
 import matplotlib.patheffects as pe
-
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.collections import LineCollection
+from matplotlib.patches import Rectangle
+from matplotlib.ticker import AutoMinorLocator
+from matplotlib.widgets import (
+    Button,
+    CheckButtons,
+    RadioButtons,
+    Slider,
+    TextBox,
+)
 
 DEFAULT_DPI = 140
 FIGSIZE = (10.5, 7.2)
@@ -73,7 +72,7 @@ class DataBundle:
     cat_labels: np.ndarray  # categories for bar/pie demo
     cat_vals: np.ndarray    # values per category
     grid_Z: np.ndarray      # 2D field for imshow/heatmap
-    grid_extent: Tuple[float, float, float, float]
+    grid_extent: tuple[float, float, float, float]
 
 def synthesize(n: int = 300, f_hz: float = 1.25, noise: float = 0.35, seed: int = SEED) -> DataBundle:
     rng = np.random.default_rng(seed)

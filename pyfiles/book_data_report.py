@@ -1,7 +1,9 @@
-import requests
-import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import requests
+
 
 def fetch_google_books(query="python", max_results=40):
     url = f"https://www.googleapis.com/books/v1/volumes?q={query}&maxResults={max_results}"

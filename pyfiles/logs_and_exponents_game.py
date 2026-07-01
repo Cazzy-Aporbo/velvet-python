@@ -10,13 +10,12 @@
 
 from __future__ import annotations  # allows forward references in type hints
 
-import math      # mathematical functions (log, exp, pow)
-import random    # to generate unique practice questions
-import sys       # to detect TTY and handle non‑interactive environments
+import math  # mathematical functions (log, exp, pow)
+import random  # to generate unique practice questions
+import sys  # to detect TTY and handle non‑interactive environments
 import textwrap  # to wrap long lines in the console
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Tuple
-
 
 # Console helpers — readable output that looks like a teaching transcript
 
@@ -30,7 +29,7 @@ def say(text: str, width: int = 78) -> None:
     print("\n".join(textwrap.wrap(text, width=width)))
 
 
-def safe_input(prompt: str, default: Optional[str] = None) -> Optional[str]:
+def safe_input(prompt: str, default: str | None = None) -> str | None:
     """Ask for input, but never crash in non‑interactive sandboxes.
     Returns default if stdin is not a TTY or if input raises EOFError/OSError.
     """
@@ -253,7 +252,7 @@ def sidebar_expert_notes() -> None:
     print("log‑sum‑exp(1000,1001) ->", lse)
 
 # Tutor modes — REVIEW (non‑interactive), FLASHCARDS, QUIZ, and MODEL LABS
-CARDS: List[Card] = [
+CARDS: list[Card] = [
     card_logarithm_definition(),
     card_exponential_form(),
     card_product_rule(),
@@ -278,7 +277,7 @@ def mode_review() -> None:
         card.demo()
 
 
-def _ask(prompt: str) -> Optional[str]:
+def _ask(prompt: str) -> str | None:
     return safe_input(prompt + " ", default=None)
 
 
@@ -302,7 +301,7 @@ def mode_flashcards() -> None:
 
 
 # Question generators for the quiz — multiple approaches accepted
-def q_change_of_base() -> Tuple[str, float]:
+def q_change_of_base() -> tuple[str, float]:
     b = random.choice([2, 3, 5, 10])
     i = random.choice([2, 3, 4, 5])
     T = b ** i
@@ -311,7 +310,7 @@ def q_change_of_base() -> Tuple[str, float]:
     return prompt, ans
 
 
-def q_solve_exponent() -> Tuple[str, float]:
+def q_solve_exponent() -> tuple[str, float]:
     b = random.choice([2, 3, 10])
     i = random.choice([1, 2, 3, 4])
     T = b ** i
@@ -320,7 +319,7 @@ def q_solve_exponent() -> Tuple[str, float]:
     return prompt, ans
 
 
-def q_product_rule() -> Tuple[str, float]:
+def q_product_rule() -> tuple[str, float]:
     base = random.choice([2, 3, 5])
     a, b = random.choice([2, 4, 8]), random.choice([3, 9])
     prompt = f"Compute log_{base}({a*b}) using the product rule (exact)."
@@ -328,7 +327,7 @@ def q_product_rule() -> Tuple[str, float]:
     return prompt, float(ans)
 
 
-QUESTIONS: List[Callable[[], Tuple[str, float]]] = [
+QUESTIONS: list[Callable[[], tuple[str, float]]] = [
     q_change_of_base,
     q_solve_exponent,
     q_product_rule,

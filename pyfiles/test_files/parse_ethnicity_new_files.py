@@ -1,7 +1,8 @@
 # Script to parse ethnicity from NEW categorized data using chunking
-import pandas as pd
 import os
 import re
+
+import pandas as pd
 
 input_file = "all_new_categorized_data_Apr30_2025.csv"
 output_file = "all_new_categorized_data_with_ethnicity_Apr30_2025.csv"
@@ -54,7 +55,7 @@ try:
         os.remove(output_file)
 
     for chunk in pd.read_csv(input_file, chunksize=chunk_size, low_memory=False, iterator=True):
-        print(f"Processing chunk...")
+        print("Processing chunk...")
         available_cols = [col for col in ethnicity_columns if col in chunk.columns]
 
         if not available_cols:
@@ -79,7 +80,7 @@ except UnicodeDecodeError:
         os.remove(output_file)
 
     for chunk in pd.read_csv(input_file, chunksize=chunk_size, low_memory=False, iterator=True, encoding="latin1"):
-        print(f"Processing chunk (latin1)...")
+        print("Processing chunk (latin1)...")
         available_cols = [col for col in ethnicity_columns if col in chunk.columns]
         if not available_cols:
             chunk["Ethnicity_Combined"] = "Unknown/Not Specified"

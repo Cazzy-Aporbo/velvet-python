@@ -1,8 +1,8 @@
-import re
 import csv
+import re
 
 # Open the extracted text file
-with open('extracted_text.txt', 'r') as file:
+with open('extracted_text.txt') as file:
     lines = file.readlines()
 
 # Initialize an empty list to store the extracted data

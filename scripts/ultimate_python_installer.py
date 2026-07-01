@@ -5,11 +5,11 @@ Purpose: Automatically install all packages from three advanced Python import re
 Includes error handling, logging, requirements.txt generation, and optional GPU detection.
 """
 
-import subprocess
-import sys
 import importlib
 import logging
 import platform
+import subprocess
+import sys
 
 # Logging setup
 logging.basicConfig(
@@ -44,13 +44,13 @@ else:
 # Only include pip-installable packages
 all_packages = [
     # Advanced numerical computation
-    "jax", "jaxlib", "cupy", "torch", "torchvision", "torch_sparse", "torch_scatter", 
+    "jax", "jaxlib", "cupy", "torch", "torchvision", "torch_sparse", "torch_scatter",
     "torch_geometric", "mpi4py", "numba", "pytensor", "aesara", "pytorch-lightning",
-    "functorch", "cupyx", "tensorly", "tensornetwork", "einops", 
+    "functorch", "cupyx", "tensorly", "tensornetwork", "einops",
 
     # Advanced ML/AI
-    "diffusers", "accelerate", "transformers", "timm", "detectron2", "monai", 
-    "lightning", "skorch", "autogluon", "flaml", "nevergrad", "optuna", "ray", 
+    "diffusers", "accelerate", "transformers", "timm", "detectron2", "monai",
+    "lightning", "skorch", "autogluon", "flaml", "nevergrad", "optuna", "ray",
     "rllib", "rl_games", "stable-baselines3", "gymnasium", "gym", "jaxopt",
     "tensorflow-probability", "pyro-ppl", "numpyro", "pymc3", "bambi", "scikit-optimize",
 
@@ -65,11 +65,11 @@ all_packages = [
     "napari", "ipyvolume", "pythreejs", "vtk", "matplotlib", "seaborn",
 
     # Geospatial
-    "geopandas", "fiona", "rioxarray", "salem", "movingpandas", "pyproj", 
+    "geopandas", "fiona", "rioxarray", "salem", "movingpandas", "pyproj",
     "rasterio", "regionmask", "skgstat", "pysal", "osmnx", "folium", "mapclassify", "pydeck",
 
     # Time series, forecasting, streaming
-    "sktime", "darts", "neuralprophet", "tbats", "prophet", "kats", "statsforecast", 
+    "sktime", "darts", "neuralprophet", "tbats", "prophet", "kats", "statsforecast",
     "pmdarima", "pyflux", "river", "creme", "apache-beam", "faust", "trino",
 
     # Bioinformatics / scientific computing

@@ -5,10 +5,10 @@ Professional data inspection + HIPAA check + multi-format export template
 """
 
 # 1. Imports
-import pandas as pd
-import numpy as np
-import re
+
 import matplotlib.pyplot as plt
+import pandas as pd
+
 
 # 2. Load Dataset
 def load_dataset(file_path):

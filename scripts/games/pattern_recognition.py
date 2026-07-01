@@ -743,4 +743,71 @@ class Level2_ParallelProcessing:
         
         return 1 if correct >= 2 else 0
     
-    def parallel_optimization
+    def parallel_optimization(self):
+        """Teach optimization through independent and parallelized reasoning."""
+        print("\nCHALLENGE 4: Parallel Optimization Strategy")
+        print()
+        print("MACHINE APPROACH: Compare alternatives by minimizing critical path")
+        print("When tasks run in parallel, total completion time is the longest sub-task.")
+        print()
+        print("CHALLENGE: Choose the better pipeline for a 4-stage workflow.")
+        
+        pipelines = [
+            ("A", [4, 6, 3, 2]),  # sequential duration by stage
+            ("B", [8, 2, 2, 2]),
+            ("C", [5, 5, 5, 1]),
+        ]
+        
+        print("\nPipeline | Stage times | Sequential | Parallel (max stage)")
+        for name, stages in pipelines:
+            sequential = sum(stages)
+            parallel = max(stages)
+            print(f"  {name}     | {stages}   | {sequential:9} | {parallel:8}")
+        
+        choice = input("\nWhich pipeline has best parallel efficiency? (A/B/C): ").strip().upper()
+        optimal = min(pipelines, key=lambda item: max(item[1]))[0]
+
+        if choice == optimal:
+            print("CORRECT. You picked the pipeline with the shortest parallel runtime.")
+            return 1
+
+        print(f"Incorrect. Pipeline {optimal} is optimal because max stage is smallest.")
+        return 0
+
+    def cross_correlation_detection(self):
+        """Detect synchronized patterns across multiple streams."""
+        print("\nCHALLENGE 5: Cross-Correlation Detection")
+        print()
+        print("MACHINE APPROACH: Compare aligned shifts to find strongest similarity.")
+
+        series_a = [1, 2, 3, 2, 1]
+        series_b = [0, 1, 2, 3, 2]
+        
+        print(f"Series A: {series_a}")
+        print(f"Series B: {series_b}")
+        
+        correlations = []
+        for lag in range(-2, 3):
+            overlap = []
+            for i, a in enumerate(series_a):
+                j = i + lag
+                if 0 <= j < len(series_b):
+                    overlap.append(a * series_b[j])
+            if overlap:
+                correlations.append((lag, sum(overlap)))
+
+        print("\nComputed correlation by lag:")
+        for lag, value in correlations:
+            print(f"  lag {lag}: {value}")
+        
+        top_lag = max(correlations, key=lambda item: item[1])[0]
+        user_lag = input("\nWhich lag maximizes similarity? ").strip()
+        try:
+            if int(user_lag) == top_lag:
+                print("CORRECT. Positive alignment reveals the strongest pattern match.")
+                return 1
+        except ValueError:
+            pass
+
+        print(f"Not quite. The strongest lag is {top_lag}.")
+        return 0

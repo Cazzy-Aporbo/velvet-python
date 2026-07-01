@@ -1,5 +1,6 @@
 import random
 from time import time
+
 # test the running times of three sort implementations: mergeSort, insertionSort, and bubbleSort
 
 
@@ -26,7 +27,7 @@ test = [i for i in range(n)]
 random.shuffle(test)
 print("Original unsorted test list:", test)
 
-# Call mergeSort 
+# Call mergeSort
 sorted_list = mergeSort(test)
 print("Sorted test list:", sorted_list)
 
@@ -35,7 +36,7 @@ def merge(left, right):
     # initializes an empty list called `result`. This list will be used to store the merged
     result = []
     #initialize 2 variables
-    i = j = 0 
+    i = j = 0
     while i < len(left) and j < len(right):
         if left[i] < right[j]:
             result.append(left[i])
@@ -67,7 +68,7 @@ def insertionSort(L):
 
 
 
-# On a single bubble pass, you run through all the elements in your list from front to back. 
+# On a single bubble pass, you run through all the elements in your list from front to back.
 # At each index you compare its value to the value of the next one
 # https://www.geeksforgeeks.org/python-program-for-bubble-sort/
 def bubbleSort(L):
@@ -98,7 +99,7 @@ bubbleSort(A)
 n = 10  # good testing length
 A = [i for i in range(n)]
 
-# test sort 
+# test sort
 random.shuffle(A)
 print("Original list:", A)
 
@@ -119,15 +120,15 @@ print("Bubble list sorted:", D)
 # Test the sorting functions using time test
 # Note: column names are: "N, Merge, Insert, Bubble"
 
-#given: time all three sorts with n values from 100 to 5000, in 100 increments. 
+#given: time all three sorts with n values from 100 to 5000, in 100 increments.
 n_values = list(range(100, 5000, 100))
 #container to store time executed
 times = {'Merge': [], 'Insert': [], 'Bubble': []}
 for n in n_values:
     A = [i for i in range(n)]
     random.shuffle(A)
-# To time a sort, call the time() function (from time import time) right before and 
-#right after the sort call. Then subtract the values and multiply by 1000 
+# To time a sort, call the time() function (from time import time) right before and
+#right after the sort call. Then subtract the values and multiply by 1000
 #to get the results in milliseconds
     t1 = time()
     B = mergeSort(A)

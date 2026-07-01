@@ -19,8 +19,8 @@ print(df.duplicated().sum())
 # Unique value counts
 for col in df.columns:
     print(col, df[col].nunique())
-    
-    
+
+
 import matplotlib.pyplot as plt
 
 numeric_cols = df.select_dtypes(include='number').columns
@@ -28,10 +28,10 @@ for col in numeric_cols:
     df[col].hist()
     plt.title(col)
     plt.show()
-    
-    
-    
-    
+
+
+
+
 # Check ranges
 for col in numeric_cols:
     print(f"{col}: min={df[col].min()}, max={df[col].max()}, mean={df[col].mean()}")

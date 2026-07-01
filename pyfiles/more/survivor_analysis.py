@@ -1,7 +1,8 @@
+from datetime import datetime
+
 import pandas as pd
 import plotly.express as px
 import plotly.io as pio
-from datetime import datetime
 
 # Dictionary of season names and their corresponding Google Sheet CSV export links
 season_links = {
