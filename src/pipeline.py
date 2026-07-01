@@ -19,6 +19,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 from src.data_utils import (
@@ -51,10 +52,12 @@ class ExperimentRun:
     test_size: int
     total_samples: int
     accuracy: float
+    run_duration_seconds: float
     class_coverage: dict[str, int]
     labels: list[str]
     confusion_matrix: dict[str, dict[str, int]]
     dataset_profile: dict[str, object]
+    split_profile: dict[str, object]
     dataset_hash: str
     parameters: dict[str, Any]
 
@@ -96,6 +99,69 @@ def _run_model(
     return accuracy, matrix
 
 
+def _normalize_parameter_value(value: Any, *, path: str) -> Any:
+    """Normalize run parameters into deterministic JSON-safe values."""
+    if value is None or isinstance(value, str | int | float | bool):
+        return value
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, list | tuple):
+        return [
+            _normalize_parameter_value(item, path=f"{path}[{index}]")
+            for index, item in enumerate(value)
+        ]
+    if isinstance(value, dict):
+        non_string_keys = [key for key in value if not isinstance(key, str)]
+        if non_string_keys:
+            raise TypeError(f"{path} contains non-string key: {non_string_keys[0]!r}")
+        normalized: dict[str, Any] = {}
+        for key in sorted(value):
+            normalized[key] = _normalize_parameter_value(value[key], path=f"{path}.{key}")
+        return normalized
+    raise TypeError(
+        f"{path} contains unsupported value type {type(value)!r}; "
+        "use JSON-safe scalars, lists, dicts, or pathlib.Path."
+    )
+
+
+def _normalize_parameters(parameters: dict[str, Any] | None) -> dict[str, Any]:
+    """Return a stable parameter payload for manifests."""
+    if parameters is None:
+        return {}
+    if not isinstance(parameters, dict):
+        raise TypeError("parameters must be a dictionary when provided")
+    return _normalize_parameter_value(parameters, path="parameters")
+
+
+def canonical_model_name(model_name: str) -> str:
+    """Collapse epoch-decorated labels into a stable family name."""
+    return re.sub(r"\s+\(epoch=\d+/\d+\)$", "", model_name).strip()
+
+
+def _build_split_profile(
+    train_data: list[tuple[str, str]],
+    test_data: list[tuple[str, str]],
+) -> dict[str, object]:
+    """Describe what the train/test boundary looks like for one run."""
+    if not train_data or not test_data:
+        raise ValueError("train/test split must leave at least one record on both sides")
+
+    train_distribution = dict(sorted(label_distribution(train_data).items()))
+    test_distribution = dict(sorted(label_distribution(test_data).items()))
+    train_labels = set(train_distribution)
+    test_labels = set(test_distribution)
+
+    return {
+        "train_label_distribution": train_distribution,
+        "test_label_distribution": test_distribution,
+        "shared_labels": sorted(train_labels & test_labels),
+        "train_only_labels": sorted(train_labels - test_labels),
+        "test_only_labels": sorted(test_labels - train_labels),
+        "train_hash": dataset_signature(train_data),
+        "test_hash": dataset_signature(test_data),
+    }
+
+
 def _to_json_dict(item: ExperimentRun) -> dict[str, Any]:
     """Convert run metadata to JSON serializable dict."""
     return asdict(item)
@@ -128,15 +194,21 @@ def run_classification_pipeline(
         Arbitrary run metadata, such as dataset version or preprocessing settings.
     """
 
+    if not callable(model_builder):
+        raise TypeError("model_builder must be callable")
+
     data_list = validate_dataset(data)
     if not 0 < test_ratio < 1:
         raise ValueError("test_ratio must be between 0 and 1")
 
     train_data, test_data = train_test_split(data_list, test_ratio=test_ratio, seed=seed)
+    split_profile = _build_split_profile(train_data, test_data)
     started_at = _now_utc()
+    perf_started = perf_counter()
 
     model = model_builder()
     accuracy, matrix = _run_model(model, train_data, test_data)
+    run_duration_seconds = round(perf_counter() - perf_started, 6)
 
     counts = Counter(label for _, label in data_list)
     labels = sorted(counts.keys())
@@ -159,12 +231,14 @@ def run_classification_pipeline(
         test_size=len(test_data),
         total_samples=len(data_list),
         accuracy=round(float(accuracy), 6),
+        run_duration_seconds=run_duration_seconds,
         class_coverage=dict(sorted(label_distribution(data_list).items())),
         labels=labels,
         confusion_matrix=matrix,
         dataset_profile=dataset_profile(data_list),
+        split_profile=split_profile,
         dataset_hash=dataset_signature(data_list),
-        parameters=parameters or {},
+        parameters=_normalize_parameters(parameters),
     )
 
     return run
@@ -225,10 +299,57 @@ def summarize_runs(runs: Iterable[ExperimentRun]) -> list[dict[str, Any]]:
     return [
         {
             "model_name": run.model_name,
+            "base_model_name": canonical_model_name(run.model_name),
             "seed": run.seed,
             "accuracy": run.accuracy,
             "train_size": run.train_size,
             "test_size": run.test_size,
+            "run_duration_seconds": run.run_duration_seconds,
+            "dataset_hash": run.dataset_hash[:12],
+            "label_imbalance": run.dataset_profile.get("label_imbalance"),
+            "train_only_labels": run.split_profile.get("train_only_labels", []),
+            "test_only_labels": run.split_profile.get("test_only_labels", []),
         }
         for run in runs
     ]
+
+
+def summarize_run_series(runs: Iterable[ExperimentRun]) -> list[dict[str, Any]]:
+    """Aggregate runs into model-family summaries for reviews."""
+    grouped: dict[tuple[str, str], list[ExperimentRun]] = {}
+    for run in runs:
+        key = (canonical_model_name(run.model_name), run.model_type)
+        grouped.setdefault(key, []).append(run)
+
+    summaries: list[dict[str, Any]] = []
+    for (model_name, model_type), entries in sorted(grouped.items(), key=lambda item: item[0]):
+        accuracies = [entry.accuracy for entry in entries]
+        durations = [entry.run_duration_seconds for entry in entries]
+        dataset_hashes = sorted({entry.dataset_hash for entry in entries})
+        test_ratios = sorted({entry.test_ratio for entry in entries})
+        seed_values = sorted(entry.seed for entry in entries)
+
+        summaries.append(
+            {
+                "model_name": model_name,
+                "model_type": model_type,
+                "run_count": len(entries),
+                "seed_range": [seed_values[0], seed_values[-1]],
+                "accuracy": {
+                    "min": round(min(accuracies), 6),
+                    "max": round(max(accuracies), 6),
+                    "mean": round(sum(accuracies) / len(accuracies), 6),
+                    "spread": round(max(accuracies) - min(accuracies), 6),
+                },
+                "duration_seconds": {
+                    "min": round(min(durations), 6),
+                    "max": round(max(durations), 6),
+                    "mean": round(sum(durations) / len(durations), 6),
+                },
+                "dataset_hashes": dataset_hashes,
+                "dataset_hash_stable": len(dataset_hashes) == 1,
+                "test_ratios": test_ratios,
+            }
+        )
+
+    return summaries

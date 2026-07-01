@@ -85,6 +85,8 @@ def test_evidence_ledger_builds_drift_alerts_and_ordering():
     assert ledger["model_count"] == 1
     assert any(alert["kind"] == "accuracy_spread" for alert in ledger["drift_alerts"])
     assert ledger["model_summaries"][0]["run_count"] == 2
+    assert ledger["health"]["status"] in {"review_recommended", "action_required"}
+    assert ledger["recommendations"]
 
     # stable deterministic ordering for reproducible reviews
     assert ledger["runs"] == sorted(ledger["runs"])
@@ -128,6 +130,8 @@ def test_evidence_ledger_written_to_disk_and_readable(tmp_path):
             "runs": ["vp-s42-t25-word-frequency-10n"],
             "model_summaries": [],
             "drift_alerts": [],
+            "health": {"status": "stable", "alert_count": 0, "severity_counts": {"high": 0, "medium": 0, "low": 0}},
+            "recommendations": ["The ledger is stable; the next useful step is to rerun on another seed range and compare the two ledgers."],
         },
         tmp_path / "evidence" / "ledger.json",
     )
@@ -149,16 +153,34 @@ def test_build_evidence_ledger_rejects_unknown_manifest_schema():
         "test_size": 1,
         "total_samples": 4,
         "accuracy": 0.5,
-        "dataset_profile": {"label_imbalance": 0.0},
+        "run_duration_seconds": 0.001,
+        "dataset_profile": {
+            "total_records": 4,
+            "label_distribution": {"greeting": 2, "tech": 2},
+            "label_count": 2,
+            "label_imbalance": 0.0,
+        },
+        "split_profile": {
+            "train_label_distribution": {"greeting": 2, "tech": 1},
+            "test_label_distribution": {"tech": 1},
+            "shared_labels": ["tech"],
+            "train_only_labels": ["greeting"],
+            "test_only_labels": [],
+            "train_hash": "train-hash",
+            "test_hash": "test-hash",
+        },
         "dataset_hash": "deadbeef",
         "started_at": "2026-01-01T00:00:00Z",
         "finished_at": "2026-01-01T00:00:01Z",
         "python_version": "3.11.0",
         "manifest_schema": "vp-manifest-v2.0",
         "parameters": {},
-        "class_coverage": {},
-        "labels": [],
-        "confusion_matrix": {},
+        "class_coverage": {"greeting": 2, "tech": 2},
+        "labels": ["greeting", "tech"],
+        "confusion_matrix": {
+            "greeting": {"greeting": 1, "tech": 0},
+            "tech": {"greeting": 0, "tech": 1},
+        },
     }
     with pytest.raises(ValueError, match="Unsupported manifest schema version"):
         build_evidence_ledger([payload])
@@ -213,16 +235,34 @@ def test_validate_manifest_payload_accepts_schema_and_range_boundaries():
         "test_size": 1,
         "total_samples": 4,
         "accuracy": 1.0,
-        "dataset_profile": {"label_imbalance": 0.0},
+        "run_duration_seconds": 0.001,
+        "dataset_profile": {
+            "total_records": 4,
+            "label_distribution": {"greeting": 2, "tech": 2},
+            "label_count": 2,
+            "label_imbalance": 0.0,
+        },
+        "split_profile": {
+            "train_label_distribution": {"greeting": 2, "tech": 1},
+            "test_label_distribution": {"tech": 1},
+            "shared_labels": ["tech"],
+            "train_only_labels": ["greeting"],
+            "test_only_labels": [],
+            "train_hash": "train-hash",
+            "test_hash": "test-hash",
+        },
         "dataset_hash": "hash",
         "started_at": "2026-01-01T00:00:00Z",
         "finished_at": "2026-01-01T00:00:01Z",
         "python_version": "3.11.0",
         "manifest_schema": "vp-manifest-v2.1",
         "parameters": {},
-        "class_coverage": {},
-        "labels": [],
-        "confusion_matrix": {},
+        "class_coverage": {"greeting": 2, "tech": 2},
+        "labels": ["greeting", "tech"],
+        "confusion_matrix": {
+            "greeting": {"greeting": 1, "tech": 0},
+            "tech": {"greeting": 0, "tech": 1},
+        },
     }
     normalized = validate_manifest_payload(payload)
     assert normalized["manifest_schema"] == "vp-manifest-v2.1"
@@ -239,6 +279,8 @@ def test_write_evidence_ledger_uses_schema_constant(tmp_path):
             "runs": [],
             "model_summaries": [],
             "drift_alerts": [],
+            "health": {"status": "stable", "alert_count": 0, "severity_counts": {"high": 0, "medium": 0, "low": 0}},
+            "recommendations": ["The ledger is stable; the next useful step is to rerun on another seed range and compare the two ledgers."],
         },
         tmp_path / "nested" / "ledger.json",
     )
@@ -260,13 +302,28 @@ def test_build_evidence_ledger_keeps_deterministic_run_ordering(tmp_path):
         "total_samples": 4,
         "accuracy": 0.75,
         "dataset_hash": "hash-a",
-        "dataset_profile": {"label_distribution": {"greeting": 2}},
+        "run_duration_seconds": 0.001,
+        "dataset_profile": {
+            "total_records": 4,
+            "label_distribution": {"greeting": 2, "tech": 2},
+            "label_count": 2,
+            "label_imbalance": 0.0,
+        },
+        "split_profile": {
+            "train_label_distribution": {"greeting": 1, "tech": 1},
+            "test_label_distribution": {"greeting": 1, "tech": 1},
+            "shared_labels": ["greeting", "tech"],
+            "train_only_labels": [],
+            "test_only_labels": [],
+            "train_hash": "train-hash",
+            "test_hash": "test-hash",
+        },
         "started_at": "2026-01-01T00:00:00Z",
         "finished_at": "2026-01-01T00:00:01Z",
         "python_version": "3.11.0",
         "manifest_schema": "vp-manifest-v2.1",
         "parameters": {},
-        "class_coverage": {"greeting": 2},
+        "class_coverage": {"greeting": 2, "tech": 2},
         "labels": ["greeting", "tech"],
         "confusion_matrix": {"greeting": {"greeting": 1, "tech": 0}, "tech": {"greeting": 1, "tech": 0}},
     }
@@ -283,3 +340,4 @@ def test_build_evidence_ledger_keeps_deterministic_run_ordering(tmp_path):
     summary = ledger["model_summaries"][0]
     assert summary["accuracy"]["spread"] == 0.05
     assert summary["dataset_hash_stable"] is True
+    assert ledger["health"]["status"] in {"review_recommended", "action_required"}

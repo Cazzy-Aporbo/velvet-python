@@ -7,9 +7,11 @@ import pytest
 from src.data_utils import dataset_profile, iter_batches, validate_dataset
 from src.ml_pipeline import WordFrequencyModel
 from src.pipeline import (
+    canonical_model_name,
     dump_run_manifests,
     run_classification_pipeline,
     run_epochs,
+    summarize_run_series,
     summarize_runs,
 )
 
@@ -52,6 +54,9 @@ def test_run_classification_pipeline_returns_manifest():
     assert run.total_samples == len(dataset)
     assert isinstance(run.confusion_matrix, dict)
     assert run.parameters == {}
+    assert run.run_duration_seconds >= 0.0
+    assert run.split_profile["train_hash"]
+    assert run.split_profile["test_hash"]
 
 
 def test_run_classification_pipeline_rejects_invalid_ratio():
@@ -102,7 +107,25 @@ def test_dump_and_summarize_runs(tmp_path: Path):
 
     summary = summarize_runs(runs)
     assert len(summary) == 2
-    assert all({"model_name", "seed", "accuracy", "train_size", "test_size"} <= row.keys() for row in summary)
+    assert all(
+        {
+            "model_name",
+            "base_model_name",
+            "seed",
+            "accuracy",
+            "train_size",
+            "test_size",
+            "run_duration_seconds",
+            "dataset_hash",
+        }
+        <= row.keys()
+        for row in summary
+    )
+
+    series = summarize_run_series(runs)
+    assert len(series) == 1
+    assert series[0]["model_name"] == "wordfreq"
+    assert series[0]["dataset_hash_stable"] is True
 
 
 def test_dataset_profile_contains_quality_signals():
@@ -137,3 +160,8 @@ def test_iter_batches_rejects_bad_size():
     data = [("hello", "greeting")]
     with pytest.raises(ValueError, match="batch_size must be positive"):
         list(iter_batches(data, batch_size=0))
+
+
+def test_canonical_model_name_removes_epoch_suffix():
+    assert canonical_model_name("tfidf (epoch=2/3)") == "tfidf"
+    assert canonical_model_name("wordfreq") == "wordfreq"

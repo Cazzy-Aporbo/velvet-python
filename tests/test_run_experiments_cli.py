@@ -41,12 +41,16 @@ def test_run_experiments_outputs_manifests_and_summary(monkeypatch, tmp_path, ca
     payload = json.loads(captured)
 
     assert "summary" in payload
+    assert "series_summary" in payload
+    assert "selected_models" in payload
     assert "manifest_files" in payload
     assert Path(payload["output_dir"]) == tmp_path.resolve()
 
     # 4 models * 2 epochs.
     assert len(payload["summary"]) == 8
     assert len(payload["manifest_files"]) == 8
+    assert len(payload["series_summary"]) == 4
+    assert len(payload["selected_models"]) == 4
 
     for filename in payload["manifest_files"]:
         file_path = tmp_path / filename
@@ -55,6 +59,8 @@ def test_run_experiments_outputs_manifests_and_summary(monkeypatch, tmp_path, ca
         assert raw["total_samples"] == len(dataset)
         assert raw["test_ratio"] == 0.30
         assert "dataset_profile" in raw
+        assert "split_profile" in raw
+        assert "run_duration_seconds" in raw
         assert 0.0 <= raw["accuracy"] <= 1.0
 
 
@@ -90,6 +96,7 @@ def test_run_experiments_model_filter_and_csv(monkeypatch, tmp_path, capsys):
 
     assert payload["summary_csv"] == "summary.csv"
     assert len(payload["manifest_files"]) == 2
+    assert len(payload["series_summary"]) == 2
 
     summary_csv = tmp_path / payload["summary_csv"]
     assert summary_csv.exists()
@@ -135,10 +142,12 @@ def test_run_experiments_can_write_ledger(monkeypatch, tmp_path, capsys):
     assert "evidence" in payload
     assert payload["evidence"]["drift_count"] >= 0
     assert payload["evidence"]["ledger_schema"] == "vp-evidence-ledger-v1"
+    assert payload["evidence"]["health"]["status"] in {"stable", "review_recommended", "action_required"}
     assert ledger_path.exists()
     raw = json.loads(ledger_path.read_text(encoding="utf-8"))
     assert raw["model_count"] == 1
     assert raw["ledger_schema"] == "vp-evidence-ledger-v1"
+    assert "recommendations" in raw
 
 
 def test_run_experiments_rejects_unknown_model_names(monkeypatch, tmp_path):

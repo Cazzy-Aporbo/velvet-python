@@ -3,7 +3,7 @@ SRC_DIR := src
 TEST_DIR := tests
 
 .DEFAULT_GOAL := help
-.PHONY: help install dev lint test test-fast pipeline check dataset-audit sweep all-runs clean
+.PHONY: help install dev lint test test-fast pipeline check dataset-audit sweep pages-catalog all-runs clean
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -34,6 +34,9 @@ dataset-audit: ## Audit the built-in dataset and write profile JSON
 
 sweep: ## Run full sweep with summary CSV export
 	@$(PYTHON) scripts/run_experiments.py --epochs 3 --seed 42 --summary-csv
+
+pages-catalog: ## Rebuild the GitHub Pages catalog JSON
+	@$(PYTHON) scripts/build_pages_catalog.py
 
 check: lint test ## Lint + test
 

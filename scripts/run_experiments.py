@@ -5,12 +5,19 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 from src.data_utils import load_dataset
 from src.evidence_ledger import build_evidence_ledger, write_evidence_ledger
-from src.model_registry import model_builders, sorted_model_keys
-from src.pipeline import dump_run_manifests, run_epochs, summarize_runs
+from src.model_registry import model_builders, model_labels, model_metadata, sorted_model_keys
+from src.pipeline import (
+    canonical_model_name,
+    dump_run_manifests,
+    run_epochs,
+    summarize_run_series,
+    summarize_runs,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,7 +55,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_models() -> dict[str, callable]:
+def build_models() -> dict[str, Callable]:
     return model_builders()
 
 
@@ -64,6 +71,7 @@ def write_summary_csv(manifest_paths: list[Path], output_dir: Path) -> Path:
 
     csv_fields = [
         "run_id",
+        "base_model_name",
         "model_name",
         "model_type",
         "seed",
@@ -71,8 +79,10 @@ def write_summary_csv(manifest_paths: list[Path], output_dir: Path) -> Path:
         "train_size",
         "test_size",
         "accuracy",
+        "run_duration_seconds",
         "total_records",
         "label_imbalance",
+        "dataset_hash",
     ]
     output = output_dir / "summary.csv"
     with output.open("w", encoding="utf-8", newline="") as f:
@@ -83,6 +93,7 @@ def write_summary_csv(manifest_paths: list[Path], output_dir: Path) -> Path:
             writer.writerow(
                 [
                     row.get("run_id", ""),
+                    canonical_model_name(row.get("model_name", "")),
                     row.get("model_name", ""),
                     row.get("model_type", ""),
                     row.get("seed", ""),
@@ -90,8 +101,10 @@ def write_summary_csv(manifest_paths: list[Path], output_dir: Path) -> Path:
                     row.get("train_size", ""),
                     row.get("test_size", ""),
                     row.get("accuracy", ""),
+                    row.get("run_duration_seconds", ""),
                     profile.get("total_records", ""),
                     profile.get("label_imbalance", ""),
+                    row.get("dataset_hash", ""),
                 ],
             )
 
@@ -104,6 +117,8 @@ def main() -> None:
 
     selected = {name.strip().lower() for name in args.models.split(",") if name.strip()}
     available = build_models()
+    labels = model_labels()
+    metadata = model_metadata()
     model_names = sorted(available) if args.models == "all" or not selected else sorted(selected)
 
     all_runs = []
@@ -125,6 +140,7 @@ def main() -> None:
     output = Path(args.output_dir)
     paths = dump_run_manifests(all_runs, output)
     summary = summarize_runs(all_runs)
+    series_summary = summarize_run_series(all_runs)
     ledger_payload = None
     ledger_path = None
 
@@ -143,6 +159,15 @@ def main() -> None:
         "output_dir": str(output.resolve()),
         "manifest_files": [str(path.name) for path in paths],
         "summary": summary,
+        "series_summary": series_summary,
+        "selected_models": [
+            {
+                "key": key,
+                "label": labels[key],
+                "metadata": metadata[key],
+            }
+            for key in model_names
+        ],
     }
     if summary_csv is not None:
         report["summary_csv"] = str(summary_csv.name)
@@ -152,6 +177,7 @@ def main() -> None:
             "ledger_schema": ledger_payload["ledger_schema"],
             "drift_count": len(ledger_payload["drift_alerts"]),
             "model_count": ledger_payload["model_count"],
+            "health": ledger_payload["health"],
         }
     print(json.dumps(report, indent=2))
 

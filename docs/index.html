@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="velvet-python atlas: an interactive catalog of Python modules, experiments, tests, and learning pathways."
+    />
+    <title>velvet-python atlas</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="depth-field" aria-hidden="true"></canvas>
+    <div class="aurora aurora-a" aria-hidden="true"></div>
+    <div class="aurora aurora-b" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <div class="page-shell">
+      <header class="hero" data-reveal>
+        <div class="hero-copy glass-panel">
+          <p class="eyebrow">GitHub Pages atlas</p>
+          <h1>velvet-python in motion</h1>
+          <p class="hero-text">
+            A layered map of the repository: core systems, tests, playful
+            simulations, scripts, and the quieter files where fluency gets
+            built one idea at a time.
+          </p>
+          <div class="hero-actions">
+            <a class="action-button primary" href="#catalog">Enter the catalog</a>
+            <a class="action-button" href="https://github.com/Cazzy-Aporbo/velvet-python">View repository</a>
+            <a class="action-button" href="https://github.com/Cazzy-Aporbo/velvet-python/blob/main/README.md">Read README</a>
+          </div>
+          <div class="metric-row" id="hero-stats"></div>
+        </div>
+
+        <aside class="hero-spotlight glass-panel" data-depth="strong">
+          <div class="spotlight-header">
+            <div>
+              <p class="eyebrow">Rotating spotlight</p>
+              <h2 id="spotlight-title">Loading the atlas</h2>
+            </div>
+            <button class="icon-button" id="next-featured" type="button">
+              Next orbit
+            </button>
+          </div>
+          <p class="spotlight-path" id="spotlight-path"></p>
+          <p class="spotlight-summary" id="spotlight-summary"></p>
+          <div class="tag-row" id="spotlight-tags"></div>
+          <div class="spotlight-grid" id="spotlight-stats"></div>
+          <p class="spotlight-note" id="spotlight-why"></p>
+          <div class="spotlight-actions">
+            <button class="action-button primary outline" id="open-spotlight" type="button">
+              Open details
+            </button>
+            <a class="action-button subtle" id="spotlight-link" href="#">Open on GitHub</a>
+          </div>
+        </aside>
+      </header>
+
+      <main>
+        <section class="story-section" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">Learning tracks</p>
+            <h2>Move through the repository with intention</h2>
+            <p>
+              The atlas is organized as a sequence of rooms. Start where you
+              need traction, then move deeper into proof, systems, or play.
+            </p>
+          </div>
+          <div class="track-rail" id="track-rail"></div>
+        </section>
+
+        <section class="story-section" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">Constellation map</p>
+            <h2>The repository has distinct gravitational fields</h2>
+            <p>
+              Each cluster below represents a different mode of learning: some
+              teach by structure, some by proof, some by experimentation.
+            </p>
+          </div>
+          <div class="cluster-grid" id="cluster-grid"></div>
+        </section>
+
+        <section class="story-section" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">Depth leaders</p>
+            <h2>Files that hold a lot of the repository’s weight</h2>
+            <p>
+              This list is generated from structure already in the codebase:
+              file size, symbol count, and the density of the learning surface.
+            </p>
+          </div>
+          <div class="depth-rail" id="depth-rail"></div>
+        </section>
+
+        <section class="story-section" id="catalog" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">File atlas</p>
+            <h2>Browse every Python file</h2>
+            <p>
+              Search by idea, filter by category, and open any file to see what
+              it teaches, why it matters, and where it lives in the wider
+              repository.
+            </p>
+          </div>
+
+          <div class="controls glass-panel">
+            <label class="search-shell" for="catalog-search">
+              <span>Search the atlas</span>
+              <input
+                id="catalog-search"
+                type="search"
+                placeholder="Try pipeline, regression, recursion, test, environment..."
+              />
+            </label>
+
+            <div class="filter-bar" id="filter-bar"></div>
+
+            <div class="sort-row">
+              <label for="sort-select">Sort by</label>
+              <select id="sort-select">
+                <option value="depth">Depth</option>
+                <option value="name">Name</option>
+                <option value="category">Category</option>
+              </select>
+              <button class="icon-button" id="surprise-button" type="button">
+                Shift the view
+              </button>
+            </div>
+          </div>
+
+          <div class="catalog-meta" id="catalog-meta"></div>
+          <div class="catalog-grid" id="catalog-grid"></div>
+        </section>
+      </main>
+
+      <footer class="page-footer glass-panel" data-reveal>
+        <div>
+          <p class="eyebrow">Built from the repository itself</p>
+          <h2>Nothing here is hand-waved.</h2>
+          <p>
+            The catalog is generated from the Python files in the repo, then
+            rendered here as a learning surface. The visual layer is meant to
+            make the structure easier to enter, not separate from the code.
+          </p>
+        </div>
+        <div class="footer-meta">
+          <p id="generated-at"></p>
+          <p>Rebuild with <code>python scripts/build_pages_catalog.py</code></p>
+        </div>
+      </footer>
+    </div>
+
+    <aside class="detail-drawer" id="detail-drawer" aria-hidden="true">
+      <div class="drawer-backdrop" id="drawer-backdrop"></div>
+      <div class="drawer-panel glass-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+        <button class="drawer-close" id="drawer-close" type="button">Close</button>
+        <p class="eyebrow" id="drawer-category"></p>
+        <h2 id="drawer-title"></h2>
+        <p class="drawer-path" id="drawer-path"></p>
+        <p class="drawer-summary" id="drawer-summary"></p>
+        <div class="tag-row" id="drawer-tags"></div>
+        <div class="drawer-stat-grid" id="drawer-stats"></div>
+        <div class="drawer-copy">
+          <div>
+            <h3>Why this matters</h3>
+            <p id="drawer-why"></p>
+          </div>
+          <div>
+            <h3>How to enter it</h3>
+            <p id="drawer-learning"></p>
+          </div>
+          <div>
+            <h3>Best for</h3>
+            <p id="drawer-best-for"></p>
+          </div>
+          <div>
+            <h3>Visible anchors</h3>
+            <ul id="drawer-anchors"></ul>
+          </div>
+        </div>
+        <div class="drawer-actions">
+          <a class="action-button primary" id="drawer-link" href="#">Open on GitHub</a>
+        </div>
+      </div>
+    </aside>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

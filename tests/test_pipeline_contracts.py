@@ -5,7 +5,12 @@ from pathlib import Path
 import pytest
 
 from src.ml_pipeline import TFIDFModel
-from src.pipeline import dump_run_manifests, run_classification_pipeline, run_epochs
+from src.pipeline import (
+    dump_run_manifests,
+    run_classification_pipeline,
+    run_epochs,
+    summarize_run_series,
+)
 
 
 def _tiny_dataset() -> list[tuple[str, str]]:
@@ -150,6 +155,8 @@ def test_run_classification_pipeline_keeps_run_parameters_and_data_profile() -> 
     assert run.parameters["notes"] == "contract test"
     assert run.dataset_profile["total_records"] == len(dataset)
     assert run.dataset_profile["label_count"] == 2
+    assert "shared_labels" in run.split_profile
+    assert run.run_duration_seconds >= 0.0
 
 
 def test_run_classification_pipeline_rejects_non_callable_model_builder() -> None:
@@ -159,3 +166,34 @@ def test_run_classification_pipeline_rejects_non_callable_model_builder() -> Non
             123,  # type: ignore[arg-type]
             [("hello", "greeting"), ("goodbye", "casual")],
         )
+
+
+def test_run_classification_pipeline_normalizes_nested_parameters() -> None:
+    run = run_classification_pipeline(
+        "tfidf",
+        TFIDFModel,
+        _tiny_dataset(),
+        parameters={
+            "notes": ["first", "second"],
+            "config": {"batch": 8, "shuffle": False},
+        },
+    )
+
+    assert run.parameters["config"] == {"batch": 8, "shuffle": False}
+    assert run.parameters["notes"] == ["first", "second"]
+
+
+def test_summarize_run_series_groups_epoch_runs() -> None:
+    runs = run_epochs(
+        "tfidf",
+        TFIDFModel,
+        _tiny_dataset(),
+        epochs=3,
+        seed=14,
+    )
+
+    summary = summarize_run_series(runs)
+    assert len(summary) == 1
+    assert summary[0]["model_name"] == "tfidf"
+    assert summary[0]["run_count"] == 3
+    assert summary[0]["duration_seconds"]["mean"] >= 0.0

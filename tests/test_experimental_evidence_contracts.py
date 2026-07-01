@@ -33,6 +33,8 @@ def test_manifest_contains_stable_evidence_fields(tmp_path):
     assert payload["dataset_hash"] == dataset_signature(dataset)
     assert "dataset_profile" in payload
     assert payload["dataset_profile"]["label_imbalance"] >= 0.0
+    assert "split_profile" in payload
+    assert payload["run_duration_seconds"] >= 0.0
     assert "confusion_matrix" in payload
     assert "run_id" in payload
 

@@ -1,106 +1,130 @@
-<h1 align="center" style="color:#9d7fbf;">velvet-python</h1>
+<div align="center">
 
-<p align="center" style="color:#74608a;">
-From clean examples to reproducible systems.
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,16,18,20,22&height=240&section=header&text=velvet-python&fontSize=72&animation=fadeIn&fontAlignY=36&desc=Code%20you%20can%20read,%20rerun,%20and%20learn%20from%20slowly&descAlignY=57&descSize=20&fontColor=6D5F80" />
+
+<p>
+  <img src="https://img.shields.io/badge/Python-3.10+-F6E6FF?style=for-the-badge&logo=python&logoColor=5A4B73&labelColor=E6D2F5" alt="Python"/>
+  <img src="https://img.shields.io/badge/Tests-Pytest-FFE6F3?style=for-the-badge&logo=pytest&logoColor=5A4B73&labelColor=F2D6EA" alt="Pytest"/>
+  <img src="https://img.shields.io/badge/Lint-Ruff-E9EEFF?style=for-the-badge&logo=ruff&logoColor=4E5B7A&labelColor=D8E0F6" alt="Ruff"/>
+  <img src="https://img.shields.io/badge/License-MIT-FFF0D9?style=for-the-badge&labelColor=F6E2BA&color=FFF0D9" alt="License"/>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-F4DEFF?style=for-the-badge&logo=python&logoColor=5B4B79&labelColor=D8C5F0" alt="Python"/>
-  <img src="https://img.shields.io/badge/Tests-Pytest-F2E2FF?style=for-the-badge&logo=pytest&logoColor=4B3B66&labelColor=E8D4F4" alt="Pytest"/>
-  <img src="https://img.shields.io/badge/Quality-Ruff-F8E5FF?style=for-the-badge&logo=ruff&logoColor=5A4B6C&labelColor=EED9F7" alt="Ruff"/>
-  <img src="https://img.shields.io/badge/License-MIT-EED9FF?style=for-the-badge&logo=open-source&labelColor=DCC2EE" alt="License"/>
-</p>
+<p><strong>A calm Python laboratory for experiments, algorithms, evidence, and better engineering habits.</strong></p>
 
-## What this repository is for
+</div>
 
-`velvet-python` is a teaching-oriented but production-minded project where code, tests, and CLI outputs are part of the curriculum.
+## What velvet-python is
 
-It is designed around one principle:
+`velvet-python` is a learning repository, but not the kind that stops at "it runs."
 
-- **Every useful claim has a reproducible artifact**
+The aim here is to make code understandable at multiple depths:
 
-You learn by reading code, running the same experiment twice, and checking whether your results match the stored manifests.
+- the small implementation you can read in one sitting,
+- the test that proves what it should do,
+- the script that turns it into a repeatable workflow,
+- the artifact that lets you compare one run against another later.
 
-## Why this is different
+This is a place to learn Python by touching real moving parts: data validation, modeling baselines, experiment orchestration, CLI design, environment setup, debugging, and evidence trails.
 
-Most learning repositories end at “how to make it run.”
+The central rule is simple:
 
-This one keeps going until the behavior is explainable:
+> Every useful claim should leave behind something another person can inspect.
 
-- deterministic dataset contracts in `src/data_utils.py`
-- reproducible train/test splits in `src/pipeline.py`
-- model sweep automation in `scripts/run_experiments.py`
-- dataset audits for input quality in `scripts/dataset_audit.py`
-- tests that pin expected behavior in `tests/`
-
-The result is a practical path for:
-
-- students who want stronger habits than random snippets,
-- data engineers who need to keep assumptions explicit,
-- interview candidates who want to explain tradeoffs under pressure.
-
-## Repository map
+## How the repository is organized
 
 ```text
 velvet-python/
 ├─ src/
-│  ├─ ai.py              Rule/Bayes/Cosine classifiers
-│  ├─ data_utils.py      Dataset loading and deterministic validation
-│  ├─ ml_pipeline.py     Feature + model wrappers
-│  ├─ pipeline.py        Experiment orchestration and manifests
-│  └─ __init__.py
+│  ├─ ai.py                 Small classifiers from first principles
+│  ├─ ml_pipeline.py        Feature/model wrappers and evaluation helpers
+│  ├─ data_utils.py         Validation, splitting, signatures, dataset profiles
+│  ├─ pipeline.py           Reproducible run manifests and series summaries
+│  ├─ evidence_ledger.py    Drift checks, evidence aggregation, review guidance
+│  ├─ model_registry.py     Stable model catalog and metadata
+│  └─ algorithm_guide.py    Recommendation logic for choosing approaches
 ├─ scripts/
-│  ├─ run_experiments.py  CLI baseline sweep + JSON/CVS outputs
-│  ├─ dataset_audit.py    Data health checks and hashable evidence
-│  └─ other demos for exploration
+│  ├─ run_experiments.py    Reproducible model sweeps and machine-readable reports
+│  ├─ dataset_audit.py      Dataset quality checks and JSON evidence
+│  └─ demos and utilities   Exploration, visuals, and environment helpers
 ├─ tests/
-│  ├─ pipeline and data utility tests
-│  └─ CLI and benchmark smoke checks
+│  ├─ contract tests        Data, pipeline, CLI, and evidence behaviors
+│  ├─ integration tests     End-to-end experiment and command checks
+│  └─ benchmark tests       Lightweight performance sanity checks
 ├─ docs/
 │  ├─ learning-path.md
 │  ├─ experiment-ledger.md
-│  └─ practice-labs.md
-├─ pyfiles/               Reference implementations and exercises
-├─ makefile              Quality and onboarding commands
+│  ├─ practice-labs.md
+│  └─ algorithm-package-playbook.md
+├─ pyfiles/                 Sketchbook-style lessons, experiments, and walkthroughs
+├─ environments/            Setup guides and environment automation
+├─ CLI.py                   Typer command surface for learning by doing
+├─ makefile                 Fast quality commands
 └─ README.md
 ```
 
-## Core engineering ideas (in practice)
+## The backbone that holds the repo together
 
-### 1) Deterministic data and fast failure
+### 1. Data is validated before it is trusted
 
-`load_dataset`, `load_csv`, and `validate_dataset` enforce structure before any model sees data:
+`src/data_utils.py` does the unglamorous work that keeps later results honest:
 
-- every row must be `(text, label)`
-- empty text/labels fail immediately
-- duplicated, missing, malformed, and malformed header cases are explicit
+- validates labeled text rows up front,
+- rejects malformed records early,
+- computes dataset signatures,
+- builds lightweight quality profiles,
+- supports deterministic train/test splitting.
 
-No implicit coercion is the goal. If a dataset is wrong, you want to know early.
+That means the repo teaches two things at once:
 
-### 2) Reproducible experiment runs
+1. how to write Python that works,
+2. how to avoid fooling yourself with bad inputs.
 
-`run_classification_pipeline` returns an `ExperimentRun` with stable metadata:
+### 2. Runs are treated like evidence, not vibes
 
-- `seed`, `test_ratio`, and split sizes
-- split results, accuracy, class coverage
-- confusion matrix and dataset hash
-- run-specific `parameters`
+`src/pipeline.py` builds a reproducible `ExperimentRun` record for every sweep.
 
-This makes model choices defensible and reviewable.
+Each run carries:
 
-### 3) Evidence-first outputs
+- the seed and holdout ratio,
+- train/test sizes,
+- accuracy and confusion matrix,
+- dataset hash and quality profile,
+- split-specific evidence,
+- run duration,
+- normalized parameters that can be serialized safely.
 
-Every non-trivial script writes machine-readable outputs:
+The result is a manifest you can compare, review, and rerun.
 
-- JSON manifests per run (`artifacts/*.json`)
-- optional `summary.csv` for spreadsheet comparison
-- optional dataset audit report (`dataset_audit.py --write-json`)
+### 3. The ledger asks whether a result is sturdy
 
-If you cannot compare run artifacts over time, you are guessing.
+`src/evidence_ledger.py` is the review layer.
 
-## Quick start (10-minute onboarding)
+It validates manifest contracts, groups related runs, checks for drift, and turns repeated experiments into a small review packet:
 
-### Setup
+- model-family summaries,
+- dataset hash stability,
+- spread across seeds,
+- holdout consistency,
+- practical recommendations when something starts to wobble.
+
+This is where "I ran a model" becomes "I can explain whether this result is reliable."
+
+## A good first path through the repo
+
+If you are new here, this route works well:
+
+1. Read `src/data_utils.py`
+2. Read `src/pipeline.py`
+3. Run `python scripts/run_experiments.py --epochs 2 --seed 42`
+4. Open the generated JSON manifests in `artifacts/`
+5. Compare the per-run `summary` with the grouped `series_summary`
+6. Read `tests/test_pipeline_contracts.py` and `tests/test_evidence_ledger.py`
+
+That path moves from input contracts, to runtime behavior, to stored evidence, to tests.
+
+## Quick start
+
+### Environment
 
 ```bash
 python -m venv .venv
@@ -109,155 +133,134 @@ pip install -r requirements.txt
 pip install -e ".[dev]"
 ```
 
-### First quality checks
+### Gate check
 
 ```bash
 make install
 make check
 ```
 
-### Run one learning sweep
+### Run an experiment sweep
 
 ```bash
-python scripts/run_experiments.py --epochs 2 --seed 42
+python scripts/run_experiments.py --epochs 2 --seed 42 --summary-csv
 ```
 
-Artifacts are written to `artifacts/`.
+That command writes:
 
-### Generate a dataset audit profile
+- one JSON manifest per run,
+- a machine-readable terminal report,
+- a `summary.csv` for spreadsheet review,
+- model-family rollups in the JSON report.
+
+### Generate a dataset audit
 
 ```bash
 python scripts/dataset_audit.py --source builtin --batch-size 2 --write-json artifacts/dataset.json
 ```
 
-### Run the CLI pipeline from Typer
+### Use the CLI entrypoint
 
 ```bash
 python CLI.py pipeline --epochs 2 --seed 44 --output artifacts
 ```
 
-## How to interpret outputs (so you can trust results)
+## Interactive atlas
 
-### Manifest fields (baseline)
+The repository also includes a GitHub Pages surface in `docs/`.
 
-- `run_id`, `started_at`, `finished_at`
-- `model_name`, `model_type`
-- `seed`, `test_ratio`, `train_size`, `test_size`
-- `accuracy`, `confusion_matrix`, `class_coverage`
-- `dataset_profile` (quality signals like duplicate rate and label imbalance)
+Planned Pages URL:
+
+- [cazzy-aporbo.github.io/velvet-python](https://cazzy-aporbo.github.io/velvet-python/)
+
+Rebuild the catalog data with:
+
+```bash
+make pages-catalog
+```
+
+Once GitHub Pages is enabled for the `docs/` folder on `main`, the atlas becomes a visual catalog of the Python files, learning tracks, and deeper study paths across the repo.
+
+## What to look for in the outputs
+
+### In a single manifest
+
+Pay attention to:
+
 - `dataset_hash`
+- `dataset_profile`
+- `split_profile`
+- `confusion_matrix`
+- `run_duration_seconds`
+- `parameters`
 
-### Practical interpretation rules
+Those fields usually explain more than the headline accuracy does.
 
-- **Accuracy changes while split is fixed?** Check model behavior and preprocessing first.
-- **Confusion gets worse but accuracy looks stable?** Verify class balance and label coverage.
-- **`dataset_hash` changes without intent?** Freeze upstream corpus source and rerun from scratch.
+### In the grouped summary
 
-Use these checks before any “improvement” claim.
+Look for:
 
-## Learning by role
+- seed-to-seed spread,
+- whether dataset hashes stayed stable,
+- whether the holdout ratio moved,
+- whether split label coverage became uneven.
 
-| Role | First pass | Second pass |
+If a result improves but the evidence around it gets noisier, that is worth slowing down for.
+
+## Different ways to use this repository
+
+| If you are... | Start here | Then move to |
 |---|---|---|
-| Beginner developer | `CLI.py pipeline`, `src/data_utils.py` | `tests/test_data_pipeline_utils.py`, `test_run_experiments_cli.py` |
-| Data engineer | `dataset_audit.py`, split strategy + hash checks | add a malformed CSV case to tests and assert failure behavior |
-| ML engineer | `run_epochs`, builder registry, manifest schema | compare model runs across seeds and record variance |
-| Interview prep | failure patterns in `docs/experiment-ledger.md` | explain one run where variance improves accuracy but hurts recall |
+| Learning Python fundamentals | `pyfiles/`, `src/data_utils.py` | `tests/test_data_pipeline_utils.py` |
+| Practicing data engineering habits | `scripts/dataset_audit.py` | `src/evidence_ledger.py` |
+| Practicing ML reasoning | `src/ml_pipeline.py`, `src/pipeline.py` | `scripts/run_experiments.py` |
+| Preparing for interviews | `CLI.py`, `docs/experiment-ledger.md` | `tests/test_cli_pipeline_command.py` |
+| Contributing to an open learning repo | `contributions.md` | `docs/practice-labs.md` |
 
-## Practical workflow for contributors
+## What the tests are doing for you
 
-1. Add or refactor one change.
-2. Add/extend one test that captures behavior.
-3. Run:
+The test suite is part of the teaching surface, not an afterthought.
 
-```bash
-make lint
-autotest=$(make test-fast)
-```
+Useful places to read:
 
-4. Re-run the relevant workflow and commit manifest evidence in your PR notes.
+- `tests/test_data_pipeline_utils.py`
+- `tests/test_pipeline_contracts.py`
+- `tests/test_run_experiments_cli.py`
+- `tests/test_evidence_ledger.py`
+- `tests/test_cli_pipeline_command.py`
+- `tests/test_data_utils_and_ingestion.py`
 
-## Added utility: audit + lab-oriented scripts
-
-### `scripts/run_experiments.py`
-
-- adds model filters with `--models`
-- stores one manifest per model x epoch
-- optional `--summary-csv` for easy review
-
-### `scripts/dataset_audit.py`
-
-- computes dataset quality profile
-- supports builtin dataset and CSV input
-- optional preview of batch extraction
-- optional JSON report for auditability
-
-### `docs/practice-labs.md`
-
-- staged practical exercises
-- role-specific prompts
-- evidence checklists for each task
-
-## Testing strategy
-
-Use one command for the gate:
-
-```bash
-make check
-```
-
-For deeper evidence before major changes, use the focused verification set:
+Run the focused set with:
 
 ```bash
 pytest \
   tests/test_data_pipeline_utils.py \
-  tests/test_dataset_audit_cli.py \
+  tests/test_pipeline_contracts.py \
   tests/test_run_experiments_cli.py \
-  tests/test_algorithm_guide_registry.py \
-  tests/test_data_utils_and_ingestion.py \
-  tests/test_cli_recommend_command.py
+  tests/test_evidence_ledger.py \
+  tests/test_cli_pipeline_command.py
 ```
 
-Current test scope:
+## What contributors should preserve
 
-- `tests/test_data_pipeline_utils.py` — data contracts and batching
-- `tests/test_run_experiments_cli.py` — reproducible scripts and outputs
-- `tests/test_dataset_audit_cli.py` — dataset health CLI behavior
-- `tests/test_algorithm_guide_registry.py` — recommendation + registry consistency
-- `tests/test_data_utils_and_ingestion.py` — CSV/data integrity and hash invariants
-- `tests/test_cli_recommend_command.py` — recommendation flow from the command line
-- core baseline and integration tests in existing suite
+When you change something here, try to keep four qualities intact:
 
-## Roadmap (pragmatic)
+1. The code should still be readable by a person learning from it.
+2. The behavior should still be pinned by tests.
+3. The result should still leave behind an inspectable artifact.
+4. The explanation should still sound like a person thinking carefully, not hiding behind abstraction.
 
-### 1–2 days
-
-- add two small model variants in a safe way
-- expand bad-input cases in dataset loading tests
-- tighten summary reporting defaults
-
-### 1–2 weeks
-
-- add `schema_version` and loader provenance to manifests
-- include replayability checks (rerun and diff hash behavior)
-- add a small benchmarking guide for CPU/runtime drift
-
-### 1–3 months
-
-- add lightweight streaming demo input using fixed-size batches
-- grow the lab docs into topic tracks for fairness, observability, and release-readiness
-- publish one reference “engineering playbook” PR example with evidence
-
-## Next read
+## Supporting reading
 
 - [docs/learning-path.md](docs/learning-path.md)
 - [docs/experiment-ledger.md](docs/experiment-ledger.md)
 - [docs/practice-labs.md](docs/practice-labs.md)
+- [docs/algorithm-package-playbook.md](docs/algorithm-package-playbook.md)
 - [contributions.md](contributions.md)
 
 ## License
 
-MIT for source code.
+MIT.
 
 ## Attribution
 

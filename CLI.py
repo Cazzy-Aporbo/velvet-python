@@ -199,7 +199,7 @@ from src.ai import CosineSimilarityClassifier, NaiveBayesClassifier
 from src.algorithm_guide import recommend_text_algorithms
 from src.evidence_ledger import build_evidence_ledger, write_evidence_ledger
 from src.model_registry import model_builders
-from src.pipeline import dump_run_manifests, run_epochs, summarize_runs
+from src.pipeline import dump_run_manifests, run_epochs, summarize_run_series, summarize_runs
 
 PROJECT_ROOT = Path(__file__).parent
 console = Console()
@@ -407,6 +407,7 @@ def pipeline(
 
     paths = dump_run_manifests(runs, PROJECT_ROOT / output)
     summary = summarize_runs(runs)
+    series_summary = summarize_run_series(runs)
 
     ledger_payload = None
     ledger_path = None
@@ -427,6 +428,23 @@ def pipeline(
                       str(row["train_size"]), str(row["test_size"]))
 
     console.print(table)
+    series_table = Table(title="Model families", border_style="#DDA0DD")
+    series_table.add_column("Model")
+    series_table.add_column("Runs")
+    series_table.add_column("Accuracy mean")
+    series_table.add_column("Spread")
+    series_table.add_column("Dataset hash stable")
+
+    for row in series_summary:
+        series_table.add_row(
+            row["model_name"],
+            str(row["run_count"]),
+            f"{row['accuracy']['mean']:.4f}",
+            f"{row['accuracy']['spread']:.4f}",
+            "yes" if row["dataset_hash_stable"] else "no",
+        )
+
+    console.print(series_table)
     console.print("[#8B7D8B]Manifests:[/#8B7D8B]")
     for path in paths:
         console.print(f" - {path}")
