@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="refresh"
+      content="0; url=./docs/"
+    />
+    <title>velvet-python atlas</title>
+    <style>
+      :root {
+        --bg: #03050f;
+        --panel: rgba(13, 18, 38, 0.82);
+        --text: #f6f0ff;
+        --muted: #cbc4dd;
+        --rose: #ffd2df;
+        --lavender: #cdbbff;
+        --cyan: #b8ebff;
+        --tangerine: #ffb66a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 18% 20%, rgba(255, 210, 223, 0.18), transparent 28%),
+          radial-gradient(circle at 78% 24%, rgba(184, 235, 255, 0.15), transparent 26%),
+          radial-gradient(circle at 56% 82%, rgba(255, 182, 106, 0.14), transparent 26%),
+          linear-gradient(180deg, #010103, #040714 50%, #050918 100%);
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        inset: -20%;
+        pointer-events: none;
+        filter: blur(72px);
+        opacity: 0.55;
+      }
+
+      body::before {
+        background:
+          radial-gradient(circle at 20% 30%, rgba(205, 187, 255, 0.24), transparent 20%),
+          radial-gradient(circle at 70% 24%, rgba(255, 210, 223, 0.22), transparent 22%);
+        animation: drift-a 16s ease-in-out infinite;
+      }
+
+      body::after {
+        background:
+          radial-gradient(circle at 72% 70%, rgba(184, 235, 255, 0.18), transparent 22%),
+          radial-gradient(circle at 36% 74%, rgba(255, 182, 106, 0.14), transparent 24%);
+        animation: drift-b 22s ease-in-out infinite;
+      }
+
+      .shell {
+        position: relative;
+        z-index: 1;
+        width: min(720px, calc(100% - 40px));
+        padding: 36px 32px;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02) 54%),
+          var(--panel);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-family: "Iowan Old Style", "Palatino Linotype", serif;
+        font-size: clamp(2.8rem, 10vw, 5rem);
+        line-height: 0.92;
+        letter-spacing: -0.05em;
+        background: linear-gradient(135deg, var(--rose), var(--lavender) 38%, var(--cyan) 68%, var(--tangerine));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 1.02rem;
+      }
+
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 22px;
+        padding: 12px 18px;
+        border-radius: 999px;
+        color: #fff7ff;
+        text-decoration: none;
+        background: linear-gradient(135deg, rgba(255, 210, 223, 0.16), rgba(184, 235, 255, 0.16));
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .pulse {
+        width: 86px;
+        height: 86px;
+        margin: 0 auto 24px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9), rgba(203, 184, 255, 0.44) 35%, rgba(184, 235, 255, 0.12) 72%, transparent 100%);
+        box-shadow:
+          0 0 42px rgba(205, 187, 255, 0.24),
+          0 0 90px rgba(184, 235, 255, 0.16);
+        animation: pulse 3.2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(0.92);
+          opacity: 0.78;
+        }
+        50% {
+          transform: scale(1.08);
+          opacity: 1;
+        }
+      }
+
+      @keyframes drift-a {
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(6%, -4%, 0); }
+      }
+
+      @keyframes drift-b {
+        0%, 100% { transform: translate3d(0, 0, 0); }
+        50% { transform: translate3d(-5%, 5%, 0); }
+      }
+    </style>
+    <script>
+      window.location.replace("./docs/");
+    </script>
+  </head>
+  <body>
+    <main class="shell">
+      <div class="pulse" aria-hidden="true"></div>
+      <h1>velvet-python</h1>
+      <p>
+        The atlas lives at the visual entrypoint for this repository.
+        Redirecting now.
+      </p>
+      <a href="./docs/">Open the atlas</a>
+    </main>
+  </body>
+</html>
