@@ -38,6 +38,7 @@ const elements = {
   spotlightLink: document.querySelector("#spotlight-link"),
   orbitNodes: document.querySelector("#orbit-nodes"),
   noteLattice: document.querySelector("#note-lattice"),
+  footerNoteField: document.querySelector("#footer-note-field"),
   drawer: document.querySelector("#detail-drawer"),
   drawerBackdrop: document.querySelector("#drawer-backdrop"),
   drawerClose: document.querySelector("#drawer-close"),
@@ -697,6 +698,42 @@ function renderGlyphLattice() {
     .join("");
 }
 
+function renderFooterField() {
+  if (!elements.footerNoteField) return;
+
+  const sequence = [
+    "signal",
+    "proof",
+    "rerun",
+    "compare",
+    "inspect",
+    "learn",
+    "trace",
+    "shape",
+  ];
+  const tagTokens = topValues(state.files.flatMap((file) => file.tags), 12).map(([tag]) => tag.toLowerCase());
+  const difficultyTokens = topValues(state.files.map((file) => file.difficulty), 4).map(([tag]) => tag.toLowerCase());
+  const tokens = [...sequence, ...tagTokens, ...difficultyTokens].slice(0, 18);
+
+  elements.footerNoteField.innerHTML = tokens
+    .map((token, index) => {
+      const column = index % 6;
+      const row = Math.floor(index / 6);
+      const x = 10 + column * 16 + ((row % 2) * 2.5);
+      const y = 18 + row * 24 + ((column % 2) * 2);
+      const delay = (index * 0.38).toFixed(2);
+      const duration = (7.5 + (index % 5) * 1.1).toFixed(2);
+
+      return `
+        <span
+          class="footer-note"
+          style="--x:${x}%; --y:${y}%; --delay:${delay}s; --duration:${duration}s;"
+        >${escapeHtml(token)}</span>
+      `;
+    })
+    .join("");
+}
+
 function renderDrawer(file) {
   if (!elements.drawerCategory) return;
 
@@ -962,6 +999,7 @@ async function init() {
     renderCatalog();
     renderSpotlight();
     renderGlyphLattice();
+    renderFooterField();
     bindControls();
     autoRotateSpotlight();
     animateDepthField(state.payload.featured);

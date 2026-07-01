@@ -104,7 +104,7 @@ body::-webkit-scrollbar-thumb {
   z-index: 2;
   width: min(1420px, calc(100% - 44px));
   margin: 0 auto;
-  padding: 22px 0 84px;
+  padding: 22px 0 56px;
 }
 
 .glass-panel {
@@ -760,7 +760,39 @@ h4 {
 }
 
 .story-section {
-  margin-top: 98px;
+  position: relative;
+  margin-top: 84px;
+}
+
+.story-section::before {
+  content: "";
+  position: absolute;
+  top: -38px;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 209, 220, 0.22),
+    rgba(180, 231, 255, 0.28),
+    rgba(255, 179, 71, 0.2),
+    transparent
+  );
+  opacity: 0.72;
+}
+
+.story-section::after {
+  content: "";
+  position: absolute;
+  top: -56px;
+  left: clamp(18px, 11vw, 200px);
+  width: clamp(120px, 20vw, 260px);
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 209, 220, 0.06), rgba(180, 231, 255, 0.14), rgba(255, 179, 71, 0.05));
+  filter: blur(16px);
+  animation: sectionDrift 10s ease-in-out infinite;
 }
 
 .section-heading {
@@ -1227,15 +1259,127 @@ select:focus {
 
 .page-footer {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 20px;
-  margin-top: 96px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.95fr) auto;
+  gap: 22px;
+  margin-top: 56px;
+  align-items: stretch;
 }
 
 .footer-meta {
   min-width: 280px;
   color: var(--text-soft);
   font-size: 0.92rem;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.footer-copy {
+  max-width: 40rem;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-orbit {
+  position: relative;
+  min-height: 220px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.06), transparent 48%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(255, 255, 255, 0.02);
+}
+
+.footer-ribbon,
+.footer-pulse,
+.footer-note-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.footer-ribbon {
+  opacity: 0.68;
+  mix-blend-mode: screen;
+}
+
+.footer-ribbon-a {
+  background:
+    radial-gradient(circle at 16% 64%, rgba(255, 209, 220, 0.18), transparent 24%),
+    linear-gradient(100deg, transparent 16%, rgba(255, 209, 220, 0.14) 38%, transparent 62%);
+  transform-origin: center;
+  animation: footerRibbonA 16s ease-in-out infinite;
+}
+
+.footer-ribbon-b {
+  background:
+    radial-gradient(circle at 78% 30%, rgba(180, 231, 255, 0.14), transparent 22%),
+    linear-gradient(120deg, transparent 14%, rgba(180, 231, 255, 0.12) 44%, transparent 72%);
+  animation: footerRibbonB 18s ease-in-out infinite;
+}
+
+.footer-ribbon-c {
+  background:
+    radial-gradient(circle at 58% 78%, rgba(255, 179, 71, 0.14), transparent 20%),
+    linear-gradient(80deg, transparent 24%, rgba(203, 184, 255, 0.1) 50%, transparent 78%);
+  animation: footerRibbonC 20s ease-in-out infinite;
+}
+
+.footer-pulse {
+  filter: blur(24px);
+}
+
+.footer-pulse-a {
+  background: radial-gradient(circle at 32% 54%, rgba(203, 184, 255, 0.18), transparent 18%);
+  animation: footerPulseA 9s ease-in-out infinite;
+}
+
+.footer-pulse-b {
+  background: radial-gradient(circle at 72% 42%, rgba(180, 231, 255, 0.16), transparent 20%);
+  animation: footerPulseB 11s ease-in-out infinite;
+}
+
+.footer-note {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  font-family: var(--body-font);
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.34);
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
+  animation: footerNoteFloat var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.footer-axis {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--body-font);
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(247, 241, 255, 0.58);
+}
+
+.footer-axis span {
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 code {
@@ -1327,6 +1471,84 @@ code {
   }
 }
 
+@keyframes sectionDrift {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.46;
+  }
+  50% {
+    transform: translateX(26px);
+    opacity: 0.9;
+  }
+}
+
+@keyframes footerRibbonA {
+  0%,
+  100% {
+    transform: translate3d(-4%, 0, 0) rotate(-5deg) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, -3%, 0) rotate(6deg) scale(1.05);
+  }
+}
+
+@keyframes footerRibbonB {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(4deg) scale(1);
+  }
+  50% {
+    transform: translate3d(-5%, 4%, 0) rotate(-4deg) scale(1.08);
+  }
+}
+
+@keyframes footerRibbonC {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) rotate(5deg) scale(1.04);
+  }
+}
+
+@keyframes footerPulseA {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.62;
+  }
+}
+
+@keyframes footerPulseB {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.24;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.58;
+  }
+}
+
+@keyframes footerNoteFloat {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translate3d(0, 0, 0);
+    opacity: 0.22;
+  }
+  50% {
+    transform: translate(-50%, -50%) translate3d(0, -10px, 0);
+    opacity: 0.5;
+  }
+}
+
 @keyframes orbitOne {
   from {
     transform: rotate(0deg) translateX(220px) rotate(0deg);
@@ -1396,6 +1618,10 @@ code {
   .catalog-guide {
     position: static;
   }
+
+  .footer-orbit {
+    min-height: 180px;
+  }
 }
 
 @media (max-width: 860px) {
@@ -1439,6 +1665,20 @@ code {
   .hero-stage,
   .orbital-shell {
     min-height: 360px;
+  }
+
+  .story-section {
+    margin-top: 72px;
+  }
+
+  .story-section::before {
+    top: -30px;
+  }
+
+  .story-section::after {
+    top: -46px;
+    left: 10px;
+    width: 150px;
   }
 
   .node {
@@ -1487,8 +1727,17 @@ code {
     min-height: 320px;
   }
 
+  .page-footer {
+    margin-top: 44px;
+  }
+
   .mandala {
     width: 140px;
     height: 140px;
+  }
+
+  .footer-axis {
+    flex-wrap: wrap;
+    justify-content: start;
   }
 }
