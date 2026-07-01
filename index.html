@@ -7,6 +7,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@700;900&display=swap');
 
+        :root {
+            --rose: #ffd1dc;
+            --cyan: #b4e7ff;
+            --tangerine: #ffb347;
+            --lavender: #cdbbff;
+            --text-soft: rgba(255, 255, 255, 0.66);
+            --panel: rgba(8, 8, 14, 0.38);
+            --panel-strong: rgba(14, 16, 28, 0.8);
+            --border: rgba(255, 255, 255, 0.12);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -28,8 +39,7 @@
 
         canvas#bgCanvas {
             position: fixed;
-            top: 0;
-            left: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
@@ -37,10 +47,7 @@
 
         .content {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             z-index: 1;
             display: flex;
             flex-direction: column;
@@ -48,20 +55,23 @@
         }
 
         header {
-            padding: 3rem 4rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+            gap: 2rem;
+            padding: 2.8rem 3.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(40px);
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.24);
         }
 
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
+            font-size: clamp(2.8rem, 4vw, 4.6rem);
             font-weight: 900;
-            letter-spacing: -0.04em;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #ffd1dc 0%, #b4e7ff 50%, #ffb347 100%);
+            letter-spacing: -0.05em;
+            line-height: 0.95;
+            margin-bottom: 0.65rem;
+            background: linear-gradient(135deg, var(--rose) 0%, var(--cyan) 48%, var(--tangerine) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -70,40 +80,227 @@
 
         @keyframes gradient-shift {
             0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(20deg); }
+            50% { filter: hue-rotate(18deg); }
         }
 
         .subtitle {
-            font-size: 0.9rem;
-            letter-spacing: 0.15em;
+            font-size: 0.88rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-soft);
             font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .intro-copy {
+            max-width: 58ch;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.75;
+            font-size: 0.96rem;
+        }
+
+        .header-side {
+            align-self: end;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .repo-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.8rem;
+        }
+
+        .stat-chip,
+        .field-note,
+        .command-ribbon,
+        .signal-tape {
+            border: 1px solid var(--border);
+            background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 56%), var(--panel);
+            backdrop-filter: blur(22px);
+        }
+
+        .stat-chip {
+            padding: 0.9rem 1rem;
+            min-height: 82px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat-chip strong {
+            font-size: 1.25rem;
+            color: #ffffff;
+        }
+
+        .stat-chip span {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255, 255, 255, 0.62);
+        }
+
+        .command-ribbon {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            padding: 0.9rem;
+        }
+
+        .command-ribbon button,
+        .command-ribbon a,
+        .modal-link {
+            appearance: none;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04);
+            color: #ffffff;
+            text-decoration: none;
+            font: inherit;
+            padding: 0.72rem 0.95rem;
+            cursor: pointer;
+            transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+        }
+
+        .command-ribbon button:hover,
+        .command-ribbon a:hover,
+        .modal-link:hover {
+            transform: translateY(-1px);
+            background: rgba(255,255,255,0.09);
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .command-ribbon button.active {
+            background: linear-gradient(135deg, rgba(255,209,220,0.14), rgba(180,231,255,0.12));
+            border-color: rgba(180,231,255,0.28);
         }
 
         .exploration-space {
             flex: 1;
             position: relative;
             overflow: hidden;
+            display: grid;
+            grid-template-columns: minmax(280px, 360px) 1fr;
+            align-items: stretch;
+        }
+
+        .field-note {
+            position: relative;
+            z-index: 2;
+            margin: 2rem 0 2rem 2rem;
+            padding: 1.35rem 1.2rem 1.15rem;
+            align-self: start;
+            max-width: 360px;
+        }
+
+        .field-note h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            letter-spacing: -0.04em;
+            line-height: 1.02;
+            margin-bottom: 0.8rem;
+            color: #fff7fb;
+        }
+
+        .field-kicker {
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.56);
+            margin-bottom: 0.8rem;
+        }
+
+        .field-note p {
+            color: rgba(255, 255, 255, 0.76);
+            line-height: 1.7;
+            font-size: 0.9rem;
+        }
+
+        .field-systems {
+            margin-top: 0.8rem;
+            color: rgba(180, 231, 255, 0.84);
+        }
+
+        .field-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-top: 1rem;
+        }
+
+        .field-tags span,
+        .modal-tag,
+        .path-list span {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.34rem 0.56rem;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255,255,255,0.05);
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.82);
+        }
+
+        .signal-tape {
+            position: absolute;
+            left: 2rem;
+            right: 2rem;
+            bottom: 1.6rem;
+            z-index: 2;
+            display: flex;
+            gap: 0.7rem;
+            padding: 0.8rem;
+            overflow-x: auto;
+        }
+
+        .signal-token {
+            min-width: 220px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.03);
+            color: #ffffff;
+            text-align: left;
+            padding: 0.8rem;
+            cursor: pointer;
+        }
+
+        .signal-token strong,
+        .signal-token span,
+        .signal-token small {
+            display: block;
+        }
+
+        .signal-token span,
+        .signal-token small {
+            margin-top: 0.34rem;
+            color: rgba(255,255,255,0.62);
+        }
+
+        .visual-stage {
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: 100%;
         }
 
         .node-cluster {
-            position: absolute;
-            width: 600px;
-            height: 600px;
+            position: relative;
+            width: min(720px, 76vw);
+            height: min(720px, 76vw);
+            max-width: 720px;
+            max-height: 720px;
             perspective: 1200px;
         }
 
         .node {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            left: 50%;
+            top: 50%;
             cursor: pointer;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: box-shadow 0.3s ease;
             transform-style: preserve-3d;
+            background: transparent;
+            border: none;
         }
 
         .node-inner {
@@ -114,8 +311,9 @@
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .node:hover .node-inner {
-            transform: rotateY(180deg);
+        .node:hover .node-inner,
+        .node:focus-visible .node-inner {
+            transform: scale(1.06) rotateY(180deg);
         }
 
         .node-front, .node-back {
@@ -127,66 +325,51 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(18px);
             overflow: hidden;
+            padding: 0.9rem;
+            text-align: center;
         }
 
         .node-back {
             transform: rotateY(180deg);
             background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.34);
         }
 
         .node-label {
-            font-size: 0.75rem;
-            text-align: center;
-            letter-spacing: 0.1em;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            line-height: 1.2;
-            opacity: 0.9;
+            line-height: 1.25;
+            opacity: 0.92;
+            word-break: break-word;
         }
 
         .node-info {
-            font-size: 0.7rem;
-            text-align: center;
-            opacity: 0.7;
-            line-height: 1.4;
-        }
-
-        @keyframes orbit {
-            0% { transform: rotateZ(0deg) translateX(200px) rotateZ(0deg); }
-            100% { transform: rotateZ(360deg) translateX(200px) rotateZ(-360deg); }
-        }
-
-        .node:nth-child(1) { animation: orbit 20s linear infinite; }
-        .node:nth-child(2) { animation: orbit 22s linear infinite reverse; animation-delay: -5s; }
-        .node:nth-child(3) { animation: orbit 24s linear infinite; animation-delay: -10s; }
-        .node:nth-child(4) { animation: orbit 26s linear infinite reverse; animation-delay: -8s; }
-        .node:nth-child(5) { animation: orbit 25s linear infinite; animation-delay: -12s; }
-        .node:nth-child(6) { animation: orbit 23s linear infinite reverse; animation-delay: -3s; }
-
-        .node:hover {
-            z-index: 100;
-            transform: scale(1.3);
+            margin-top: 0.42rem;
+            font-size: 0.67rem;
+            opacity: 0.72;
+            line-height: 1.45;
         }
 
         .mandala {
             position: absolute;
-            width: 200px;
-            height: 200px;
+            width: 240px;
+            height: 240px;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 5;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .mandala svg {
             width: 100%;
             height: 100%;
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.16));
             animation: rotate-mandala 30s linear infinite;
         }
 
@@ -195,19 +378,32 @@
             100% { transform: rotate(360deg); }
         }
 
+        .scroll-indicator {
+            position: absolute;
+            bottom: 7rem;
+            right: 5vw;
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+            animation: pulse-text 2s ease-in-out infinite;
+            pointer-events: none;
+            color: rgba(255,255,255,0.48);
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.48; }
+            50% { opacity: 1; }
+        }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(20px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            animation: fade-in 0.4s ease;
+            animation: fade-in 0.35s ease;
         }
 
         @keyframes fade-in {
@@ -220,83 +416,57 @@
         }
 
         .modal-panel {
-            width: 90%;
-            max-width: 900px;
-            height: 80vh;
-            background: linear-gradient(135deg, rgba(50, 50, 60, 0.9), rgba(30, 30, 40, 0.95));
-            border: 1px solid rgba(255, 200, 200, 0.2);
+            width: min(1180px, calc(100% - 48px));
+            height: min(84vh, 880px);
+            background: linear-gradient(135deg, rgba(20, 20, 28, 0.94), rgba(8, 8, 12, 0.98));
+            border: 1px solid rgba(255, 255, 255, 0.12);
             overflow: hidden;
-            display: flex;
-            animation: panel-rise 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes panel-rise {
-            from {
-                opacity: 0;
-                transform: translateY(60px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            display: grid;
+            grid-template-columns: minmax(260px, 0.34fr) minmax(0, 0.66fr);
+            position: relative;
         }
 
         .modal-sidebar {
-            width: 30%;
-            background: rgba(0, 0, 0, 0.4);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2.4rem 1.8rem 2.1rem;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
         }
 
         .modal-main {
-            flex: 1;
-            padding: 3rem;
+            padding: 2.5rem 2.3rem 2.2rem;
             overflow-y: auto;
             position: relative;
         }
 
-        .modal-main::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 2px;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(255, 200, 200, 0.5), transparent);
-        }
-
         .modal-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            line-height: 1.2;
+            font-size: 2.4rem;
+            margin-bottom: 1rem;
+            line-height: 1.12;
         }
 
         .modal-code {
-            background: rgba(0, 0, 0, 0.6);
-            border-left: 3px solid rgba(255, 200, 200, 0.5);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            font-size: 0.85rem;
+            background: rgba(0, 0, 0, 0.56);
+            border-left: 3px solid rgba(180, 231, 255, 0.42);
+            padding: 1.15rem 1.2rem;
+            margin: 1rem 0 1.4rem;
+            font-size: 0.82rem;
             overflow-x: auto;
-            line-height: 1.6;
-            color: #b4e7ff;
+            line-height: 1.65;
+            color: var(--cyan);
             white-space: pre-wrap;
         }
 
         .modal-close {
             position: absolute;
-            top: 2rem;
-            right: 2rem;
+            top: 1rem;
+            right: 1.2rem;
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.66);
             font-size: 2rem;
             cursor: pointer;
-            transition: color 0.3s ease;
             z-index: 10;
         }
 
@@ -305,64 +475,84 @@
         }
 
         .modal-sidebar h3 {
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin: 2rem 0 1rem;
-            opacity: 0.7;
+            letter-spacing: 0.16em;
+            margin: 1.6rem 0 0.8rem;
+            opacity: 0.68;
         }
 
         .modal-sidebar p {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            opacity: 0.8;
-            margin-bottom: 0.8rem;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            opacity: 0.84;
+            margin-bottom: 0.45rem;
         }
 
-        .modal-tag {
-            display: inline-block;
-            padding: 0.4rem 0.8rem;
-            background: rgba(255, 200, 200, 0.1);
-            border: 1px solid rgba(255, 200, 200, 0.3);
-            font-size: 0.7rem;
-            margin: 0.3rem 0.3rem 0 0;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .path-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            animation: pulse-text 2s ease-in-out infinite;
-            pointer-events: none;
+        .empty-line {
+            color: rgba(255,255,255,0.58);
+            margin-bottom: 0.85rem;
+            line-height: 1.65;
         }
 
-        @keyframes pulse-text {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+        @media (max-width: 1120px) {
+            header {
+                grid-template-columns: 1fr;
+                padding: 2.4rem 2rem 1.6rem;
+            }
+
+            .exploration-space {
+                grid-template-columns: 1fr;
+            }
+
+            .field-note {
+                margin: 1.25rem 1.25rem 0;
+                max-width: none;
+            }
+
+            .signal-tape {
+                left: 1.25rem;
+                right: 1.25rem;
+                bottom: 1.2rem;
+            }
+
+            .visual-stage {
+                min-height: 560px;
+            }
         }
 
-        @media (max-width: 1024px) {
-            h1 { font-size: 2.5rem; }
-            .node { width: 100px; height: 100px; }
-            .modal-panel { flex-direction: column; }
-            .modal-sidebar { width: 100%; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        }
+        @media (max-width: 820px) {
+            .modal-panel {
+                grid-template-columns: 1fr;
+                height: min(92vh, 980px);
+            }
 
-        @media (max-width: 768px) {
-            header { padding: 2rem; }
-            h1 { font-size: 1.8rem; }
-            .exploration-space { padding: 2rem; }
-            .modal-panel { width: 95%; height: 90vh; }
-            .modal-main { padding: 2rem; }
+            .modal-sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+            }
+
+            .node-cluster {
+                width: min(92vw, 620px);
+                height: min(92vw, 620px);
+            }
+
+            .scroll-indicator {
+                bottom: 8.6rem;
+                right: 1.25rem;
+            }
         }
 
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -370,216 +560,117 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.18);
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.34);
         }
     </style>
 </head>
-<body>
-    <canvas id="bgCanvas"></canvas>
+<body data-catalog="./docs/catalog.json">
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
 
     <div class="content">
         <header>
-            <h1>Velvet Python</h1>
-            <p class="subtitle">A Dimensional Approach to Code Understanding</p>
+            <div>
+                <h1>Velvet Python</h1>
+                <p class="subtitle">Dimensional code exploration for the full repository</p>
+                <p class="intro-copy">
+                    A live container for the Python files, proof surfaces, runnable paths, and
+                    shared modules inside <code>velvet-python</code>. The field below is driven by
+                    the repository catalog, so each orbiting surface maps back to real code.
+                </p>
+            </div>
+
+            <div class="header-side">
+                <div class="repo-stats" id="repoStats"></div>
+                <div class="command-ribbon">
+                    <button id="hubButton" type="button">Core hubs</button>
+                    <button id="proofButton" type="button">Proof surfaces</button>
+                    <button id="executionButton" type="button">Runnable paths</button>
+                    <button id="shuffleButton" type="button">Shift field</button>
+                    <a id="repoLink" href="https://github.com/Cazzy-Aporbo/velvet-python" target="_blank" rel="noreferrer">Repository</a>
+                </div>
+            </div>
         </header>
 
         <div class="exploration-space">
-            <div class="mandala" id="mandala">
-                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
-                    <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,200,200,0.2)" stroke-width="0.5"/>
-                    <circle cx="100" cy="100" r="50" fill="none" stroke="rgba(180,231,255,0.2)" stroke-width="0.5"/>
-                    <g id="petals">
-                        <path d="M 100 100 L 100 20" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 141.4 58.6" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 180 100" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 141.4 141.4" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 100 180" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 58.6 141.4" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 20 100" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                        <path d="M 100 100 L 58.6 58.6" stroke="rgba(255,200,200,0.3)" stroke-width="1" fill="none"/>
-                    </g>
-                </svg>
+            <aside class="field-note">
+                <p class="field-kicker">Current signal</p>
+                <h2 id="fieldTitle">Loading the repository field</h2>
+                <p id="fieldSummary">Pulling the strongest Python surfaces into orbit.</p>
+                <p class="field-systems" id="fieldSystems"></p>
+                <div class="field-tags" id="fieldTags"></div>
+            </aside>
+
+            <div class="visual-stage">
+                <div class="mandala" aria-hidden="true">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,255,255,0.24)" stroke-width="0.5"/>
+                        <circle cx="100" cy="100" r="74" fill="none" stroke="rgba(255,209,220,0.18)" stroke-width="0.5"/>
+                        <circle cx="100" cy="100" r="56" fill="none" stroke="rgba(180,231,255,0.18)" stroke-width="0.5"/>
+                        <path d="M100 14 L120 80 L186 100 L120 120 L100 186 L80 120 L14 100 L80 80 Z" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="0.8"/>
+                        <path d="M100 34 L112 88 L166 100 L112 112 L100 166 L88 112 L34 100 L88 88 Z" fill="none" stroke="rgba(255,179,71,0.18)" stroke-width="0.8"/>
+                    </svg>
+                </div>
+
+                <div class="node-cluster" id="nodeCluster" aria-live="polite"></div>
+                <div class="scroll-indicator">EXPLORE • FOCUS • LEARN</div>
             </div>
 
-            <div class="node-cluster" id="nodeCluster"></div>
-
-            <div class="scroll-indicator">EXPLORE • ROTATE • DISCOVER</div>
+            <div class="signal-tape" id="signalTape"></div>
         </div>
     </div>
 
     <div class="modal" id="modal">
         <div class="modal-panel">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close" onclick="closeModal()" aria-label="Close details">&times;</button>
             <div class="modal-sidebar" id="modalSidebar"></div>
             <div class="modal-main" id="modalMain"></div>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-        let animationId;
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgContext = bgCanvas.getContext('2d');
 
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+
+        function drawBackground(time) {
+            bgContext.fillStyle = '#000000';
+            bgContext.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            bgContext.strokeStyle = 'rgba(255, 200, 200, 0.045)';
+            bgContext.lineWidth = 1;
+
+            for (let band = 0; band < 6; band += 1) {
+                bgContext.beginPath();
+                for (let x = 0; x < bgCanvas.width; x += 18) {
+                    const y = bgCanvas.height / 2 + Math.sin((x + time * 0.45) / 110 + band) * (44 + band * 7);
+                    if (x === 0) bgContext.moveTo(x, y);
+                    else bgContext.lineTo(x, y);
+                }
+                bgContext.stroke();
+            }
+
+            bgContext.fillStyle = 'rgba(255, 255, 255, 0.045)';
+            for (let point = 0; point < 26; point += 1) {
+                const x = (Math.sin(time * 0.00012 + point * 0.7) * bgCanvas.width * 0.48) + bgCanvas.width * 0.5;
+                const y = (Math.cos(time * 0.00018 + point * 0.48) * bgCanvas.height * 0.42) + bgCanvas.height * 0.5;
+                bgContext.fillRect(x, y, 2, 2);
+            }
+
+            requestAnimationFrame(() => drawBackground(time + 1));
         }
 
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
-
-        function drawBackground(time) {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = 'rgba(255, 200, 200, 0.05)';
-            ctx.lineWidth = 1;
-
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                for (let x = 0; x < canvas.width; x += 20) {
-                    const y = canvas.height / 2 + Math.sin((x + time * 0.5) / 100 + i) * 50;
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-            }
-
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-            for (let i = 0; i < 20; i++) {
-                const x = (Math.sin(time * 0.0001 + i) * canvas.width) % canvas.width;
-                const y = (Math.cos(time * 0.00015 + i * 0.5) * canvas.height) % canvas.height;
-                ctx.fillRect(x, y, 2, 2);
-            }
-
-            animationId = requestAnimationFrame(() => drawBackground(time + 1));
-        }
-
         drawBackground(0);
-
-        const files = [
-            {
-                name: 'ai.py',
-                type: 'Core Module',
-                category: 'Classification',
-                desc: 'Bayes, Rule, Cosine',
-                purpose: 'Three foundational classifiers exploring probability, logic, and similarity metrics.',
-                learnings: ['Classifier interfaces', 'Bayesian probability', 'Vector math', 'Trade-offs'],
-                usage: 'from src.ai import BayesClassifier',
-                example: 'classifier.train(texts, labels)\\npredictions = classifier.predict(new_texts)'
-            },
-            {
-                name: 'data_utils.py',
-                type: 'Core Module',
-                category: 'Data Engineering',
-                desc: 'Validation, Loading',
-                purpose: 'Deterministic data contracts. Every row validated before processing.',
-                learnings: ['Data validation', 'Integrity checking', 'Fast failure', 'Contracts'],
-                usage: 'from src.data_utils import load_dataset',
-                example: 'df = load_dataset(\"data/train.csv\")\\nvalidate_dataset(df)'
-            },
-            {
-                name: 'ml_pipeline.py',
-                type: 'Core Module',
-                category: 'Orchestration',
-                desc: 'Features, Models, Eval',
-                purpose: 'Complete ML workflow orchestration with reproducible metadata.',
-                learnings: ['Pipeline architecture', 'Feature engineering', 'Metadata tracking'],
-                usage: 'from src.ml_pipeline import run_classification_pipeline',
-                example: 'run = run_classification_pipeline(df, seed=42)'
-            },
-            {
-                name: 'run_experiments.py',
-                type: 'Script',
-                category: 'Automation',
-                desc: 'Model Sweeps, Outputs',
-                purpose: 'CLI automation for reproducible experiment runs at scale.',
-                learnings: ['CLI design', 'Experiment automation', 'Artifact management'],
-                usage: 'python scripts/run_experiments.py --epochs 10',
-                example: 'python scripts/run_experiments.py --models bayesian cosine'
-            },
-            {
-                name: 'dataset_audit.py',
-                type: 'Script',
-                category: 'Quality',
-                desc: 'Profiling, Detection',
-                purpose: 'Comprehensive dataset health analysis and anomaly detection.',
-                learnings: ['Data profiling', 'Quality signals', 'Issue detection'],
-                usage: 'python scripts/dataset_audit.py --source builtin',
-                example: 'python scripts/dataset_audit.py --write-json artifacts/audit.json'
-            },
-            {
-                name: 'tests/',
-                type: 'Test Suite',
-                category: 'Verification',
-                desc: 'Reproducibility, Edge Cases',
-                purpose: 'Comprehensive test suite ensuring robustness and reproducibility.',
-                learnings: ['Test design', 'Edge cases', 'Regression prevention'],
-                usage: 'pytest tests/ -v',
-                example: 'pytest tests/test_data_pipeline_utils.py'
-            }
-        ];
-
-        const cluster = document.getElementById('nodeCluster');
-        files.forEach((file) => {
-            const node = document.createElement('div');
-            node.className = 'node';
-            node.innerHTML = `
-                <div class="node-inner">
-                    <div class="node-front">
-                        <div class="node-label">${file.name}</div>
-                        <div class="node-info">${file.category}</div>
-                    </div>
-                    <div class="node-back">
-                        <div class="node-info">${file.type}</div>
-                        <div style="margin-top: 8px; font-size: 0.65rem; opacity: 0.7;">${file.desc}</div>
-                    </div>
-                </div>
-            `;
-            node.addEventListener('click', () => openModal(file));
-            cluster.appendChild(node);
-        });
-
-        function openModal(file) {
-            document.getElementById('modalSidebar').innerHTML = `
-                <h3>Type</h3>
-                <p>${file.type}</p>
-                <h3>Category</h3>
-                <p>${file.category}</p>
-                <h3>Key Learnings</h3>
-                <div>${file.learnings.map((item) => `<div class="modal-tag">${item}</div>`).join('')}</div>
-            `;
-
-            document.getElementById('modalMain').innerHTML = `
-                <h2 class="modal-title">${file.name}</h2>
-                <p style="font-size: 1rem; line-height: 1.8; margin-bottom: 2rem; opacity: 0.9;">${file.purpose}</p>
-
-                <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2rem; margin-bottom: 1rem; opacity: 0.7;">Usage</h3>
-                <div class="modal-code">${file.usage}</div>
-
-                <h3 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2rem; margin-bottom: 1rem; opacity: 0.7;">Example</h3>
-                <div class="modal-code">${file.example}</div>
-            `;
-
-            document.getElementById('modal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
-        }
-
-        document.getElementById('modal').addEventListener('click', (event) => {
-            if (event.target.id === 'modal') closeModal();
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') closeModal();
-        });
     </script>
+    <script src="./docs/dimensional-atlas.js" defer></script>
 </body>
 </html>

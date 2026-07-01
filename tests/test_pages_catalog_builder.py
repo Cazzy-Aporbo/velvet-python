@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts.build_pages_catalog import OUTPUT, ROOT, build_payload, discover_files, file_facts
+from scripts.build_pages_catalog import (
+    OUTPUT,
+    ROOT,
+    build_connection_map,
+    build_payload,
+    discover_files,
+    file_facts,
+)
 
 
 def test_discover_files_finds_python_catalog_inputs() -> None:
@@ -16,7 +23,8 @@ def test_discover_files_finds_python_catalog_inputs() -> None:
 
 
 def test_file_facts_exposes_learning_metadata_for_core_file() -> None:
-    facts = file_facts(ROOT / "src" / "pipeline.py")
+    paths = discover_files()
+    facts = file_facts(ROOT / "src" / "pipeline.py", build_connection_map(paths))
 
     assert facts.category_key == "core"
     assert facts.category_label == "Core Systems"
@@ -26,6 +34,22 @@ def test_file_facts_exposes_learning_metadata_for_core_file() -> None:
     assert facts.summary
     assert facts.why_it_matters
     assert facts.learning_moment
+    assert facts.system_role
+    assert "tests/" in " ".join(facts.proof_paths) or facts.connectivity["proof_count"] >= 0
+
+
+def test_connection_map_links_core_modules_to_execution_and_proof_surfaces() -> None:
+    connection_map = build_connection_map(discover_files())
+    pipeline = connection_map["src/pipeline.py"]
+
+    assert any(path.startswith("src/") for path in pipeline.upstream_paths)
+    assert pipeline.connectivity["downstream_count"] >= 1
+    assert pipeline.system_role in {
+        "Execution pipeline",
+        "Systems hub",
+        "Shared service",
+        "Verified core",
+    }
 
 
 def test_build_payload_is_consistent_with_generated_catalog_output() -> None:
@@ -33,8 +57,10 @@ def test_build_payload_is_consistent_with_generated_catalog_output() -> None:
 
     assert payload["repository"]["name"] == "velvet-python"
     assert payload["stats"]["python_file_count"] == len(payload["files"])
+    assert payload["stats"]["internal_link_count"] >= 1
     assert payload["tracks"]
     assert payload["featured"]
+    assert payload["system"]["hub_files"]
     assert any(file["path"] == "src/pipeline.py" for file in payload["files"])
     assert any(category["key"] == "core" for category in payload["categories"])
 

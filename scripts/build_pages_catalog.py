@@ -11,6 +11,7 @@ import ast
 import json
 import math
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from hashlib import sha1
@@ -176,11 +177,29 @@ class FileFacts:
     best_for: str
     difficulty: str
     depth_index: int
+    system_role: str
+    system_role_note: str
     tags: list[str]
     anchors: list[str]
+    upstream_paths: list[str]
+    downstream_paths: list[str]
+    proof_paths: list[str]
+    execution_paths: list[str]
+    connectivity: dict[str, int]
     stats: dict[str, int]
     github_url: str
     featured: bool
+
+
+@dataclass(frozen=True)
+class ConnectionFacts:
+    upstream_paths: list[str]
+    downstream_paths: list[str]
+    proof_paths: list[str]
+    execution_paths: list[str]
+    connectivity: dict[str, int]
+    system_role: str
+    system_role_note: str
 
 
 def utc_now() -> str:
@@ -308,6 +327,84 @@ def infer_tags(path: str, summary: str, anchors: list[str]) -> list[str]:
     return sorted(dict.fromkeys(tags))
 
 
+def module_name_for_path(path: Path) -> str:
+    relative = path.relative_to(ROOT).with_suffix("").as_posix()
+    if relative.endswith("/__init__"):
+        relative = relative[: -len("/__init__")]
+    return relative.replace("/", ".")
+
+
+def lookup_internal_module(module_name: str, module_to_path: dict[str, str]) -> str | None:
+    parts = module_name.split(".")
+    while parts:
+        candidate = ".".join(parts)
+        if candidate in module_to_path:
+            return candidate
+        parts.pop()
+    return None
+
+
+def relative_import_base(current_module: str, level: int) -> str:
+    package_parts = current_module.split(".")[:-1]
+    if level <= 0:
+        return ".".join(package_parts)
+    drop_count = max(level - 1, 0)
+    if drop_count >= len(package_parts):
+        package_parts = []
+    elif drop_count:
+        package_parts = package_parts[: len(package_parts) - drop_count]
+    return ".".join(package_parts)
+
+
+def resolve_internal_import_paths(
+    *,
+    path: Path,
+    text: str,
+    module_to_path: dict[str, str],
+) -> list[str]:
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return []
+
+    current_module = module_name_for_path(path)
+    resolved: set[str] = set()
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                match = lookup_internal_module(alias.name, module_to_path)
+                if match:
+                    resolved.add(module_to_path[match])
+            continue
+
+        if not isinstance(node, ast.ImportFrom):
+            continue
+
+        base_module = node.module or ""
+        if node.level:
+            relative_base = relative_import_base(current_module, node.level)
+            base_module = ".".join(part for part in (relative_base, base_module) if part)
+
+        base_match = lookup_internal_module(base_module, module_to_path) if base_module else None
+
+        for alias in node.names:
+            if alias.name == "*":
+                if base_match:
+                    resolved.add(module_to_path[base_match])
+                continue
+
+            candidate = ".".join(part for part in (base_module, alias.name) if part)
+            match = lookup_internal_module(candidate, module_to_path)
+            if match:
+                resolved.add(module_to_path[match])
+            elif base_match:
+                resolved.add(module_to_path[base_match])
+
+    relative = path.relative_to(ROOT).as_posix()
+    return sorted(item for item in resolved if item != relative)
+
+
 def difficulty_band(nonempty_lines: int, function_count: int, class_count: int) -> str:
     score = nonempty_lines + function_count * 10 + class_count * 18
     if score < 120:
@@ -388,14 +485,165 @@ def headline_from(summary: str, title: str) -> str:
     return f"{title} turns one slice of Python into something concrete enough to study."
 
 
-def file_facts(path: Path) -> FileFacts:
+def system_role_for(
+    *,
+    relative_path: str,
+    category_key: str,
+    upstream_count: int,
+    downstream_count: int,
+    proof_count: int,
+    execution_count: int,
+) -> str:
+    if category_key == "tests":
+        return "Proof surface"
+    if relative_path == "CLI.py":
+        return "Command entrypoint"
+    if category_key == "scripts":
+        return "Workflow orchestrator" if upstream_count >= 3 else "Automation surface"
+    if category_key == "environments" or category_key == "legacy-env":
+        return "Environment surface"
+    if category_key == "games":
+        return "Simulation studio"
+    if category_key == "applied":
+        return "Applied study"
+    if category_key in {"foundations", "labs"}:
+        return "Concept lab"
+    if "registry" in relative_path:
+        return "Selection registry"
+    if "ledger" in relative_path:
+        return "Evidence reviewer"
+    if "pipeline" in relative_path:
+        return "Execution pipeline"
+    if "data" in relative_path:
+        return "Data contract"
+    if downstream_count >= 5 and upstream_count >= 2:
+        return "Systems hub"
+    if downstream_count >= 4:
+        return "Shared service"
+    if upstream_count >= 4:
+        return "Composition layer"
+    if proof_count >= 3:
+        return "Verified core"
+    if execution_count >= 2:
+        return "Runnable bridge"
+    return "Core module"
+
+
+def system_role_note(
+    *,
+    role: str,
+    upstream_count: int,
+    downstream_count: int,
+    proof_count: int,
+    execution_count: int,
+) -> str:
+    parts: list[str] = []
+
+    if upstream_count:
+        parts.append(f"pulls from {upstream_count} internal module{'s' if upstream_count != 1 else ''}")
+    if downstream_count:
+        parts.append(f"feeds {downstream_count} other file{'s' if downstream_count != 1 else ''}")
+    if proof_count:
+        parts.append(f"shows up in {proof_count} test surface{'s' if proof_count != 1 else ''}")
+    if execution_count:
+        parts.append(f"reaches {execution_count} runnable surface{'s' if execution_count != 1 else ''}")
+
+    if not parts:
+        parts.append("sits mostly on its own as a self-contained study surface")
+
+    closers = {
+        "Data contract": "This is where input quality stops being implied and starts being enforced.",
+        "Execution pipeline": "This is the handoff where validated data becomes a rerunnable experiment record.",
+        "Evidence reviewer": "This layer is about whether a result stays stable when you ask harder questions of it.",
+        "Selection registry": "This is useful when you want one stable place to inspect model choices and tradeoffs.",
+        "Command entrypoint": "This is where the repository becomes something a learner can actually run and probe.",
+        "Workflow orchestrator": "This is one of the clearest places to study how small modules become a repeatable workflow.",
+        "Systems hub": "This is a strong file to read when you want the shape of the repository to reveal itself quickly.",
+        "Proof surface": "Read this alongside the implementation to see which behaviors are intentionally pinned down.",
+    }
+
+    joined = ", ".join(parts[:-1]) + (f", and {parts[-1]}" if len(parts) > 1 else parts[0])
+    return f"This {role.lower()} {joined}. {closers.get(role, 'It is a useful place to study how one part of the repository connects to the rest.')}"
+
+
+def build_connection_map(paths: list[Path]) -> dict[str, ConnectionFacts]:
+    texts = {path.relative_to(ROOT).as_posix(): safe_read(path) for path in paths}
+    module_to_path = {module_name_for_path(path): path.relative_to(ROOT).as_posix() for path in paths}
+
+    upstream_by_path: dict[str, list[str]] = {}
+    downstream_index: dict[str, set[str]] = defaultdict(set)
+
+    for path in paths:
+        relative = path.relative_to(ROOT).as_posix()
+        upstream_paths = resolve_internal_import_paths(
+            path=path,
+            text=texts[relative],
+            module_to_path=module_to_path,
+        )
+        upstream_by_path[relative] = upstream_paths
+        for upstream in upstream_paths:
+            downstream_index[upstream].add(relative)
+
+    connection_map: dict[str, ConnectionFacts] = {}
+    for path in paths:
+        relative = path.relative_to(ROOT).as_posix()
+        category_key, _ = pick_category(relative)
+        upstream_paths = upstream_by_path.get(relative, [])
+        downstream_paths = sorted(downstream_index.get(relative, set()))
+        proof_paths = [item for item in downstream_paths if item.startswith("tests/")]
+        execution_paths = [
+            item for item in downstream_paths if item == "CLI.py" or item.startswith("scripts/")
+        ]
+        connectivity = {
+            "upstream_count": len(upstream_paths),
+            "downstream_count": len(downstream_paths),
+            "proof_count": len(proof_paths),
+            "execution_count": len(execution_paths),
+            "total_links": len(upstream_paths) + len(downstream_paths),
+        }
+        role = system_role_for(
+            relative_path=relative,
+            category_key=category_key,
+            upstream_count=connectivity["upstream_count"],
+            downstream_count=connectivity["downstream_count"],
+            proof_count=connectivity["proof_count"],
+            execution_count=connectivity["execution_count"],
+        )
+        connection_map[relative] = ConnectionFacts(
+            upstream_paths=upstream_paths[:6],
+            downstream_paths=downstream_paths[:6],
+            proof_paths=proof_paths[:6],
+            execution_paths=execution_paths[:6],
+            connectivity=connectivity,
+            system_role=role,
+            system_role_note=system_role_note(
+                role=role,
+                upstream_count=connectivity["upstream_count"],
+                downstream_count=connectivity["downstream_count"],
+                proof_count=connectivity["proof_count"],
+                execution_count=connectivity["execution_count"],
+            ),
+        )
+
+    return connection_map
+
+
+def file_facts(path: Path, connection_map: dict[str, ConnectionFacts]) -> FileFacts:
     relative = path.relative_to(ROOT).as_posix()
     category_key, category_label = pick_category(relative)
     text = safe_read(path)
     summary = module_summary(path, text)
     function_count, class_count, import_count, anchors = ast_counts(text)
     total_lines, nonempty_lines, comment_lines = line_counts(text)
+    connection = connection_map[relative]
     tags = infer_tags(relative, summary, anchors)
+    if connection.proof_paths:
+        tags.append("Proof Linked")
+    if connection.execution_paths:
+        tags.append("Runnable Surface")
+    if connection.connectivity["downstream_count"] >= 4:
+        tags.append("Shared Module")
+    tags = sorted(dict.fromkeys(tags))
     difficulty = difficulty_band(nonempty_lines, function_count, class_count)
     depth = depth_index(nonempty_lines, function_count, class_count, tags)
     why, learning, best_for = narrative(category_key, title_from_path(path), summary, tags)
@@ -413,8 +661,15 @@ def file_facts(path: Path) -> FileFacts:
         best_for=best_for,
         difficulty=difficulty,
         depth_index=depth,
+        system_role=connection.system_role,
+        system_role_note=connection.system_role_note,
         tags=tags,
         anchors=anchors,
+        upstream_paths=connection.upstream_paths,
+        downstream_paths=connection.downstream_paths,
+        proof_paths=connection.proof_paths,
+        execution_paths=connection.execution_paths,
+        connectivity=connection.connectivity,
         stats={
             "total_lines": total_lines,
             "nonempty_lines": nonempty_lines,
@@ -488,8 +743,15 @@ def serialize_file(file: FileFacts) -> dict[str, Any]:
         "best_for": file.best_for,
         "difficulty": file.difficulty,
         "depth_index": file.depth_index,
+        "system_role": file.system_role,
+        "system_role_note": file.system_role_note,
         "tags": file.tags,
         "anchors": file.anchors,
+        "upstream_paths": file.upstream_paths,
+        "downstream_paths": file.downstream_paths,
+        "proof_paths": file.proof_paths,
+        "execution_paths": file.execution_paths,
+        "connectivity": file.connectivity,
         "stats": file.stats,
         "github_url": file.github_url,
         "featured": file.featured,
@@ -497,17 +759,32 @@ def serialize_file(file: FileFacts) -> dict[str, Any]:
 
 
 def build_payload() -> dict[str, Any]:
-    files = [file_facts(path) for path in discover_files()]
+    paths = discover_files()
+    connection_map = build_connection_map(paths)
+    files = [file_facts(path, connection_map) for path in paths]
     category_lookup = category_descriptions()
 
     total_lines = sum(file.stats["total_lines"] for file in files)
     total_functions = sum(file.stats["function_count"] for file in files)
     total_classes = sum(file.stats["class_count"] for file in files)
+    total_internal_links = sum(file.connectivity["upstream_count"] for file in files)
     category_counts: dict[str, int] = {}
     for file in files:
         category_counts[file.category_key] = category_counts.get(file.category_key, 0) + 1
 
     top_depth = sorted(files, key=lambda item: (item.depth_index, item.stats["nonempty_lines"]), reverse=True)
+    top_connected = sorted(
+        files,
+        key=lambda item: (
+            item.connectivity["total_links"],
+            item.connectivity["downstream_count"],
+            item.depth_index,
+        ),
+        reverse=True,
+    )
+    proof_linked = [file for file in files if file.connectivity["proof_count"]]
+    execution_linked = [file for file in files if file.connectivity["execution_count"]]
+    shared_modules = [file for file in files if file.connectivity["downstream_count"] >= 2]
 
     return {
         "generated_at": utc_now(),
@@ -522,7 +799,17 @@ def build_payload() -> dict[str, Any]:
             "total_lines": total_lines,
             "function_count": total_functions,
             "class_count": total_classes,
+            "internal_link_count": total_internal_links,
             "category_counts": category_counts,
+        },
+        "system": {
+            "connected_file_count": sum(1 for file in files if file.connectivity["total_links"]),
+            "proof_linked_count": len(proof_linked),
+            "execution_linked_count": len(execution_linked),
+            "shared_module_count": len(shared_modules),
+            "hub_files": [serialize_file(file) for file in top_connected[:5]],
+            "proof_files": [serialize_file(file) for file in sorted(proof_linked, key=lambda item: item.connectivity["proof_count"], reverse=True)[:5]],
+            "execution_files": [serialize_file(file) for file in sorted(execution_linked, key=lambda item: item.connectivity["execution_count"], reverse=True)[:5]],
         },
         "categories": [
             {
