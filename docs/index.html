@@ -1,183 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Velvet Python | Elite Code Architecture</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="velvet-python atlas: a dynamic GitHub Pages catalog of Python files, learning paths, tests, experiments, and workflow scripts."
+    />
+    <title>velvet-python atlas</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas id="depth-field" aria-hidden="true"></canvas>
+    <div class="aurora aurora-a" aria-hidden="true"></div>
+    <div class="aurora aurora-b" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
 
-        :root {
-            /* Holographic + Feminine Palette */
-            --primary-rose: #E8B4D0;
-            --primary-lavender: #D4A5E3;
-            --primary-periwinkle: #A8C5E8;
-            --accent-cyan: #7DDFE8;
-            --accent-magenta: #FF66CC;
-            --accent-gold: #FFD700;
-            
-            /* Depth layers */
-            --bg-void: #0a0a14;
-            --bg-deep: #1a1a2e;
-            --bg-surface: #2d2d4a;
-            --glass-light: rgba(232, 180, 208, 0.1);
-            --glass-medium: rgba(168, 197, 232, 0.15);
-            --glass-heavy: rgba(212, 165, 227, 0.2);
-            
-            --text-primary: #ffffff;
-            --text-secondary: #E8B4D0;
-            --text-muted: #A8A8D0;
-        }
+    <div class="page-shell">
+      <header class="hero" id="top" data-reveal>
+        <div class="hero-copy glass-panel">
+          <p class="eyebrow">GitHub Pages atlas</p>
+          <h1>velvet-python <span>in full color</span></h1>
+          <p class="hero-text">
+            A living catalog of the Python files in this repository. Search the
+            code, follow learning routes, open the deeper modules, and move
+            through tests, experiments, and scripts without losing the shape of
+            the whole project.
+          </p>
 
-        html {
-            scroll-behavior: smooth;
-        }
+          <nav class="hero-nav" aria-label="Atlas sections">
+            <a class="mini-link" href="#paths">Learning paths</a>
+            <a class="mini-link" href="#signals">Signals</a>
+            <a class="mini-link" href="#orbit">Featured files</a>
+            <a class="mini-link" href="#catalog">Full catalog</a>
+          </nav>
 
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: linear-gradient(135deg, var(--bg-void) 0%, #0f0f1e 50%, var(--bg-deep) 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            position: relative;
-        }
+          <div class="hero-actions">
+            <a class="action-button primary" href="#catalog">Enter the catalog</a>
+            <a class="action-button" href="https://github.com/Cazzy-Aporbo/velvet-python">View repository</a>
+            <a class="action-button" href="https://github.com/Cazzy-Aporbo/velvet-python/blob/main/README.md">Read README</a>
+          </div>
 
-        /* Animated Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(232, 180, 208, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(168, 197, 232, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(212, 165, 227, 0.05) 0%, transparent 50%);
-            animation: glow-pulse 15s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
+          <div class="hero-promise">
+            <article class="promise-chip">
+              <strong>Searchable</strong>
+              <span>Every Python file is mapped into the atlas.</span>
+            </article>
+            <article class="promise-chip">
+              <strong>Runnable</strong>
+              <span>Scripts, tests, and core modules stay linked together.</span>
+            </article>
+            <article class="promise-chip">
+              <strong>Learnable</strong>
+              <span>The page is built to help you enter the repo with intent.</span>
+            </article>
+          </div>
 
-        @keyframes glow-pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1.2; }
-        }
+          <div class="metric-row" id="hero-stats"></div>
+        </div>
 
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+        <aside class="hero-spotlight glass-panel" data-reveal>
+          <div class="spotlight-header">
+            <div>
+              <p class="eyebrow">Rotating spotlight</p>
+              <h2 id="spotlight-title">Loading the atlas</h2>
+            </div>
+            <button class="icon-button" id="next-featured" type="button">
+              Shift orbit
+            </button>
+          </div>
 
-        /* ===== HEADER ===== */
-        header {
-            padding: 3rem 0;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(232, 180, 208, 0.2);
-            animation: slide-down 1s ease-out;
-        }
+          <p class="spotlight-path" id="spotlight-path"></p>
+          <p class="spotlight-summary" id="spotlight-summary"></p>
+          <div class="tag-row" id="spotlight-tags"></div>
+          <div class="spotlight-grid" id="spotlight-stats"></div>
+          <p class="spotlight-note" id="spotlight-why"></p>
 
-        @keyframes slide-down {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+          <div class="spotlight-actions">
+            <button class="action-button primary outline" id="open-spotlight" type="button">
+              Open details
+            </button>
+            <a class="action-button subtle" id="spotlight-link" href="#">Open on GitHub</a>
+          </div>
 
-        h1 {
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            background: linear-gradient(135deg, var(--primary-rose), var(--primary-lavender), var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
-            animation: shimmer 3s ease-in-out infinite;
-        }
+          <div class="hero-stage" aria-hidden="true">
+            <div class="orbital-shell">
+              <div class="orbital-ring orbital-ring-a"></div>
+              <div class="orbital-ring orbital-ring-b"></div>
+              <div class="orbital-ring orbital-ring-c"></div>
+              <div class="node-cluster" id="orbit-nodes"></div>
+              <div class="mandala">
+                <svg viewBox="0 0 200 200" role="presentation" aria-hidden="true">
+                  <circle cx="100" cy="100" r="92" class="mandala-ring"></circle>
+                  <circle cx="100" cy="100" r="62" class="mandala-ring faint"></circle>
+                  <path class="mandala-line" d="M100 18 L118 82 L182 100 L118 118 L100 182 L82 118 L18 100 L82 82 Z"></path>
+                  <path class="mandala-line faint" d="M100 42 L110 90 L158 100 L110 110 L100 158 L90 110 L42 100 L90 90 Z"></path>
+                </svg>
+              </div>
+              <div class="note-lattice" id="note-lattice"></div>
+              <div class="orbit-core">
+                <span class="orbit-core-label">live atlas</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </header>
 
-        @keyframes shimmer {
-            0%, 100% {
-                filter: brightness(1) drop-shadow(0 0 20px rgba(232, 180, 208, 0.3));
-            }
-            50% {
-                filter: brightness(1.1) drop-shadow(0 0 40px rgba(168, 197, 232, 0.5));
-            }
-        }
+      <main>
+        <section class="story-section" id="paths" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">Learning paths</p>
+            <h2>Choose a route through the repository</h2>
+            <p>
+              Start where you have energy. Some routes are small and direct,
+              others move into systems, proof, or interactive experiments.
+            </p>
+          </div>
+          <div class="track-rail" id="track-rail"></div>
+        </section>
 
-        .tagline {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            opacity: 0.9;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            margin-bottom: 2rem;
-            animation: fade-in 1.5s ease-out 0.3s both;
-        }
+        <section class="story-section" id="signals" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">Signal map</p>
+            <h2>See where the repository puts its weight</h2>
+            <p>
+              The cards below show the major learning clusters. Use them to move
+              the full catalog into focus, or to understand how the codebase is
+              divided between foundations, runnable workflows, tests, and core
+              modules.
+            </p>
+          </div>
 
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
+          <div class="signal-layout">
+            <div class="cluster-grid" id="cluster-grid"></div>
 
-        /* ===== NAVIGATION ===== */
-        nav {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 3rem;
-            animation: fade-in 1.5s ease-out 0.6s both;
-        }
+            <aside class="signal-panel glass-panel">
+              <div class="panel-head">
+                <p class="eyebrow">From the code itself</p>
+                <h3>What this repository keeps visible</h3>
+              </div>
+              <div class="method-grid" id="method-grid"></div>
+              <div class="signal-notes" id="signal-notes"></div>
+            </aside>
+          </div>
+        </section>
 
-        nav button {
-            padding: 0.8rem 1.8rem;
-            background: var(--glass-medium);
-            border: 1px solid rgba(168, 197, 232, 0.4);
-            color: var(--text-primary);
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.95rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        <section class="story-section" id="orbit" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">Featured files</p>
+            <h2>Open the modules that carry the most teaching surface</h2>
+            <p>
+              These are the files that shape the learning experience most
+              strongly: the ones that connect implementation, behavior, and
+              evidence.
+            </p>
+          </div>
+          <div class="orbit-strip" id="orbit-strip"></div>
+        </section>
 
-        nav button:hover {
-            background: var(--glass-heavy);
-            border-color: var(--primary-rose);
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px rgba(232, 180, 208, 0.2);
-        }
+        <section class="story-section" id="catalog" data-reveal>
+          <div class="section-heading">
+            <p class="eyebrow">File atlas</p>
+            <h2>Browse every Python file</h2>
+            <p>
+              Search by idea, filter by cluster, sort by depth, then open any
+              file to see what it teaches and where it lives in the repository.
+            </p>
+          </div>
 
-        nav button.active {
-            background: linear-gradient(135deg, var(--primary-rose), var(--primary-lavender));
-            border-color: var(--primary-rose);
-            box-shadow: 0 0 30px rgba(232, 180, 208, 0.4);
-        }
+          <div class="controls glass-panel">
+            <label class="search-shell" for="catalog-search">
+              <span>Search the atlas</span>
+              <input
+                id="catalog-search"
+                type="search"
+                placeholder="Try recursion, pipeline, audit, registry, simulation, environment..."
+              />
+            </label>
 
-        /* ===== SEARCH ===== */
-        .search-container {
+            <div class="filter-bar" id="filter-bar"></div>
+
+            <div class="sort-row">
+              <label for="sort-select">Sort by</label>
+              <select id="sort-select">
+                <option value="depth">Depth</option>
+                <option value="name">Name</option>
+                <option value="category">Category</option>
+              </select>
+              <button class="icon-button" id="surprise-button" type="button">
+                Shift the view
+              </button>
+            </div>
+          </div>
+
+          <div class="catalog-meta" id="catalog-meta"></div>
+
+          <div class="catalog-shell">
+            <div class="catalog-grid" id="catalog-grid"></div>
+
+            <aside class="catalog-guide glass-panel">
+              <p class="eyebrow">Current view</p>
+              <h3 id="guide-title">Loading the catalog</h3>
+              <p class="guide-note" id="guide-note"></p>
+              <div class="tag-row" id="guide-tags"></div>
+              <div class="guide-list" id="guide-list"></div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="page-footer glass-panel" data-reveal>
+        <div>
+          <p class="eyebrow">Generated from the repository</p>
+          <h2>This page stays tied to the code.</h2>
+          <p>
+            The catalog is rebuilt from the Python files in the repo, then
+            surfaced here as a way into the codebase. The visual layer is meant
+            to help the structure breathe, not replace the work itself.
+          </p>
+        </div>
+        <div class="footer-meta">
+          <p id="generated-at"></p>
+          <p>Rebuild with <code>python scripts/build_pages_catalog.py</code></p>
+        </div>
+      </footer>
+    </div>
+
+    <aside class="detail-drawer" id="detail-drawer" aria-hidden="true">
+      <div class="drawer-backdrop" id="drawer-backdrop"></div>
+      <div class="drawer-panel glass-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+        <button class="drawer-close" id="drawer-close" type="button">Close</button>
+        <p class="eyebrow" id="drawer-category"></p>
+        <h2 id="drawer-title"></h2>
+        <p class="drawer-path" id="drawer-path"></p>
+        <p class="drawer-summary" id="drawer-summary"></p>
+        <div class="tag-row" id="drawer-tags"></div>
+        <div class="drawer-stat-grid" id="drawer-stats"></div>
+        <div class="drawer-copy">
+          <div>
+            <h3>Why this matters</h3>
+            <p id="drawer-why"></p>
+          </div>
+          <div>
+            <h3>How to enter it</h3>
+            <p id="drawer-learning"></p>
+          </div>
+          <div>
+            <h3>Best for</h3>
+            <p id="drawer-best-for"></p>
+          </div>
+          <div>
+            <h3>Visible anchors</h3>
+            <ul id="drawer-anchors"></ul>
+          </div>
+        </div>
+        <div class="drawer-actions">
+          <a class="action-button primary" id="drawer-link" href="#">Open on GitHub</a>
+        </div>
+      </div>
+    </aside>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
             display: flex;
             justify-content: center;
             margin: 3rem 0;

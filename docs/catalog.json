@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T03:39:44Z",
+  "generated_at": "2026-07-01T04:10:16Z",
   "repository": {
     "name": "velvet-python",
     "owner": "Cazzy-Aporbo",
@@ -7,9 +7,9 @@
     "pages_hint": "Enable GitHub Pages from the docs/ folder on main."
   },
   "stats": {
-    "python_file_count": 184,
-    "total_lines": 80499,
-    "function_count": 850,
+    "python_file_count": 185,
+    "total_lines": 80543,
+    "function_count": 854,
     "class_count": 384,
     "category_counts": {
       "legacy-env": 4,
@@ -21,7 +21,7 @@
       "applied": 14,
       "labs": 33,
       "scripts": 21,
-      "tests": 27
+      "tests": 28
     }
   },
   "categories": [
@@ -47,7 +47,7 @@
       "key": "tests",
       "label": "Evidence & Tests",
       "description": "The proof layer: contracts, failure cases, and the checks that keep claims inspectable.",
-      "file_count": 27
+      "file_count": 28
     },
     {
       "key": "environments",
@@ -112,7 +112,7 @@
       "id": "proof",
       "title": "Learn Through Proof",
       "description": "Use the tests as a study guide for what the code promises, what it rejects, and where it is meant to fail fast.",
-      "file_count": 27,
+      "file_count": 28,
       "categories": [
         "tests"
       ]
@@ -7053,6 +7053,40 @@
         "import_count": 2
       },
       "github_url": "https://github.com/Cazzy-Aporbo/velvet-python/blob/main/tests/test_ml_pipeline.py",
+      "featured": false
+    },
+    {
+      "id": "tests--test_pages_catalog_builder-py",
+      "path": "tests/test_pages_catalog_builder.py",
+      "name": "test_pages_catalog_builder.py",
+      "title": "Test Pages Catalog Builder",
+      "category_key": "tests",
+      "category_label": "Evidence & Tests",
+      "summary": "Test Pages Catalog Builder is part of the velvet-python learning catalog.",
+      "headline": "Test Pages Catalog Builder is part of the velvet-python learning catalog.",
+      "why_it_matters": "Test Pages Catalog Builder matters because it teaches the repo by pressure. It shows what should hold steady when the code changes.",
+      "learning_moment": "Start here when you want to see how testing is written plainly enough to study without losing the engineering edge.",
+      "best_for": "best for readers who want to understand behavior through proof",
+      "difficulty": "gentle",
+      "depth_index": 24,
+      "tags": [
+        "Testing"
+      ],
+      "anchors": [
+        "test_discover_files_finds_python_catalog_inputs",
+        "test_file_facts_exposes_learning_metadata_for_core_file",
+        "test_build_payload_is_consistent_with_generated_catalog_output",
+        "test_catalog_output_file_exists_and_is_inside_docs"
+      ],
+      "stats": {
+        "total_lines": 44,
+        "nonempty_lines": 31,
+        "comment_lines": 0,
+        "function_count": 4,
+        "class_count": 0,
+        "import_count": 3
+      },
+      "github_url": "https://github.com/Cazzy-Aporbo/velvet-python/blob/main/tests/test_pages_catalog_builder.py",
       "featured": false
     },
     {
